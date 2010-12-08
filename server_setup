@@ -1,0 +1,10 @@
+#!/bin/sh
+operation=$1
+script_dir=/home/supertool/Arbiter/svn/AdMonitor
+svn_dir=/home/supertool/Arbiter/svn/AdMonitor
+for i in (51,52,53,54)
+do
+	ssh 192.168.1.$i
+	svn up $svn_dir
+	$script_dir/move.sh $operation
+done
