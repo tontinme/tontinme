@@ -1,0 +1,34 @@
+Global setup:
+
+ Download and install Git
+  git config --global user.name "tontinme"
+  git config --global user.email tontinme@gmail.com
+        
+
+Next steps:
+
+  mkdir tontinme
+  cd tontinme
+  git init
+  touch README
+  git add README
+  git commit -m 'first commit'
+  git remote add origin git@github.com:tontinme/tontinme.git
+  git push origin master
+      
+
+Existing Git Repo?
+
+  cd existing_git_repo
+  git remote add origin git@github.com:tontinme/tontinme.git
+  git push origin master
+      
+
+Importing a Subversion Repo?
+
+  Click here
+      
+
+When you're done:
+
+  Continue
