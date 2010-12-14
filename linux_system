@@ -1,0 +1,7 @@
+linux 光盘刻录软件包
+	cdrecord-2.01-10
+	dvd+rw-tools-7.0-0.el5.3
+	mkisofs-2.01-10
+刻录设备检测
+	cdrecord -scanbus	#用于SCSI光驱
+	cdrecord -scanbus dev=APAPI
