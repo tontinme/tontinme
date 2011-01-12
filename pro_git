@@ -1,0 +1,48 @@
+##chapter 1
+#install
+	for CENTOS
+	$yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
+	for DEBIAN	
+	$ apt-get install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
+	download sourcecode	http://git-scm.com/download
+	make 
+	$ tar -zxf git-1.6.0.5.tar.gz
+	$ cd git-1.6.0.5
+	$ make prefix=/usr/local all
+	$ sudo make prefix=/usr/local install
+
+oR
+	$yum install git-core
+	$apt-get install git-core
+
+	for WINDOWS
+	http://code.google.com/p/msysgit
+#git config
+	#user info
+		/etc/gitconfig #系统中对所有用户都普遍适用的配置 --system read and write this file
+		~/.gitconfig #用户目录下的配置文件只适用于该用户 --global read and write this file
+		.git/config #仅针对当前项目有效
+		#每一个级别的配置都会覆盖上层的相同配置。so values in .git/config trump those in /etc/gitconfig
+		#你要配置你的user.name和user.email，说明是谁提交了更新。
+		#--global表示在当前系统用户下所做的所有提交操作都使用此name和email.如果在某个特定项目中使用其他名字或邮件，只需去掉--global重新配置即可，新的设置保存当前项目的.git/config中。
+	#text editor
+		chose your text editor,git uses your system's default editor,which is generally vi or vim
+		$git config --global core.editor emacs
+	#diff tool
+		$git config --global merge.tool vimdiff 
+	#checking your settings
+		$git config --list
+		#有时候会看到重复的变量名，那说明他们来自不同的配置文件（比如/etc/gitconfig和~/.gitconfig）,不过最终git实际采用的是最后一个。
+		#you can also check what git thinks a specific key's value
+		$git config user.name (for example)
+	#getting help
+		$git help <verb>
+		$git <verb> --help
+		man git-<verb>
+		#for example, you can get the manpage help for the config command
+		$git help config
+
+
+##chapter 2	git basics
+
+#getting a git repository
