@@ -45,4 +45,51 @@ oR
 
 ##chapter 2	git basics
 
-#getting a git repository
+#getting a git repositor
+	#initializing a repository
+		$git init
+		$git add *.c
+		$git add README
+		$git commit -m 'initial project version'
+	#clone an existing repository
+		$git clone git://github.com/schacon/grit.git	#这会在当前目录下创建一个名为“grit”的目录。
+		#克隆时，自定义要新建的项目目录名称	
+		$git clone git://github.com/schacon/grit.git
+#recording changes to the repository
+	#checking the status of your file
+		$git status
+	#ignoring files
+		$cat .gitignore
+		文件.gitignore的格式规范如下：
+			所有空行或者以#开头的行都会被git忽略
+			可以使用标准的glob模式匹配	#glob模式指shell所使用的简化了的正则表达式
+			匹配模式最后跟反斜杠（/）说明要忽略的是目录
+			要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号（！）取反
+		an exampel .gitignore file
+			#a comment - this is ignored
+			*.a	#忽略所有.a结尾的文件
+			!lib.a	#但lib.a除外
+			/TODO	#仅忽略项目根目录下的TODO文件，不包括subdir/TODO
+			build/	#忽略build/目录下的所有文件
+			doc/*.txt	#会忽略doc/notes.txt，但不包括doc/server/arch.txt
+	#viewing your staged and unstaged changes
+		$git diff	#to see what you've changed but not yet staged		
+		$git diff --cached	#to see what you've staged that will go into your next commit
+	#commit your changes
+		$git commit
+		$git commit -m 'your commit message'
+	#skip the staging area
+		$git commit -a -m 'your commit message'	#加上 -a 选项，提交之前就不再需要 git add 文件了
+	#remove files		
+		$git rm readme.txt	#从已跟踪文件清单中移除，并连带从工作目录中删除指定的文件
+		$git rm -f readme.txt	#如果删除之前修改过并且已经放到暂存区域的话，使用 -f 强制执行
+		$git rm --cached readme.txt	#从git仓库中删除（即从暂存区域移除），但仍保留在当前工作目录中
+		$git rm \*~	#星号*之前的反斜杠\，表示使用git自己的文件模式扩展匹配方式（删除所有log/目录下扩展名为.log的文件），而不是按照shell扩展（仅删除指定目录下的文件，不会递归匹配）。
+	#move files
+		$git mv file_from file_to	#不像其他的VCS系统，git并不跟踪文件移动操作。如果在git中重命名了某个文件，仓库中存储的元数据并不会体现出这一次改名操作。不过git灰常聪明，它会推断出究竟发生了什么。
+		#this is equivalent to running something like this:
+			$mv README.txt README
+			$git rm README.txt
+			$git add README	
+			#有时候用其他工具批处理改名的话，记得在提交前删除老的文件名，再添加新的文件名。
+#view the commit history
