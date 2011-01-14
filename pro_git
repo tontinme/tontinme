@@ -96,3 +96,7 @@
 			$git add README	
 			#有时候用其他工具批处理改名的话，记得在提交前删除老的文件名，再添加新的文件名。
 #view the commit history
+	$git log
+		$git log -p -2	# -p 展开显示每次提交的内容差异	 # -2 仅显示最近的两次更新
+		$git log --stat	#仅显示简要的增改行数统计
+		$git --pretty	#可以指定使用完全不同于默认格式的方式展示提交历史 参数：short full fuller oneline format 等。
