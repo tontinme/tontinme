@@ -1,5 +1,5 @@
 ##chapter 1
-#install
+#1.4 install
 	for CENTOS
 	$yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
 	for DEBIAN	
@@ -16,7 +16,7 @@
 
 	for WINDOWS
 	http://code.google.com/p/msysgit
-#git config
+#1.5 git config
 	#user info
 		/etc/gitconfig #系统中对所有用户都普遍适用的配置 --system read and write this file
 		~/.gitconfig #用户目录下的配置文件只适用于该用户 --global read and write this file
@@ -46,7 +46,7 @@
 
 ##chapter 2	git basics
 
-#getting a git repositor
+#2.1 getting a git repositor
 	#initializing a repository
 		$git init
 		$git add *.c
@@ -56,7 +56,7 @@
 		$git clone git://github.com/schacon/grit.git	#这会在当前目录下创建一个名为“grit”的目录。
 		#克隆时，自定义要新建的项目目录名称	
 		$git clone git://github.com/schacon/grit.git
-#recording changes to the repository
+#2.2 recording changes to the repository
 	#checking the status of your file
 		$git status
 	#ignoring files
@@ -95,8 +95,49 @@
 			$git rm README.txt
 			$git add README	
 			#有时候用其他工具批处理改名的话，记得在提交前删除老的文件名，再添加新的文件名。
-#view the commit history
+#2.3 view the commit history
 	$git log
 		$git log -p -2	# -p 展开显示每次提交的内容差异	 # -2 仅显示最近的两次更新
 		$git log --stat	#仅显示简要的增改行数统计
 		$git --pretty	#可以指定使用完全不同于默认格式的方式展示提交历史 参数：short full fuller oneline format 等。
+			format选项中常用的格式占位符：
+				选项	说明
+				%H	提交对象（commit）的完整哈希字串
+				%h	提交对象的简短哈希字串
+				%T	树对象（tree）的完整哈希字串
+				%t	树对象的简短哈希字串
+				%P	父对象（parent）的完整哈希字串
+				%p	父对象的简短哈希字串
+				%an	作者（author）的名字
+				%ae	作者的电子邮件地址
+				%ad	作者修订日期（可以用 -date=选项定制格式）
+				%ar	作者修订日期，按多久以前的方式显示
+				%cn	提交者（committer）的名字
+				%ce	提交者的电子邮件地址
+				%cd	提交日期
+				%cr	提交日期，按多久以前的方式显示
+				%s	提交说明
+			author:指实际作出修改的人
+			committer:最后将此工作成果提交到仓库的人
+	#limit log output
+		$git log --since (--until)	#the time-limiting options
+			-(n)	#仅显示最近的n条提交
+			--since, --after	#仅显示指定时间之后的提交
+			--until, --before	#仅显示指定时间之前的提交
+			--author 		#仅显示指定作者相关的提交
+			--committer		#仅显示指定提交者相关的提交
+	#Using a GUI to Visualize History
+		$gitk
+#2.4 undo things
+	#change your last commit	
+		$git commit --amend	#this comman  takes your staging area and uses it for the commit. If you've have made no changes\
+					#since your last commit(for instance, you run this command immediately after your previous commit),\
+					#then your snapshot will look exactly the same and all you'll change is your commit message. 
+	#unstaging a staged file
+		$git reset HEAD <file>
+	#unmodify a modified file
+		$git checkout -- <file>	#Don't ever use this command unless you absolutely know that youdon't want the file. If you just \
+					#need to get it out of the way,we'll go over stashing and branching in the next chater.
+		#任何已经提交到git的都可以被恢复。即使在已经删除的分支中的提交，或者用--amend重新改写的提交，都可以被恢复。所以，你可能失\
+		#去的数据，仅限于没有提交过的，对git来说它们就像从未存在过一样。
+#2.5 working with remotes
