@@ -1,3 +1,9 @@
+#alias
+	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
+		alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
+	#工作中可能经常要删除一些log文件，可以这样定义：
+		alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
+		alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
 #find
 	#忽略大小写的查找
 		#find -iname 'xxx'
@@ -5,3 +11,44 @@
 		./XXX
 		./Xxx
 	#查找文件目录的深度限制（从/开始计算。包括maxdepth和mindepth）
+		[root@server test]# find / -name ‘passwd’
+		/usr/share/doc/nss_ldap-253/pam.d/passwd
+		/usr/bin/passwd
+		/etc/pam.d/passwd
+		/etc/passwd
+		[root@server test]# cd /
+		[root@server /]# find -mindepth 3 -maxdepth 3 -name ‘passwd’
+		./usr/bin/passwd
+		./etc/pam.d/passwd
+	#根据文件属性查找
+		#查找其中组权限是r的，也可以包括其他权限
+		#find . -perm -g=r -type f -exec ls -l {} \;
+		—-r—– 1 root root 0 01-08 20:45 ./FAn
+		-rwxrwxrwx 1 root root 0 01-08 17:00 ./Fan
+		-rw-r—– 1 root root 0 01-08 17:01 ./FAN
+		-rw-r–r– 1 root root 0 01-08 17:01 ./fan
+		#查找其中组权限是r的，不能包括其他权限
+		#find . -perm g=r -type f -exec ls -l {} \;
+		—-r—– 1 root root 0 01-08 20:45 ./FAn
+	#查找空文件（0字节文件）
+		#find ~ -empty
+		#注：按照深度去查找，比如我只想查找2层深度的文件
+			#find . -maxdepth 2 -empty
+			./root/spread-bin-4.0.0
+	#工作中可能想要删除一些临时文件，想要删除最大的5个文件，这样查找：
+		#find . -type f -exec ls -s {} \; | sort -n -r | head 5
+		201424 ./ctier-server-3.6.0-1.noarch.rpm
+		14568 ./.cpan/Metadata
+		4700 ./ruby-1.8.7.tar.gz
+		4316 ./ruby-1.8.7/libruby-static.a
+		3372 ./passenger-2.2.11/ext/apache2/ApplicationPoolServerExecutable
+	#查找指定文件类型的文件：使用-type选项
+	#根据文件修改时间查找
+		#ls -lrt
+	#指定查找某文件修改时间之前修改或者创建的文件
+		#find -newer filename
+	#根据文件大小查找
+		#比如，查找大于20M的文件
+			#find . -size +20M
+		#查找小于1M的文件
+			#find . -size -1M
