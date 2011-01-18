@@ -1,0 +1,7 @@
+#find
+	#忽略大小写的查找
+		#find -iname 'xxx'
+		./xxx
+		./XXX
+		./Xxx
+	#查找文件目录的深度限制（从/开始计算。包括maxdepth和mindepth）
