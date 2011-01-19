@@ -1,0 +1,39 @@
+#连接成功后运行命令
+	#只想运行单个命令的话，直接把命令附加在ssh命令之后即可。如：
+		$ssh freebsd uname -a
+		Linux bebop 2.6.32-24-generic #39-Ubuntu SMP Wed Jul 28 05:14:15 UTC 2010 x86_64 GNU/Linux
+	#但有些命令可能会报错，如"top"，这时只需加上“-t”参数就行了
+#使用别名
+	#更改~/.ssh/config，比如：
+	Host bob
+    		HostName bob.example.com
+    		Port 2222
+    		User wdaher
+		IdentityFile ~/.ssh/bob
+
+	Host alice
+    		HostName alice.example.com
+    		Port 8183
+    		User waseem
+		IdentityFile ~/.ssh/alice
+
+	Host self
+    		HostName wsd.example.com
+    		Port 31337
+    		User waseemio
+		IdentityFile ~/.ssh/self
+	Host github.com		#github的Host必须写成github.com
+		HostName github.com
+		User git
+		IdentityFile ~/.ssh/github
+	#连接时，就变成这样了
+	ssh bob
+	ssh alice
+	ssh self
+	ssh github.com
+#端口转发
+	#略
+#通过authorized_keys指定登录后要执行的命令
+	#该命令定义在authorized_keys中，ssh连上后，只能执行该命令，并且执行完后立即退出。比如：
+		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(其中ssh-dss AAAA...就是原有的public key了)
+	
