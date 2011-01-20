@@ -1,9 +1,53 @@
+---Index
+------alias
+------chroot
+------crontab
+------find
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
 		alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
 	#工作中可能经常要删除一些log文件，可以这样定义：
 		alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
 		alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
+#chroot
+	
+#crontab
+	#field		allowed values
+	minute		0-59
+	hour		0-23
+	day of month	1-31
+	month		1-12 (or names)
+	day of week	0-7 (0 or 7 is Sun, or use names)
+	#在一天做N次的计划任务
+		#以下例子代表在12点和18点执行任务
+		00 12，18 * * * /home/tontinme/test.sh	
+	#在一天的特定时间段的计划任务
+		#以下代表在12点到18点的每个小时的整点执行脚本
+		00 12-18 * * * /home/tontinme/test.sh
+		#以下代表在工作日（不包括周六日）的12点到18点的整点执行脚本
+	#查看root以外用户的计划任务内容	
+		#编辑使用-e选项
+		#crontab -u tontinme -l
+		00 12,18 * * * /home/tontinme/test.sh	
+	#在相隔时间后执行计划任务
+		#以下表示每10分钟执行一次任务
+		* /10 * * * * /home/tontinme/test.sh
+	#某特定相隔时间的计划任务
+		#以下表示每年的第一分钟执行脚本
+		@yearly /home/tontinme/test.sh
+			#使用@yearly对应的是0 * * * *,还有如下可用：
+			@reboot		run once, at startup
+			@yearly		run once a year, "0 0 1 1 *"
+			@annually	same as @yearly
+			@monthly	run once a month, "0 0 1 * *"
+			@weekly		run once a week, "0 0 * * 0"
+			@daily		run once a day, "0 0 * * *"
+			@midnight	same as @daily
+			@hourly		run once an hour, "0 * * * *"
+		#这里特别强调@reboot,可以设定重启后执行。
+	#以秒为单位执行计划任务
+		#以下表示每20秒执行一次：
+		* * * * * sleep 20; /home/tontinme/test.sh
 #find
 	#忽略大小写的查找
 		#find -iname 'xxx'
