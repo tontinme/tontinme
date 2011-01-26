@@ -1,14 +1,16 @@
+#!/bin/bash
 ---Index
 ------alias
 ------chroot
 ------crontab
 ------find
+------wget
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
-		alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
+		$alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
 	#工作中可能经常要删除一些log文件，可以这样定义：
-		alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
-		alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
+		$alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
+		$alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
 #chroot
 	
 #crontab
@@ -50,7 +52,7 @@
 		* * * * * sleep 20; /home/tontinme/test.sh
 #find
 	#忽略大小写的查找
-		#find -iname 'xxx'
+		$find -iname 'xxx'
 		./xxx
 		./XXX
 		./Xxx
@@ -96,3 +98,47 @@
 			#find . -size +20M
 		#查找小于1M的文件
 			#find . -size -1M
+#wget
+	#通常下载单个文件的方式
+		$wget http://hotfile.com/dl/97851370/9727f76/backups-DN22006-sUN.part03.rar	
+	#下载一个和下载地址文件名不同的文件
+		默认wget会自动分隔最后一个斜线的后面作为文件名，正常下载模式：
+			$wget http://www.aaa.com/test/download.php?src_id=02
+			下载后：
+			$ls
+			download_.php?src_id=02
+		可以使用-O选项解决：
+			$wget –O test.zip http://www.aaa.com/test/download.php?src_id=02
+			下载后：
+			$ls
+			test.zip
+	#指定下载速度
+		$wget -limit-rate=100k http://limit.com/test.tar.gz
+	#断点续传
+		使用-c选项	
+	#后台下载
+		-b选项进行后台下载，wget在后台继续运行，并把输出写至"wget-log"，查看日志
+		$tail -l wget-log	
+	#当下载多个内容时，可以将这些地址放到一个文件中，然后下载这个文件。
+		$cat download_file_list.txt
+		url1
+		url2
+		url3
+		...
+		$wget -i download_file_list.txt
+	#下载一个站点
+		$wget -mirror -p -convert-links -P localhost www.tontin.me
+	#限制下载的类型
+		$wget -R *.jpg www.tontin.me
+		$wget --reject=jpg www.tontin.me
+	#记录下载日志
+		$wget -o /var/log/wget.log www.tontin.me
+	#仅下载某些类型的文件
+		$wget -r -A *.pdf mirrors.sohu.com/ebook
+		# -r recursive
+		# -A --accept acclist
+		# -A *.pdf will match file1.pdf, but also file2.PDF, if you use --ignore-case
+	#使用用户名和密码下载文件，包括ftp和http
+		$wget --user=USERNAME --password=PASSWORD www.tontin.me
+		#these parameters can be overridden using the --ftp-user and --ftp-password options for FTP\
+		# connections and the --http-user and --http-password options for HTTP connections.
