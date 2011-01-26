@@ -127,7 +127,7 @@
 		...
 		$wget -i download_file_list.txt
 	#下载一个站点
-		$wget -mirror -p -convert-links -P localhost www.tontin.me
+		$wget --mirror -p -convert-links -P localhost www.tontin.me
 	#限制下载的类型
 		$wget -R *.jpg www.tontin.me
 		$wget --reject=jpg www.tontin.me
