@@ -21,4 +21,20 @@
 		POSTROUTING:	位于nat表，用于修改源地址（SNAT）
 #3.1 iptables语法概述
 	#iptables [-t 要操作的表]
-		<>
+		<操作命令>
+		[要操作的链]
+		[规则号码]
+		[规则条件]
+		[-j 匹配到以后的动作]
+#3.2 命令概述
+	操作命令（-A，-I，-D，-R，-P，-F）
+	查看命令（-[vnx]L）
+	#-A <链名>	APPEND，追加一条规则（放到最后）
+		eg. iptables -t filter -A INPUT -j DROP
+	#-I <链名>[规则号码]	INSERT，插入一条规则
+		eg. iptables -I INPUT -j DROP	#在filter表的INPUT链里插入一条规则（插入到第一条）
+		eg. iptables -I INPUT 3 -j DROP	#在filter表的INPUT链里插入一条规则（插入到第三条）
+	#注意：	1. -t filter可不写，不写则自动默认是filter表
+		2. -I 链名[规则号码]，如果不写规则号码，则默认是1
+		3. 确保规则号码<=(已有规则数+1)，否则报错
+	#-D <链名><规则号码 | 具体规则内容>	DELETE，删除一条规则
