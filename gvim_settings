@@ -1,4 +1,4 @@
-vim、gvim在windows下中文乱码的终极解决方案
+锘縱im銆乬vim鍦╳indows涓嬩腑鏂囦贡鐮佺殑缁堟瀬瑙ｅ喅鏂规
 
 set encoding=utf-8
 set fileencodings=utf-8,chinese,latin-1
@@ -7,8 +7,8 @@ set fileencoding=chinese
 else
 set fileencoding=utf-8
 endif
-"解决菜单乱码
+"瑙ｅ喅鑿滃崟涔辩爜
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
-"解决consle输出乱码
+"瑙ｅ喅consle杈撳嚭涔辩爜
 language messages zh_CN.utf-8

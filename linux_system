@@ -1,7 +1,7 @@
-linux ¹âÅÌ¿ÌÂ¼Èí¼ş°ü
+ï»¿linux å…‰ç›˜åˆ»å½•è½¯ä»¶åŒ…
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3
 	mkisofs-2.01-10
-¿ÌÂ¼Éè±¸¼ì²â
-	cdrecord -scanbus	#ÓÃÓÚSCSI¹âÇı
+åˆ»å½•è®¾å¤‡æ£€æµ‹
+	cdrecord -scanbus	#ç”¨äºSCSIå…‰é©±
 	cdrecord -scanbus dev=APAPI
