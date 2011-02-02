@@ -1,0 +1,24 @@
+#!/bin/sh
+#2.1 框架图
+	-->PREROUTING-->[ROUTE]-->FORWARD-->POSTROUTING-->
+	    mangle	 |	mangle		^mangle
+	    nat		 |	filter		|nat
+			 |			|
+			 |			|	
+			 v			|
+			 INPUT			OUTPUT
+			 |mangle		^mangle
+			 |filter		|nat
+			 v ------->local------->|filter
+#2.2 链和表
+	#表
+		filter:	用于过滤的时候
+		nat:	用于做NAT的时候（NAT:Network Address Translator）
+	#链
+		INPUT:		位于filter表，匹配目的IP是本机的包
+		FORWORD:	位于filter表，匹配穿过本机的数据包
+		PREROUTING:	位于nat表，用于修改目的地址（DNAT）	
+		POSTROUTING:	位于nat表，用于修改源地址（SNAT）
+#3.1 iptables语法概述
+	#iptables [-t 要操作的表]
+		<>
