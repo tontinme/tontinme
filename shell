@@ -25,3 +25,4 @@
 	${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
 	${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
 	${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
+#for循环
