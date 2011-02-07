@@ -20,6 +20,9 @@
 	day of month	1-31
 	month		1-12 (or names)
 	day of week	0-7 (0 or 7 is Sun, or use names)
+	#crontab [-e [UserName] | -l [UserName] | -r [UserName] | -v [UserName] | File]
+		-e [Username]:执行文字编辑器来设定时程表，内定的文字编辑器是vi，可以设定VISUAL环境变量来指定\
+			使用那个文字编辑器（比如setenv VISUAL joe）
 	#在一天做N次的计划任务
 		#以下例子代表在12点和18点执行任务
 		00 12，18 * * * /home/tontinme/test.sh	
