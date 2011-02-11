@@ -1,0 +1,89 @@
+Groups are specified, one to a line, starting with an @ symbol, a space, and then the full group name as given in the comps.xml file. Groups can also be specified using the id for the group, such as gnome-desktop.
+带@符号的是软件包组，命名方法：[@ 组的全名]，或者[@组ID]，比如gnome-desktop
+Specify individual packages with no additional characters
+当指定单独的软件包时不要添加任何额外的字符	比如imake
+You can also specify which packages not to install from the default package list:
+	-autofs
+The following options are available for the %packages option:
+--nobase
+	do not install the @Base group. Use this option to perform a minimal installation, for example, for a single-purpose server or desktop appliance
+--resolvedeps
+	The --resolvedeps option has been deprecated. Dependencies are resolved automatically every time now.
+--ignoredeps
+	The --ignoredeps option has been deprecated. Dependencies are resolved automatically every time now.
+--ignoremissing
+	Ignore the missing packages and groups instead of halting the installation to ask if the installation should be aborted or continued. For exaple:	%packages --ignoremissing
+
+%packages
+@cluster-storage			对集群存储进行支持的软件包	Cluster Storage <- Cluster Storage
+@office					办公（包括office,pdf查看等）	office/Productivity <- Applications
+@development-libs			开发应用程序所需的核心库	Development Libraries <- Development
+@editors				文本编辑器，包括emaces和vi	Editors <- Applications
+@system-tools				各类系统工具的集合，如：监控网络交通的工具	System Tools <- Base System
+@gnome-software-development		开发GTK+和GNOME图形化应用程序	GNOME Software Development <- Development
+@text-internet				基于文本的电子邮件，万维网和聊天客户的软件包，这些应用程序不需要X窗口系统	Text-based Internet <- Applications
+@x-software-development			允许您开发用于X窗口系统的应用程序	X Software Development <- Development
+@legacy-network-server			用于老的网络协议的服务器，比如rsh和telnet	Legacy Network Server <- Servers
+@dns-server				允许您在系统上运行DNS名称服务器（BIND)	DNS Name Server <- Servers	
+@gnome-desktop				GNOME图形化用户界面	GNOME Desktop Environment <- Desktop Environment
+@dialup					拨号联网支持	Dialup Networking Support <- Base System
+@core					核心系统
+@base					包括软件包的最小集	Base <- Base System
+@ftp-server				FTP服务器	FTP Server <- Servers
+@network-server				包括基于网络的服务器，例如DHCP,NIS，kerberos	Network Servers <- Servers
+@games					游戏和娱乐	Games and Entertainment <- Applications
+@legacy-software-development		提供对从前发行的红帽企业Linux的兼容性支持	Legacy Software Development <- Development
+@clustering				集群支持	Clustering <- Clustering
+@java					对运行使用Java编写的程序的支持	Java <- Base System
+@java-development			对使用Java开发程序的支持	Java Development <- Development
+@openfabrics-enterprise-distribution	用于高性能联网以及集群的组件，例如infiniband和rdma	OpenFabrics Enterprice Distribution <- Base System
+@emacs					gun emacs文本编辑器	Emacs <- Applications
+@legacy-software-support		老的软件支持	Legacy Software Support <- Base System
+@base-x					基本的图形化用户界面	X Windows System <- Base System
+@chinese-support			汉语支持	Chinese Support <- languages
+@graphics				帮助您操作和扫描图像的软件包	Graphics <- Applications
+@web-server				web 服务器	Web Server <- Servers
+@ruby					对Ruby编程语言的基本支持	Ruby <- Development
+@smb-server				smb 服务器
+@printing				启用打印系统或充当打印服务器的系统	Printing Support <- Servers
+@mail-server				允许您配置IMAP或postfix邮件服务器	Mail Server <- Servers
+@server-cfg				包含所有红帽的定制服务器配置工具	Server Configuration Tools <- Servers
+@sound-and-video			从光盘录制到播放音频光盘和多媒体文件	Sound and Video <- Applications
+@admin-tools				包括一个系统图形化管理工具的集合，比如管理用户帐号和配置系统硬件	Administration Tools <- Base System
+@news-server				新闻服务器	News Server <- Servers
+@development-tools			包括automake,gcc,perl,python和调试器之类的核心开发工具	Development Tools <- Development
+@graphical-internet			包含图形化电子邮件，万维网和聊天客户端	Graphical Internet <- Applications
+perl-XML-SAX				perl module for XML-SAX, SAX全称Simple API for XML, 用于简单并快速的解析XML文件
+perl-Convert-ASN1			An ASN.1 Encode/Decode library
+perl-XML-NamespaceSupport		XML-NamespaceSupport Perl module	
+emacs					emacs编辑器
+audit					linux的审计功能		The audit package contains the user space utilities for storing and searching the audit records generate by \
+					the audit subsystem in the Linux 2.6 kernel
+mesa-libGLU-devel			Mesa libGLU development package
+kexec-tools				使用kexec迅速切换内核时需安装该工具（http://www.linuxsir.org/main/node/296）	kexec-tools provides /sbin/kexec binary that \
+					facilitates a new kernel to boot using the kernel's kexec feature either on a normal or a panic reboot. This package contains the \
+					/sbin/kexec binary and ancillary utilities that	together form the userspace component of the kernel's kexec feature.
+device-mapper-multipath			可以将服务器节点和存储阵列之间的多条I/O链路配置为一个单独的设备。这些I/O链路是由不同的线缆、交换机、控制器组成的SAN物理链路。\
+					Multipath将这些链路聚合在一起，生成一个单独的新的设备。	Tools to manage multipath devices using device-mapper
+vnc-server				A VNC server
+xorg-x11-server-Xnest			Xnest在一个X窗口中显示另外一个X服务器的内容，可以用来调试GUI程序，同时测试多个不同的桌面环境和截取界面等特殊的应用。Xnest只是\
+					代理／转发X的协议，不涉及重新绘制等真正的X服务器的操作。	Xnest is an X server, which has been implemented as an ordinary \
+					X application. It runs in a window just like other X applications, but it is an X server itself in which you can run other \
+					software. It is a very useful tool for developers who wish to test their applications without running them on their real X server.
+xorg-x11-server-Xvfb			Xvfb是一个虚拟的X Server，可以运行在没有图形设备的系统上	Xvfb (X Virtual Frame Buffer) is an X server that is able to \
+					run on machines with no display hardware and no physical input devices. Xvfb simulates a dumb framebuffer using virtual memory. \
+					Xvfb does not open any devices, but behaves otherwise as an X display. Xvfb is normally used for testing servers.
+libsane-hpaio				SANE driver for scanners in HP's multi-function devices (from HPOJ)
+pexpect					Pexpect 是 Don Libes 的 Expect 语言的一个 Python 实现，是一个用来启动子程序，并使用正则表达式对程序输出做出特定响应，以此实现\
+					与其自动交互的 Python 模块。 Pexpect 的使用范围很广，可以用来实现与 ssh、ftp 、telnet 等程序的自动交互；可以用来自动复制软件安装包\
+					并在不同机器自动安装；还可以用来实现软件测试中与命令行交互的自动化。	Pure Python Expect-like module. Pexpect can be used for \
+					automating interactive applications such as ssh, ftp, passwd, telnet, etc. It can be used to automate setup scripts for \
+					duplicating software package installations on different servers. And it can be used for automated software testing.
+imake					imake is a build automation system implemented on top of the C preprocessor	Imake is a deprecated source code configuration \
+					and build system which has traditionally been supplied by and used to build the X Window System in X11R6 and previous releases. \
+					As of the X Window System X11R7 release, the X Window system has switched to using GNU autotools as the primary build system, \
+					and the Imake system is now deprecated, and should not be used by new software projects. Software developers are encouraged to \
+					migrate software to the GNU autotools system.
+
+参考来源：	http://pkgs.org/
+		http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-packageselection.html
