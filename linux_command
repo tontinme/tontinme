@@ -4,6 +4,7 @@
 ------chroot
 ------crontab
 ------find
+------top
 ------wget
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
@@ -101,6 +102,17 @@
 			#find . -size +20M
 		#查找小于1M的文件
 			#find . -size -1M
+#top
+	#根据一些参数将性能排序
+		使用-O选项进入选择菜单，选择相关字母（大写向上调整，小写向下调整）即可根据参数排序
+	#高亮显示
+		按z或者b
+	#改变刷新top命令的时间间隔（默认是3s）
+		按d，显示：$delay from 3.0 to:
+	#显示/隐藏进程的路径
+		按c键
+	#设定top查看性能次数-当刷新指定次数后自动退出
+		$top -n 你指定的次数
 #wget
 	#通常下载单个文件的方式
 		$wget http://hotfile.com/dl/97851370/9727f76/backups-DN22006-sUN.part03.rar	
