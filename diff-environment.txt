@@ -1,0 +1,118 @@
+﻿
+#如果你要使用的私钥(private key)含有密码(passphrase)时，可能需要使用ssh-agent来暂时托管你的密码短语，开启ssh-agent后，ssh将从ssh-agent获取你的专用密钥。具体方法如下：
+~#eval `ssh-agent`	#开启ssh-agent
+~#ssh-add PATH_of_ID_RSA/id_rsa		#添加你所使用的私钥
+附:其他一些有用的命令
+	~#ssh-add -d PATH_of_ID_RSA/id_rsa	从ssh-agent中去除指定私钥的托管
+	~#ssh-add -D 				从ssh-agent中去除所有私钥的托管
+	~#ssh-add -l				列出当前被ssh-agent托管的所有私钥
+
+从样本机上拷贝一份标准系统配置文件，放到含有所需私钥的系统上，文件夹这里命名为diff-standard
+创建脚本diff.sh，比较标准文件和远程系统的异同：
+====================================diff.sh============================================
+#!/bin/bash
+#name	diff.sh
+#Usage:	sh diff.sh
+
+server_name="b1 b2 b3 b4 c0 c1 c2 c3 c4 c5 c6 c7"
+for server_id in `seq 10 107` $server_name; do
+        file_name=$server_id.diff
+        echo =======================================================$server_id=========================================================== >> $file_name
+	#空行用于格式化输出
+        echo  >> $file_name
+        echo  >> $file_name
+	#标记文件对应的机器编号
+        echo =======================================================$server_id-sysctl.conf=============================================== >> $file_name
+        echo  >> $file_name
+	#以下命令用于diff本地当前目录下的iptables和远程系统iptables,并就结果输出到指定文件
+	#这里只是举例比较iptables，其他文件的比较类似
+	diff -bB --side-by-side iptables <( ssh -i XXX/id_rsa root@$server_id.mzhen.cn 'cat /etc/sysconfig/iptables' ) | tee -a $file_name
+        echo  >> $file_name
+done
+
+创建脚本copy-standard.sh，将标准文件拷贝到需要对比的所有远程机器上(这里选择远程目录为/root/standard-file/)
+#!/bin/bash
+#name	copy-standard.sh	
+#Usage:	sh copy-standard.sh`
+
+server_name="b1 b2 b3 b4 c0 c1 c2 c3 c4 c5 c6 c7"
+for server_id in `seq 10 107` $server_name; do
+        rsync -e ssh -avz /home/supertool/diff-standard/standard-file $server_id.mzhen.cn:/root/
+done
+
+创建脚本execute-standard.sh，用于在远程机器上执行modify-standard.sh或echo-standard.sh或check-standard.sh
+#!/bin/sh
+#name	execute-standard.sh
+#Usage:	sh execute-standard.sh
+
+server_name="b1 b2 b3 b4 c0 c1 c2 c3 c4 c5 c6 c7"
+for server_id in `seq 10 107` $server_name; do
+	ssh -i XXX/id_rsa root@$server_id.mzhen.cn < modify-standard.sh
+#       ssh -i XXX/id_rsa root@$server_id.mzhen.cn < echo-standard.sh
+#       ssh -i XXX/id_rsa root@$server_id.mzhen.cn < check-standard.sh
+done
+
+创建脚本modify-standard.sh，更改拷贝到各个系统上的标准文件的地址和hostname为对应值，以下只列出了需要修改的文件。	#这里为了保险起见，没有直接将修改后的文件内容直接echo到系统对应文件中。
+#!/bin/sh
+#name	modify-standard.sh
+#Usage:	executed by execute-standard.sh
+
+mac_addr_in=`/sbin/ifconfig eth0  | sed -n '/HWaddr/ s/^.*HWaddr */HWADDR=/pg'`
+local_addr=`ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
+sed -i "/HWADDR=/c\\$mac_addr_in" /root/standard-file/ifcfg-eth0
+sed -i "/IPADDR=/c\IPADDR=$local_addr" /root/standard-file/ifcfg-eth0
+#cat /root/standard-file/ifcfg-eth0 > /etc/sysconfig/network-scripts/ifcfg-eth0
+mac_addr_out=`/sbin/ifconfig eth1  | sed -n '/HWaddr/ s/^.*HWaddr */HWADDR=/pg'`
+remote_addr=`ifconfig eth1 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "`
+sed -i "/HWADDR=/c\\$mac_addr_out" /root/standard-file/ifcfg-eth1
+sed -i "/IPADDR=/c\IPADDR=$remote_addr" /root/standard-file/ifcfg-eth1
+server_num=`ifconfig eth1 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "|cut -f 4 -d "."`
+sed -i "s/107/$server_num/" /root/standard-file/network
+sed -i "s/107/$server_num/" /root/standard-file/bashrc_root
+sed -i "s/107/$server_num/" /root/standard-file/bashrc_supertool
+
+创建脚本check-standard.sh，比较修改后的标准文件和系统当前文件，检查是否符合修改的预期。	#为了方便比较，可以将所有文件取回到本地，并且不同机器的相同文件同时比较。
+#!/bin/sh
+#name	check-standard.sh
+#Usage:	executed by execute-standard.sh
+
+server_num=`ifconfig eth1 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "|cut -f 4 -d "."`
+diff -bB --side-by-side /root/standard-file/bashrc_root /root/.bashrc | tee /root/standard-file/bashrc_root-$server_num.check
+diff -bB --side-by-side /root/standard-file/bashrc_supertool /home/supertool/.bashrc | tee /root/standard-file/bashrc_supertool-$server_num.check
+diff -bB --side-by-side /root/standard-file/ifcfg-eth0 /etc/sysconfig/network-scripts/ifcfg-eth0 | tee /root/standard-file/ifcfg-eth0-$server_num.check
+diff -bB --side-by-side /root/standard-file/ifcfg-eth1 /etc/sysconfig/network-scripts/ifcfg-eth1 | tee /root/standard-file/ifcfg-eth1-$server_num.check
+diff -bB --side-by-side /root/standard-file/network /etc/sysconfig/network | tee /root/standard-file/network-$server_num.check
+
+创建脚本echo-standard.sh，确定更改后的标准文件没有问题后（达到了更改目的并且mac,ip,hostname都已更改），创建要修改文件的备份并且直接覆盖原文件为标准文件。
+#!/bin/sh
+#name	echo-standard.sh
+#Usage:	executed by execute-standard.sh
+
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak-diff
+cp /etc/sysctl.conf /etc/sysctl.conf.bak-diff
+cp /etc/security/limits.conf /etc/security/limits.conf.bak-diff
+cp /etc/pam.d/login /etc/pam.d/login.bak-diff
+cp /etc/sysconfig/network-scripts/ifcfg-eth0 /etc/sysconfig/network-scripts/ifcfg-eth0.bak-diff
+cp /etc/sysconfig/network-scripts/ifcfg-eth1 /etc/sysconfig/network-scripts/ifcfg-eth1.bak-diff
+cp /etc/sysconfig/network /etc/sysconfig/network.bak-diff
+cp /etc/resolv.conf /etc/resolv.conf.bak-diff
+cp /etc/sysconfig/i18n /etc/sysconfig/i18n.bak-diff
+cp /root/.bashrc /root/.bashrc.bak-diff
+cp /home/supertool/.bashrc /home/supertool/.bashrc.bak-diff
+cp /etc/sysconfig/ntpd /etc/sysconfig/ntpd.bak-diff
+cp /etc/ntp.conf /etc/ntp.conf.bak-diff
+cp /etc/sysconfig/iptables /etc/sysconfig/iptables.bak-diff
+cat /root/standard-file/sshd_config > /etc/ssh/sshd_config
+cat /root/standard-file/sysctl.conf > /etc/sysctl.conf
+cat /root/standard-file/limits.conf > /etc/security/limits.conf
+cat /root/standard-file/login > /etc/pam.d/login
+cat /root/standard-file/ifcfg-eth0 > /etc/sysconfig/network-scripts/ifcfg-eth0
+cat /root/standard-file/ifcfg-eth1 > /etc/sysconfig/network-scripts/ifcfg-eth1
+cat /root/standard-file/network > /etc/sysconfig/network
+cat /root/standard-file/resolv.conf > /etc/resolv.conf
+cat /root/standard-file/i18n > /etc/sysconfig/i18n
+cat /root/standard-file/bashrc_root > /root/.bashrc
+cat /root/standard-file/bashrc_supertool > /home/supertool/.bashrc
+cat /root/standard-file/ntpd > /etc/sysconfig/ntpd
+cat /root/standard-file/ntp.conf > /etc/ntp.conf
+#cat /root/standard-file/iptables > /etc/sysconfig/iptables	#iptables情况特殊，这里没有直接覆盖修改
