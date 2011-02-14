@@ -1,5 +1,5 @@
-##chapter 1
-#1.4 install
+1. chapter 1
+1.4 install
 	for CENTOS
 	$yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel
 	for DEBIAN	
@@ -16,7 +16,7 @@
 
 	for WINDOWS
 	http://code.google.com/p/msysgit
-#1.5 git config
+1.5 git config
 	#user info
 		/etc/gitconfig #系统中对所有用户都普遍适用的配置 --system read and write this file
 		~/.gitconfig #用户目录下的配置文件只适用于该用户 --global read and write this file
@@ -44,9 +44,9 @@
 		$git help config
 
 
-##chapter 2	git basics
+2. chapter 2	git basics
 
-#2.1 getting a git repositor
+2.1 getting a git repositor
 	#initializing a repository
 		$git init
 		$git add *.c
@@ -56,7 +56,7 @@
 		$git clone git://github.com/schacon/grit.git	#这会在当前目录下创建一个名为“grit”的目录。
 		#克隆时，自定义要新建的项目目录名称	
 		$git clone git://github.com/schacon/grit.git
-#2.2 recording changes to the repository
+2.2 recording changes to the repository
 	#checking the status of your file
 		$git status
 	#ignoring files
@@ -95,7 +95,7 @@
 			$git rm README.txt
 			$git add README	
 			#有时候用其他工具批处理改名的话，记得在提交前删除老的文件名，再添加新的文件名。
-#2.3 view the commit history
+2.3 view the commit history
 	$git log
 		$git log -p -2	# -p 展开显示每次提交的内容差异	 # -2 仅显示最近的两次更新
 		$git log --stat	#仅显示简要的增改行数统计
@@ -128,7 +128,7 @@
 			--committer		#仅显示指定提交者相关的提交
 	#Using a GUI to Visualize History
 		$gitk
-#2.4 undo things
+2.4 undo things
 	#change your last commit	
 		$git commit --amend	#this comman  takes your staging area and uses it for the commit. If you've have made no changes\
 					#since your last commit(for instance, you run this command immediately after your previous commit),\
@@ -140,4 +140,45 @@
 					#need to get it out of the way,we'll go over stashing and branching in the next chater.
 		#任何已经提交到git的都可以被恢复。即使在已经删除的分支中的提交，或者用--amend重新改写的提交，都可以被恢复。所以，你可能失\
 		#去的数据，仅限于没有提交过的，对git来说它们就像从未存在过一样。
-#2.5 working with remotes
+2.5 working with remotes
+	#showing your remotes
+		$git remote	#git默认使用origin来标识你所克隆的原始仓库
+		$git remote -v 	#--verbose,显示对应的克隆地址
+		#If you have more than one remote,like this
+			$git remote -v
+			bakkdoor  git://github.com/bakkdoor/grit.git
+			cho45     git://github.com/cho45/grit.git
+			defunkt   git://github.com/defunkt/grit.git
+			koke      git://github.com/koke/grit.git
+			origin    git@github.com:mojombo/grit.git
+		#This means we can pull contributions from any of these users pretty easily. But notice that only the origin remote is an \
+		#SSH URL, so it's the only one I can push to(we'll cover why this is in Chapter 4)	
+	#add remote repositories
+		$git remote add pd git://github.com/paulboone/ticgit.git
+		$git remote -v
+		origin	git://github.com/schacon/ticgit.git
+		pd	git://github.com/paulboone/ticgit.git
+		#现在可以用字串pb指代对应的仓库地址了，比如说要抓取所有Paul有的，但本地仓库没有的信息，可以运行git fetch pb
+			$git fetch pb
+			remote: Counting objects: 58, done.
+			remote: Compressing objects: 100% (41/41), done.
+			remote: Total 44 (delta 24), reused 1 (delta 0)
+			Unpacking objects: 100% (44/44), done.
+			From git://github.com/paulboone/ticgit
+	 		* [new branch]      master     -> pb/master
+ 			* [new branch]      ticgit     -> pb/ticgit
+		#现在，Paul的主干分支master已经完全可以在本地访问了，对应的名字是pb/master，你可以将它合并到自己的某个分支，或者切换到这个\
+		#分支，看看有些什么有趣的更新。
+	#fetch and pull from your remotes
+		$git fetch [remote-name]
+			#此命令会到远程仓库中拉取所有你本地仓库中还没有的数据。运行完成后，你就可以在本地访问该远程仓库中的所有分支，将其中、
+			#某个分支合并到本地，或者只是取出某个分支，一探究竟。
+			#如果是克隆了一个仓库，此命令会自动将远程仓库归于origin名下。所以git fetch origin会抓取从你上次克隆以来别人上传到\
+			#此远程仓库中的所有更新（或是上次fetch以来别人提交的更新）。
+	#push to your remotes
+		$git push [remote-name] [branch-name]
+		#比如把本地的master分支push到origin服务器上
+			$git push origin master		#要求在所克隆的服务器上有写权限，或者同一时刻没有其他人在推送数据
+	#inspect a remote
+		$git remote show [remote-name]	
+			$git remote show origin		#查看所克隆的origin仓库
