@@ -1,5 +1,4 @@
-#!/bin/sh
-#判断读取字符串值
+1. 判断读取字符串值
 	表达式		含义
 	${var}		变量var的值，与$var相同
 	${var-DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
@@ -12,7 +11,7 @@
 	${var:?ERR_MSG}	如果var没被设置，那么就打印$ERR_MSG
 	${!varprefix*}	匹配之前所有以varprefix开头进行声明的变量
 	${!varprefix@}	匹配之前所有以varprefix开头进行声明的变量
-#字符串操作（长度，读取，替换）
+2. 字符串操作（长度，读取，替换）
 	表达式				含义
 	${#string}			$string的长度
 	${string:position}		在$string中，从位置$position开始提取子串
@@ -25,4 +24,23 @@
 	${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
 	${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
 	${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
-#for循环
+3. for循环
+	1. for((i=1; i<=10; i++));
+       		do echo $(expr $i \* 4);
+	done
+	2. 在shell中常用的是for i in $(seq 10)
+	3. for i in `ls`
+	4. for i in ${arr[@]}
+	5. for i in $*; do
+	6. for File in /proc/sys/net/ipv4/conf/*/accept_redirects; do
+	7. for i in f1 f2 f3; do
+	8. for i in *.txt
+	9. for i in $(ls *.txt)
+		for in 语句与``和$()合用，利用``或$()的将多行合为一行的缺陷，实际是合为一个字符串数组。
+	10. LIST="rootfs usr data data2"
+	    for d in $LIST; do
+		    用for in语句自动对字符串按空格进行遍历的特性，对多个目录遍历。
+	11. for i in {1..10}
+	12. for i in stringchar{1..10}
+	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
+	注意：awk中的for循环写法和C语言是一样的
