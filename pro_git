@@ -182,3 +182,12 @@
 	#inspect a remote
 		$git remote show [remote-name]	
 			$git remote show origin		#查看所克隆的origin仓库
+	#remove and rename remotes
+		$git remote rename pb paul	#rename pb to paul
+		$git remote rm paul		#remove a reference for some reason
+2.6 tag
+	#list your tag	
+		$git tag
+		$git tag -l 'v1.4.2.*'		#search for tags with a particular pattern
+	#creat tags
+		
