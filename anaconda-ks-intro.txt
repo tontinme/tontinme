@@ -1,7 +1,7 @@
-Groups are specified, one to a line, starting with an @ symbol, a space, and then the full group name as given in the comps.xml file. Groups can also be specified using the id for the group, such as gnome-desktop.
-´ø@·ûºÅµÄÊÇÈí¼ş°ü×é£¬ÃüÃû·½·¨£º[@ ×éµÄÈ«Ãû]£¬»òÕß[@×éID]£¬±ÈÈçgnome-desktop
+ï»¿Groups are specified, one to a line, starting with an @ symbol, a space, and then the full group name as given in the comps.xml file. Groups can also be specified using the id for the group, such as gnome-desktop.
+å¸¦@ç¬¦å·çš„æ˜¯è½¯ä»¶åŒ…ç»„ï¼Œå‘½åæ–¹æ³•ï¼š[@ ç»„çš„å…¨å]ï¼Œæˆ–è€…[@ç»„ID]ï¼Œæ¯”å¦‚gnome-desktop
 Specify individual packages with no additional characters
-µ±Ö¸¶¨µ¥¶ÀµÄÈí¼ş°üÊ±²»ÒªÌí¼ÓÈÎºÎ¶îÍâµÄ×Ö·û	±ÈÈçimake
+å½“æŒ‡å®šå•ç‹¬çš„è½¯ä»¶åŒ…æ—¶ä¸è¦æ·»åŠ ä»»ä½•é¢å¤–çš„å­—ç¬¦	æ¯”å¦‚imake
 You can also specify which packages not to install from the default package list:
 	-autofs
 The following options are available for the %packages option:
@@ -15,68 +15,68 @@ The following options are available for the %packages option:
 	Ignore the missing packages and groups instead of halting the installation to ask if the installation should be aborted or continued. For exaple:	%packages --ignoremissing
 
 %packages
-@cluster-storage			¶Ô¼¯Èº´æ´¢½øĞĞÖ§³ÖµÄÈí¼ş°ü	Cluster Storage <- Cluster Storage
-@office					°ì¹«£¨°üÀ¨office,pdf²é¿´µÈ£©	office/Productivity <- Applications
-@development-libs			¿ª·¢Ó¦ÓÃ³ÌĞòËùĞèµÄºËĞÄ¿â	Development Libraries <- Development
-@editors				ÎÄ±¾±à¼­Æ÷£¬°üÀ¨emacesºÍvi	Editors <- Applications
-@system-tools				¸÷ÀàÏµÍ³¹¤¾ßµÄ¼¯ºÏ£¬Èç£º¼à¿ØÍøÂç½»Í¨µÄ¹¤¾ß	System Tools <- Base System
-@gnome-software-development		¿ª·¢GTK+ºÍGNOMEÍ¼ĞÎ»¯Ó¦ÓÃ³ÌĞò	GNOME Software Development <- Development
-@text-internet				»ùÓÚÎÄ±¾µÄµç×ÓÓÊ¼ş£¬ÍòÎ¬ÍøºÍÁÄÌì¿Í»§µÄÈí¼ş°ü£¬ÕâĞ©Ó¦ÓÃ³ÌĞò²»ĞèÒªX´°¿ÚÏµÍ³	Text-based Internet <- Applications
-@x-software-development			ÔÊĞíÄú¿ª·¢ÓÃÓÚX´°¿ÚÏµÍ³µÄÓ¦ÓÃ³ÌĞò	X Software Development <- Development
-@legacy-network-server			ÓÃÓÚÀÏµÄÍøÂçĞ­ÒéµÄ·şÎñÆ÷£¬±ÈÈçrshºÍtelnet	Legacy Network Server <- Servers
-@dns-server				ÔÊĞíÄúÔÚÏµÍ³ÉÏÔËĞĞDNSÃû³Æ·şÎñÆ÷£¨BIND)	DNS Name Server <- Servers	
-@gnome-desktop				GNOMEÍ¼ĞÎ»¯ÓÃ»§½çÃæ	GNOME Desktop Environment <- Desktop Environment
-@dialup					²¦ºÅÁªÍøÖ§³Ö	Dialup Networking Support <- Base System
-@core					ºËĞÄÏµÍ³
-@base					°üÀ¨Èí¼ş°üµÄ×îĞ¡¼¯	Base <- Base System
-@ftp-server				FTP·şÎñÆ÷	FTP Server <- Servers
-@network-server				°üÀ¨»ùÓÚÍøÂçµÄ·şÎñÆ÷£¬ÀıÈçDHCP,NIS£¬kerberos	Network Servers <- Servers
-@games					ÓÎÏ·ºÍÓéÀÖ	Games and Entertainment <- Applications
-@legacy-software-development		Ìá¹©¶Ô´ÓÇ°·¢ĞĞµÄºìÃ±ÆóÒµLinuxµÄ¼æÈİĞÔÖ§³Ö	Legacy Software Development <- Development
-@clustering				¼¯ÈºÖ§³Ö	Clustering <- Clustering
-@java					¶ÔÔËĞĞÊ¹ÓÃJava±àĞ´µÄ³ÌĞòµÄÖ§³Ö	Java <- Base System
-@java-development			¶ÔÊ¹ÓÃJava¿ª·¢³ÌĞòµÄÖ§³Ö	Java Development <- Development
-@openfabrics-enterprise-distribution	ÓÃÓÚ¸ßĞÔÄÜÁªÍøÒÔ¼°¼¯ÈºµÄ×é¼ş£¬ÀıÈçinfinibandºÍrdma	OpenFabrics Enterprice Distribution <- Base System
-@emacs					gun emacsÎÄ±¾±à¼­Æ÷	Emacs <- Applications
-@legacy-software-support		ÀÏµÄÈí¼şÖ§³Ö	Legacy Software Support <- Base System
-@base-x					»ù±¾µÄÍ¼ĞÎ»¯ÓÃ»§½çÃæ	X Windows System <- Base System
-@chinese-support			ººÓïÖ§³Ö	Chinese Support <- languages
-@graphics				°ïÖúÄú²Ù×÷ºÍÉ¨ÃèÍ¼ÏñµÄÈí¼ş°ü	Graphics <- Applications
-@web-server				web ·şÎñÆ÷	Web Server <- Servers
-@ruby					¶ÔRuby±à³ÌÓïÑÔµÄ»ù±¾Ö§³Ö	Ruby <- Development
-@smb-server				smb ·şÎñÆ÷
-@printing				ÆôÓÃ´òÓ¡ÏµÍ³»ò³äµ±´òÓ¡·şÎñÆ÷µÄÏµÍ³	Printing Support <- Servers
-@mail-server				ÔÊĞíÄúÅäÖÃIMAP»òpostfixÓÊ¼ş·şÎñÆ÷	Mail Server <- Servers
-@server-cfg				°üº¬ËùÓĞºìÃ±µÄ¶¨ÖÆ·şÎñÆ÷ÅäÖÃ¹¤¾ß	Server Configuration Tools <- Servers
-@sound-and-video			´Ó¹âÅÌÂ¼ÖÆµ½²¥·ÅÒôÆµ¹âÅÌºÍ¶àÃ½ÌåÎÄ¼ş	Sound and Video <- Applications
-@admin-tools				°üÀ¨Ò»¸öÏµÍ³Í¼ĞÎ»¯¹ÜÀí¹¤¾ßµÄ¼¯ºÏ£¬±ÈÈç¹ÜÀíÓÃ»§ÕÊºÅºÍÅäÖÃÏµÍ³Ó²¼ş	Administration Tools <- Base System
-@news-server				ĞÂÎÅ·şÎñÆ÷	News Server <- Servers
-@development-tools			°üÀ¨automake,gcc,perl,pythonºÍµ÷ÊÔÆ÷Ö®ÀàµÄºËĞÄ¿ª·¢¹¤¾ß	Development Tools <- Development
-@graphical-internet			°üº¬Í¼ĞÎ»¯µç×ÓÓÊ¼ş£¬ÍòÎ¬ÍøºÍÁÄÌì¿Í»§¶Ë	Graphical Internet <- Applications
-perl-XML-SAX				perl module for XML-SAX, SAXÈ«³ÆSimple API for XML, ÓÃÓÚ¼òµ¥²¢¿ìËÙµÄ½âÎöXMLÎÄ¼ş
+@cluster-storage			å¯¹é›†ç¾¤å­˜å‚¨è¿›è¡Œæ”¯æŒçš„è½¯ä»¶åŒ…	Cluster Storage <- Cluster Storage
+@office					åŠå…¬ï¼ˆåŒ…æ‹¬office,pdfæŸ¥çœ‹ç­‰ï¼‰	office/Productivity <- Applications
+@development-libs			å¼€å‘åº”ç”¨ç¨‹åºæ‰€éœ€çš„æ ¸å¿ƒåº“	Development Libraries <- Development
+@editors				æ–‡æœ¬ç¼–è¾‘å™¨ï¼ŒåŒ…æ‹¬emaceså’Œvi	Editors <- Applications
+@system-tools				å„ç±»ç³»ç»Ÿå·¥å…·çš„é›†åˆï¼Œå¦‚ï¼šç›‘æ§ç½‘ç»œäº¤é€šçš„å·¥å…·	System Tools <- Base System
+@gnome-software-development		å¼€å‘GTK+å’ŒGNOMEå›¾å½¢åŒ–åº”ç”¨ç¨‹åº	GNOME Software Development <- Development
+@text-internet				åŸºäºæ–‡æœ¬çš„ç”µå­é‚®ä»¶ï¼Œä¸‡ç»´ç½‘å’ŒèŠå¤©å®¢æˆ·çš„è½¯ä»¶åŒ…ï¼Œè¿™äº›åº”ç”¨ç¨‹åºä¸éœ€è¦Xçª—å£ç³»ç»Ÿ	Text-based Internet <- Applications
+@x-software-development			å…è®¸æ‚¨å¼€å‘ç”¨äºXçª—å£ç³»ç»Ÿçš„åº”ç”¨ç¨‹åº	X Software Development <- Development
+@legacy-network-server			ç”¨äºè€çš„ç½‘ç»œåè®®çš„æœåŠ¡å™¨ï¼Œæ¯”å¦‚rshå’Œtelnet	Legacy Network Server <- Servers
+@dns-server				å…è®¸æ‚¨åœ¨ç³»ç»Ÿä¸Šè¿è¡ŒDNSåç§°æœåŠ¡å™¨ï¼ˆBIND)	DNS Name Server <- Servers	
+@gnome-desktop				GNOMEå›¾å½¢åŒ–ç”¨æˆ·ç•Œé¢	GNOME Desktop Environment <- Desktop Environment
+@dialup					æ‹¨å·è”ç½‘æ”¯æŒ	Dialup Networking Support <- Base System
+@core					æ ¸å¿ƒç³»ç»Ÿ
+@base					åŒ…æ‹¬è½¯ä»¶åŒ…çš„æœ€å°é›†	Base <- Base System
+@ftp-server				FTPæœåŠ¡å™¨	FTP Server <- Servers
+@network-server				åŒ…æ‹¬åŸºäºç½‘ç»œçš„æœåŠ¡å™¨ï¼Œä¾‹å¦‚DHCP,NISï¼Œkerberos	Network Servers <- Servers
+@games					æ¸¸æˆå’Œå¨±ä¹	Games and Entertainment <- Applications
+@legacy-software-development		æä¾›å¯¹ä»å‰å‘è¡Œçš„çº¢å¸½ä¼ä¸šLinuxçš„å…¼å®¹æ€§æ”¯æŒ	Legacy Software Development <- Development
+@clustering				é›†ç¾¤æ”¯æŒ	Clustering <- Clustering
+@java					å¯¹è¿è¡Œä½¿ç”¨Javaç¼–å†™çš„ç¨‹åºçš„æ”¯æŒ	Java <- Base System
+@java-development			å¯¹ä½¿ç”¨Javaå¼€å‘ç¨‹åºçš„æ”¯æŒ	Java Development <- Development
+@openfabrics-enterprise-distribution	ç”¨äºé«˜æ€§èƒ½è”ç½‘ä»¥åŠé›†ç¾¤çš„ç»„ä»¶ï¼Œä¾‹å¦‚infinibandå’Œrdma	OpenFabrics Enterprice Distribution <- Base System
+@emacs					gun emacsæ–‡æœ¬ç¼–è¾‘å™¨	Emacs <- Applications
+@legacy-software-support		è€çš„è½¯ä»¶æ”¯æŒ	Legacy Software Support <- Base System
+@base-x					åŸºæœ¬çš„å›¾å½¢åŒ–ç”¨æˆ·ç•Œé¢	X Windows System <- Base System
+@chinese-support			æ±‰è¯­æ”¯æŒ	Chinese Support <- languages
+@graphics				å¸®åŠ©æ‚¨æ“ä½œå’Œæ‰«æå›¾åƒçš„è½¯ä»¶åŒ…	Graphics <- Applications
+@web-server				web æœåŠ¡å™¨	Web Server <- Servers
+@ruby					å¯¹Rubyç¼–ç¨‹è¯­è¨€çš„åŸºæœ¬æ”¯æŒ	Ruby <- Development
+@smb-server				smb æœåŠ¡å™¨
+@printing				å¯ç”¨æ‰“å°ç³»ç»Ÿæˆ–å……å½“æ‰“å°æœåŠ¡å™¨çš„ç³»ç»Ÿ	Printing Support <- Servers
+@mail-server				å…è®¸æ‚¨é…ç½®IMAPæˆ–postfixé‚®ä»¶æœåŠ¡å™¨	Mail Server <- Servers
+@server-cfg				åŒ…å«æ‰€æœ‰çº¢å¸½çš„å®šåˆ¶æœåŠ¡å™¨é…ç½®å·¥å…·	Server Configuration Tools <- Servers
+@sound-and-video			ä»å…‰ç›˜å½•åˆ¶åˆ°æ’­æ”¾éŸ³é¢‘å…‰ç›˜å’Œå¤šåª’ä½“æ–‡ä»¶	Sound and Video <- Applications
+@admin-tools				åŒ…æ‹¬ä¸€ä¸ªç³»ç»Ÿå›¾å½¢åŒ–ç®¡ç†å·¥å…·çš„é›†åˆï¼Œæ¯”å¦‚ç®¡ç†ç”¨æˆ·å¸å·å’Œé…ç½®ç³»ç»Ÿç¡¬ä»¶	Administration Tools <- Base System
+@news-server				æ–°é—»æœåŠ¡å™¨	News Server <- Servers
+@development-tools			åŒ…æ‹¬automake,gcc,perl,pythonå’Œè°ƒè¯•å™¨ä¹‹ç±»çš„æ ¸å¿ƒå¼€å‘å·¥å…·	Development Tools <- Development
+@graphical-internet			åŒ…å«å›¾å½¢åŒ–ç”µå­é‚®ä»¶ï¼Œä¸‡ç»´ç½‘å’ŒèŠå¤©å®¢æˆ·ç«¯	Graphical Internet <- Applications
+perl-XML-SAX				perl module for XML-SAX, SAXå…¨ç§°Simple API for XML, ç”¨äºç®€å•å¹¶å¿«é€Ÿçš„è§£æXMLæ–‡ä»¶
 perl-Convert-ASN1			An ASN.1 Encode/Decode library
 perl-XML-NamespaceSupport		XML-NamespaceSupport Perl module	
-emacs					emacs±à¼­Æ÷
-audit					linuxµÄÉó¼Æ¹¦ÄÜ		The audit package contains the user space utilities for storing and searching the audit records generate by \
+emacs					emacsç¼–è¾‘å™¨
+audit					linuxçš„å®¡è®¡åŠŸèƒ½		The audit package contains the user space utilities for storing and searching the audit records generate by \
 					the audit subsystem in the Linux 2.6 kernel
 mesa-libGLU-devel			Mesa libGLU development package
-kexec-tools				Ê¹ÓÃkexecÑ¸ËÙÇĞ»»ÄÚºËÊ±Ğè°²×°¸Ã¹¤¾ß£¨http://www.linuxsir.org/main/node/296£©	kexec-tools provides /sbin/kexec binary that \
+kexec-tools				ä½¿ç”¨kexecè¿…é€Ÿåˆ‡æ¢å†…æ ¸æ—¶éœ€å®‰è£…è¯¥å·¥å…·ï¼ˆhttp://www.linuxsir.org/main/node/296ï¼‰	kexec-tools provides /sbin/kexec binary that \
 					facilitates a new kernel to boot using the kernel's kexec feature either on a normal or a panic reboot. This package contains the \
 					/sbin/kexec binary and ancillary utilities that	together form the userspace component of the kernel's kexec feature.
-device-mapper-multipath			¿ÉÒÔ½«·şÎñÆ÷½ÚµãºÍ´æ´¢ÕóÁĞÖ®¼äµÄ¶àÌõI/OÁ´Â·ÅäÖÃÎªÒ»¸öµ¥¶ÀµÄÉè±¸¡£ÕâĞ©I/OÁ´Â·ÊÇÓÉ²»Í¬µÄÏßÀÂ¡¢½»»»»ú¡¢¿ØÖÆÆ÷×é³ÉµÄSANÎïÀíÁ´Â·¡£\
-					Multipath½«ÕâĞ©Á´Â·¾ÛºÏÔÚÒ»Æğ£¬Éú³ÉÒ»¸öµ¥¶ÀµÄĞÂµÄÉè±¸¡£	Tools to manage multipath devices using device-mapper
+device-mapper-multipath			å¯ä»¥å°†æœåŠ¡å™¨èŠ‚ç‚¹å’Œå­˜å‚¨é˜µåˆ—ä¹‹é—´çš„å¤šæ¡I/Oé“¾è·¯é…ç½®ä¸ºä¸€ä¸ªå•ç‹¬çš„è®¾å¤‡ã€‚è¿™äº›I/Oé“¾è·¯æ˜¯ç”±ä¸åŒçš„çº¿ç¼†ã€äº¤æ¢æœºã€æ§åˆ¶å™¨ç»„æˆçš„SANç‰©ç†é“¾è·¯ã€‚\
+					Multipathå°†è¿™äº›é“¾è·¯èšåˆåœ¨ä¸€èµ·ï¼Œç”Ÿæˆä¸€ä¸ªå•ç‹¬çš„æ–°çš„è®¾å¤‡ã€‚	Tools to manage multipath devices using device-mapper
 vnc-server				A VNC server
-xorg-x11-server-Xnest			XnestÔÚÒ»¸öX´°¿ÚÖĞÏÔÊ¾ÁíÍâÒ»¸öX·şÎñÆ÷µÄÄÚÈİ£¬¿ÉÒÔÓÃÀ´µ÷ÊÔGUI³ÌĞò£¬Í¬Ê±²âÊÔ¶à¸ö²»Í¬µÄ×ÀÃæ»·¾³ºÍ½ØÈ¡½çÃæµÈÌØÊâµÄÓ¦ÓÃ¡£XnestÖ»ÊÇ\
-					´úÀí£¯×ª·¢XµÄĞ­Òé£¬²»Éæ¼°ÖØĞÂ»æÖÆµÈÕæÕıµÄX·şÎñÆ÷µÄ²Ù×÷¡£	Xnest is an X server, which has been implemented as an ordinary \
+xorg-x11-server-Xnest			Xneståœ¨ä¸€ä¸ªXçª—å£ä¸­æ˜¾ç¤ºå¦å¤–ä¸€ä¸ªXæœåŠ¡å™¨çš„å†…å®¹ï¼Œå¯ä»¥ç”¨æ¥è°ƒè¯•GUIç¨‹åºï¼ŒåŒæ—¶æµ‹è¯•å¤šä¸ªä¸åŒçš„æ¡Œé¢ç¯å¢ƒå’Œæˆªå–ç•Œé¢ç­‰ç‰¹æ®Šçš„åº”ç”¨ã€‚Xneståªæ˜¯\
+					ä»£ç†ï¼è½¬å‘Xçš„åè®®ï¼Œä¸æ¶‰åŠé‡æ–°ç»˜åˆ¶ç­‰çœŸæ­£çš„XæœåŠ¡å™¨çš„æ“ä½œã€‚	Xnest is an X server, which has been implemented as an ordinary \
 					X application. It runs in a window just like other X applications, but it is an X server itself in which you can run other \
 					software. It is a very useful tool for developers who wish to test their applications without running them on their real X server.
-xorg-x11-server-Xvfb			XvfbÊÇÒ»¸öĞéÄâµÄX Server£¬¿ÉÒÔÔËĞĞÔÚÃ»ÓĞÍ¼ĞÎÉè±¸µÄÏµÍ³ÉÏ	Xvfb (X Virtual Frame Buffer) is an X server that is able to \
+xorg-x11-server-Xvfb			Xvfbæ˜¯ä¸€ä¸ªè™šæ‹Ÿçš„X Serverï¼Œå¯ä»¥è¿è¡Œåœ¨æ²¡æœ‰å›¾å½¢è®¾å¤‡çš„ç³»ç»Ÿä¸Š	Xvfb (X Virtual Frame Buffer) is an X server that is able to \
 					run on machines with no display hardware and no physical input devices. Xvfb simulates a dumb framebuffer using virtual memory. \
 					Xvfb does not open any devices, but behaves otherwise as an X display. Xvfb is normally used for testing servers.
 libsane-hpaio				SANE driver for scanners in HP's multi-function devices (from HPOJ)
-pexpect					Pexpect ÊÇ Don Libes µÄ Expect ÓïÑÔµÄÒ»¸ö Python ÊµÏÖ£¬ÊÇÒ»¸öÓÃÀ´Æô¶¯×Ó³ÌĞò£¬²¢Ê¹ÓÃÕıÔò±í´ïÊ½¶Ô³ÌĞòÊä³ö×ö³öÌØ¶¨ÏìÓ¦£¬ÒÔ´ËÊµÏÖ\
-					ÓëÆä×Ô¶¯½»»¥µÄ Python Ä£¿é¡£ Pexpect µÄÊ¹ÓÃ·¶Î§ºÜ¹ã£¬¿ÉÒÔÓÃÀ´ÊµÏÖÓë ssh¡¢ftp ¡¢telnet µÈ³ÌĞòµÄ×Ô¶¯½»»¥£»¿ÉÒÔÓÃÀ´×Ô¶¯¸´ÖÆÈí¼ş°²×°°ü\
-					²¢ÔÚ²»Í¬»úÆ÷×Ô¶¯°²×°£»»¹¿ÉÒÔÓÃÀ´ÊµÏÖÈí¼ş²âÊÔÖĞÓëÃüÁîĞĞ½»»¥µÄ×Ô¶¯»¯¡£	Pure Python Expect-like module. Pexpect can be used for \
+pexpect					Pexpect æ˜¯ Don Libes çš„ Expect è¯­è¨€çš„ä¸€ä¸ª Python å®ç°ï¼Œæ˜¯ä¸€ä¸ªç”¨æ¥å¯åŠ¨å­ç¨‹åºï¼Œå¹¶ä½¿ç”¨æ­£åˆ™è¡¨è¾¾å¼å¯¹ç¨‹åºè¾“å‡ºåšå‡ºç‰¹å®šå“åº”ï¼Œä»¥æ­¤å®ç°\
+					ä¸å…¶è‡ªåŠ¨äº¤äº’çš„ Python æ¨¡å—ã€‚ Pexpect çš„ä½¿ç”¨èŒƒå›´å¾ˆå¹¿ï¼Œå¯ä»¥ç”¨æ¥å®ç°ä¸ sshã€ftp ã€telnet ç­‰ç¨‹åºçš„è‡ªåŠ¨äº¤äº’ï¼›å¯ä»¥ç”¨æ¥è‡ªåŠ¨å¤åˆ¶è½¯ä»¶å®‰è£…åŒ…\
+					å¹¶åœ¨ä¸åŒæœºå™¨è‡ªåŠ¨å®‰è£…ï¼›è¿˜å¯ä»¥ç”¨æ¥å®ç°è½¯ä»¶æµ‹è¯•ä¸­ä¸å‘½ä»¤è¡Œäº¤äº’çš„è‡ªåŠ¨åŒ–ã€‚	Pure Python Expect-like module. Pexpect can be used for \
 					automating interactive applications such as ssh, ftp, passwd, telnet, etc. It can be used to automate setup scripts for \
 					duplicating software package installations on different servers. And it can be used for automated software testing.
 imake					imake is a build automation system implemented on top of the C preprocessor	Imake is a deprecated source code configuration \
@@ -85,5 +85,5 @@ imake					imake is a build automation system implemented on top of the C preproc
 					and the Imake system is now deprecated, and should not be used by new software projects. Software developers are encouraged to \
 					migrate software to the GNU autotools system.
 
-²Î¿¼À´Ô´£º	http://pkgs.org/
+å‚è€ƒæ¥æºï¼š	http://pkgs.org/
 		http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-packageselection.html
