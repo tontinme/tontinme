@@ -1,14 +1,29 @@
-﻿vim、gvim在windows下中文乱码的终极解决方案
+﻿1. vim、gvim在windows下中文乱码的终极解决方案
 
-set encoding=utf-8
-set fileencodings=utf-8,chinese,latin-1
-if has("win32")
-set fileencoding=chinese
-else
-set fileencoding=utf-8
-endif
-"解决菜单乱码
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
-"解决consle输出乱码
-language messages zh_CN.utf-8
+	set encoding=utf-8
+	set fileencodings=utf-8,chinese,latin-1
+	if has("win32")
+	set fileencoding=chinese
+	else
+	set fileencoding=utf-8
+	endif
+	"解决菜单乱码
+	source $VIMRUNTIME/delmenu.vim
+	source $VIMRUNTIME/menu.vim
+	"解决consle输出乱码
+	language messages zh_CN.utf-8
+2. 退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
+	在你的/etc/vim/gvimrc或/etc/vim/gvimrc.local中加入以下两行（在vim的配置文件中加入即可）
+	au VimLeave * exe 'if exists("g:cmd") && g:cmd == "gvims" | if strlen(v:this_session) | exe "wviminfo! " . v:this_session . ".viminfo" | else | exe "wviminfo! " . "~/.vim/session/" . g:myfilename . ".session.viminfo" | endif | endif '
+	au VimLeave * exe 'if exists("g:cmd") && g:cmd == "gvims" | if strlen(v:this_session) | exe "mksession! " . v:this_session | else | exe "mksession! " . "~/.vim/session/" . g:myfilename . ".session" | endif | endif'
+	
+	并保证目录~/.vim/session存在
+	然后写一个脚本程序gvims
+	#!/bin/sh
+	if [ -r ~/.vim/session/$1.session ]; then
+		gvim "+source ~/.vim/session/$1.session" "+rviminfo ~/.vim/session/$1.session.viminfo" "+let g:cmd = \"gvims\" " "+command Noprj let g:cmd = \"\" "
+	else
+		gvim "+let g:myfilename = \"$1\" " "+let g:cmd = \"gvims\" " "+command Noprj let g:cmd = \"\" "
+	fi
+	
+	当用gvim编辑完后，退出时，文件是以当前子窗口的名字保存窗口信息的，所以下次打开时，要用到那个窗口名字作为gvim的参数
