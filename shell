@@ -1,4 +1,24 @@
-1. 判断读取字符串值
+#!/bin/sh
+#shell的命令行输入
+	CTRL + a —— 相当于<HOME>键
+	CTRL + e —— 相当于<END>键
+	CTRL + x —— 连续按两下的话，首尾交替
+	CTRL + m —— 输入完命令后，这个动作相当于按下<ENTER>
+	CTRL + j —— 输入完命令后，这个动作相当于按下<ENTER>
+	CTRL + o —— 输入完命令后，这个动作相当于按下<ENTER>，不同的是，你在按下CTRL+o时它会记住上一次你CTRL+o的命令
+	CTRL + c —— 丢弃上一行所有的内容，重新开始下一行
+	CTRL + u —— 删除光标前的所有字母
+	CTRL + k —— 删除光标后的所有字母
+	CTRL + w —— 删除光标所指的一个单词（从光标到单词的开头）
+	CTRL + y —— 粘贴，剪切板的内容是CTRL+u
+	CTRL + d —— 相当于<Delete>
+	CTRL + h —— 相当于<Backspace>
+	CTRL + b —— 相当于<left>
+	CTRL + f —— 相当于<Right>
+	CTRL + l —— 相当于执行clear清屏命令
+	CTRL + r —— 向前搜索键入的命令
+	CTRL + p —— 上翻前面键入的命令
+#判断读取字符串值
 	表达式		含义
 	${var}		变量var的值，与$var相同
 	${var-DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
@@ -11,7 +31,7 @@
 	${var:?ERR_MSG}	如果var没被设置，那么就打印$ERR_MSG
 	${!varprefix*}	匹配之前所有以varprefix开头进行声明的变量
 	${!varprefix@}	匹配之前所有以varprefix开头进行声明的变量
-2. 字符串操作（长度，读取，替换）
+#字符串操作（长度，读取，替换）
 	表达式				含义
 	${#string}			$string的长度
 	${string:position}		在$string中，从位置$position开始提取子串
@@ -24,7 +44,7 @@
 	${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
 	${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
 	${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
-3. for循环
+#for循环
 	1. for((i=1; i<=10; i++));
        		do echo $(expr $i \* 4);
 	done
@@ -43,4 +63,4 @@
 	11. for i in {1..10}
 	12. for i in stringchar{1..10}
 	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
-	注意：awk中的for循环写法和C语言是一样的
+	#注意：awk中的for循环写法和C语言是一样的
