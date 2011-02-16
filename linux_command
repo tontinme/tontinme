@@ -16,8 +16,8 @@
 	
 #crontab
 	#field		allowed values
-	minute		0-59
-	hour		0-23
+	minute		0-59		#每分钟用*或*/1表示
+	hour		0-23		#0表示0点
 	day of month	1-31
 	month		1-12 (or names)
 	day of week	0-7 (0 or 7 is Sun, or use names)
@@ -37,7 +37,7 @@
 		00 12,18 * * * /home/tontinme/test.sh	
 	#在相隔时间后执行计划任务
 		#以下表示每10分钟执行一次任务
-		* /10 * * * * /home/tontinme/test.sh
+		*/10 * * * * /home/tontinme/test.sh
 	#某特定相隔时间的计划任务
 		#以下表示每年的第一分钟执行脚本
 		@yearly /home/tontinme/test.sh
@@ -54,6 +54,13 @@
 	#以秒为单位执行计划任务
 		#以下表示每20秒执行一次：
 		* * * * * sleep 20; /home/tontinme/test.sh
+	#其他实例
+		#晚上11点到早上7点之间，每隔一小时执行一次脚本
+		* 23-7/1 * * * /home/tontinme/test.sh
+		#每月的4号与每周一到周三的11点执行脚本
+		0 11 4 * mon-wed /home/tontinme/test.sh
+		#一月一号的4点执行脚本
+		0 4 1 jan * /home/tontinme/test.sh
 #find
 	#忽略大小写的查找
 		$find -iname 'xxx'
