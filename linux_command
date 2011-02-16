@@ -4,8 +4,10 @@
 ------chroot
 ------crontab
 ------find
+------su & sudo
 ------top
 ------wget
+------whoami,id,groups,newgrp
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
 		$alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
@@ -109,6 +111,76 @@
 			#find . -size +20M
 		#查找小于1M的文件
 			#find . -size -1M
+#su & sudo
+	#su
+		直接切换为超级用户
+		普通用户要切换为超级用户必须知道超级用户的口令
+		适用于系统中只有单个系统管理员的情况
+	#sudo
+		直接使用sudo命令前缀执行系统管理命令
+		执行系统管理员命令时无需知道超级用户的口令，使用普通用户自己的口令即可
+		由于执行系统管理员命令时无需知晓超级用户口令，所以适用于系统中有多个系统管理员的情况，当然\
+		单个管理员时也可以使用。
+	#su	
+		su [-|-p] [-c command] [username]
+		- : 在切换当前用户时切换用户工作环境
+		-p ：在切换当前用户时不切换用户工作环境，即保持当前用户工作环境，此为缺省值
+		-c command : 以指定的用户身份执行命令command
+		username : 为要切换的用户，省略时表示root
+	#sudo
+		#简介：允许系统管理员为几个用户或组委派权利，使之能运行部分或全部由root（或另一个）用户执行\
+			的命令。宗旨：给用户尽可能少的权限但仍允许完成他们的工作，sudo是设置了SUID位的执行文件
+		#特点：
+			sudo能够限制用户在指定主机上运行某些命令
+			sudo可以提供日志，忠实的记录每个用户使用sudo做了些什么，并且能将日志传到中心主机或者日志\
+				服务器。
+			sudo为系统管理员提供配置文件，允许系统管理员集中的管理用户的使用权限和使用的主机。它默认\
+				的存放位置是/etc/sudoers
+			sudo使用时间戳文件来完成类似“检票”的系统。当用户执行sudo并且输入密码后，用户获得了一张默认\
+				存活期为5分钟的“入场券”（默认值可以在编译时改变）。超时以后，用户必须重新输入密码。
+		#用户执行sudo的执行过程
+			1.在/var/run/sudo/$HOME目录中查找时间戳文件
+			2.读取配置文件/etc/sudoers，判断用户是否有执行此sudo命令的权限
+	#sudo命令格式
+		sudo -V | -h | -k | -l | -v
+		sudo [-Hh] [-u username|#uid] {-i | -s <command>}
+
+		-v : 显示版本信息，并退出。
+		-h : 显示帮助信息
+		-l : 显示当前用户（执行sudo的使用者）的权限，只有在/etc/sudoers里的用户才能使用该选项。
+		-v : 延长密码有效期限5分钟。
+		-k : 将会强迫使用者在下一次执行sudo时问密码（不论有没有超过5分钟）
+		-H : 将环境变量中的$HOME指定为要变更身份的使用者目录（如不加-u参数就是/root）
+		-b : 在后台执行指令
+		-u : username |#uid :以指定的用户作为新的身份。省略此参数表示以root的身份执行指令。
+		-i : 模拟一个新用户身份的初始shell
+		-s : 执行环境变量$SHELL所指定的shell，或是/etc/passwd里所指定的shell
+		command : 以新用户身份要执行的命令。
+	#配置sudo
+		#/etc/sudoers的组成部分
+			1.别名定义部分：包括User_Alias,Host_Alias,Runas_Alias,Cmnd_Alias
+			2.配置选项部分：由Defaults设置
+			3.User Host = (Runas)			Cmd
+			  用户 主机  （可切换的其他用户）	可执行的命令
+		#说明：
+			1.在cmnd部分之间可以使用NOPASSWD:参数，表示不用输入密码即可执行cmnd
+			2.(Runas)部分可以省略，省略时表示(root)，即表示仅能切换为root用户身份
+			3.四个部分均可设置多个项目，每个项目用逗号间隔
+			4.四个部分均可使用别名定义来简化配置，即用User_Alias定义用户别名、用Host_Alias定义主机别名\
+				用Runas_Alias定义切换用户别名、用Cmnd_Alias定义命令别名。别名必须使用大写字母。
+			别名格式：
+				User_Alias USER_ALIAS_NAME = user1, user2, ......
+				Host_Alias HOST_ALIAS_NAME = host1, host2, ......
+				Runas_Alias RUNAS_ALIAS_NAME = runas1, runas2, ......
+				Cmnd_Alias COMMAND_ALIAS_NAME = cmnd1, cmnd2, ......
+		#配置片段：
+			详见：https://docs.google.com/document/pub?id=12wW2gTEVMc-8cRhkd0qUX-lQQAKlQVSZY1BIPcuaUMI
+			让osmond用户和wheel组的成员可以在任何主机上以任何人的身份运行任何命令
+			专职系统管理员(millert,mikef和dowdy)可以在任何主机上执行任何命令而不需要进行身份验证
+			兼职系统管理员(bostley,jwfox和crawl)可以在任何主机上运行任何命令
+			兼职管理员(jalala, sonar和huge)可以在任何主机上运行 BROWSE、PROCESSES、USERS 中的命令
+			允许sys 组的成员运行 networking, software, service 等管理命令
+			WEBMASTERS(will, wendy,和 wim)中的用户都能够在主机www上以www的身份执行任何命令，或者使用 su www 命令
 #top
 	#根据一些参数将性能排序
 		使用-O选项进入选择菜单，选择相关字母（大写向上调整，小写向下调整）即可根据参数排序
@@ -164,3 +236,8 @@
 		$wget --user=USERNAME --password=PASSWORD www.tontin.me
 		#these parameters can be overridden using the --ftp-user and --ftp-password options for FTP\
 		# connections and the --http-user and --http-password options for HTTP connections.
+#whoami,id,groups,newgrp
+	whoami		#用于显示当前用户的名称
+	groups		#用于显示指定用户所属的组
+	id		#用于显示用户身份
+	newgrp		#用于转换用户的当前组到指定的附加组，用户必须属于该组才可以进行
