@@ -1,7 +1,17 @@
-﻿linux 光盘刻录软件包
+﻿1. linux 光盘刻录软件包
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3
 	mkisofs-2.01-10
-刻录设备检测
+2. 刻录设备检测
 	cdrecord -scanbus	#用于SCSI光驱
 	cdrecord -scanbus dev=APAPI
+3. 查看是否为64位的cpu
+	#打入以下命令
+	grep flags /proc/cpuinfo
+	输出：
+	flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov \
+		pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm nx lm
+	如果找到lm，说明你的cpu是64位的.
+	lm	Long Mode —— 64位CPU
+	rm	Read Mode —— 16位CPU
+	pm	Protected Mode —— 32位CPU
