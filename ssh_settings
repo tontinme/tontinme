@@ -1,10 +1,10 @@
-#Á¬½Ó³É¹¦ºóÔËĞĞÃüÁî
-	#Ö»ÏëÔËĞĞµ¥¸öÃüÁîµÄ»°£¬Ö±½Ó°ÑÃüÁî¸½¼ÓÔÚsshÃüÁîÖ®ºó¼´¿É¡£Èç£º
+ï»¿#è¿æ¥æˆåŠŸåè¿è¡Œå‘½ä»¤
+	#åªæƒ³è¿è¡Œå•ä¸ªå‘½ä»¤çš„è¯ï¼Œç›´æ¥æŠŠå‘½ä»¤é™„åŠ åœ¨sshå‘½ä»¤ä¹‹åå³å¯ã€‚å¦‚ï¼š
 		$ssh freebsd uname -a
 		Linux bebop 2.6.32-24-generic #39-Ubuntu SMP Wed Jul 28 05:14:15 UTC 2010 x86_64 GNU/Linux
-	#µ«ÓĞĞ©ÃüÁî¿ÉÄÜ»á±¨´í£¬Èç"top"£¬ÕâÊ±Ö»Ğè¼ÓÉÏ¡°-t¡±²ÎÊı¾ÍĞĞÁË
-#Ê¹ÓÃ±ğÃû
-	#¸ü¸Ä~/.ssh/config£¬±ÈÈç£º
+	#ä½†æœ‰äº›å‘½ä»¤å¯èƒ½ä¼šæŠ¥é”™ï¼Œå¦‚"top"ï¼Œè¿™æ—¶åªéœ€åŠ ä¸Šâ€œ-tâ€å‚æ•°å°±è¡Œäº†
+#ä½¿ç”¨åˆ«å
+	#æ›´æ”¹~/.ssh/configï¼Œæ¯”å¦‚ï¼š
 	Host bob
     		HostName bob.example.com
     		Port 2222
@@ -22,18 +22,18 @@
     		Port 31337
     		User waseemio
 		IdentityFile ~/.ssh/self
-	Host github.com		#githubµÄHost±ØĞëĞ´³Égithub.com
+	Host github.com		#githubçš„Hostå¿…é¡»å†™æˆgithub.com
 		HostName github.com
 		User git
 		IdentityFile ~/.ssh/github
-	#Á¬½ÓÊ±£¬¾Í±ä³ÉÕâÑùÁË
+	#è¿æ¥æ—¶ï¼Œå°±å˜æˆè¿™æ ·äº†
 	ssh bob
 	ssh alice
 	ssh self
 	ssh github.com
-#¶Ë¿Ú×ª·¢
-	#ÂÔ
-#Í¨¹ıauthorized_keysÖ¸¶¨µÇÂ¼ºóÒªÖ´ĞĞµÄÃüÁî
-	#¸ÃÃüÁî¶¨ÒåÔÚauthorized_keysÖĞ£¬sshÁ¬ÉÏºó£¬Ö»ÄÜÖ´ĞĞ¸ÃÃüÁî£¬²¢ÇÒÖ´ĞĞÍêºóÁ¢¼´ÍË³ö¡£±ÈÈç£º
-		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(ÆäÖĞssh-dss AAAA...¾ÍÊÇÔ­ÓĞµÄpublic keyÁË)
+#ç«¯å£è½¬å‘
+	#ç•¥
+#é€šè¿‡authorized_keysæŒ‡å®šç™»å½•åè¦æ‰§è¡Œçš„å‘½ä»¤
+	#è¯¥å‘½ä»¤å®šä¹‰åœ¨authorized_keysä¸­ï¼Œsshè¿ä¸Šåï¼Œåªèƒ½æ‰§è¡Œè¯¥å‘½ä»¤ï¼Œå¹¶ä¸”æ‰§è¡Œå®Œåç«‹å³é€€å‡ºã€‚æ¯”å¦‚ï¼š
+		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(å…¶ä¸­ssh-dss AAAA...å°±æ˜¯åŸæœ‰çš„public keyäº†)
 	
