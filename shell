@@ -1,4 +1,87 @@
 #!/bin/sh
+#echo相关参数
+	-e	允许解释转义序列
+	-n	删除输出结果的换行符
+	#转义序列
+	\a	报警
+	\b	退格
+	\n	换行
+	\r	回车
+	\t	制表符
+#for循环
+	1. for((i=1; i<=10; i++));
+       		do echo $(expr $i \* 4);
+	done
+	2. 在shell中常用的是for i in $(seq 10)	或 for i in `seq 10`
+		for i in	`seq $BEGIN $END`
+		for i in 	`seq $BEGIN $INTERVAL $END`	#从$BEGIN开始增长，以$INTERVAL为增量，一直增长到$END为止
+	3. for i in `ls`
+	4. for i in ${arr[@]}
+	5. for i in $*; do
+	6. for File in /proc/sys/net/ipv4/conf/*/accept_redirects; do
+	7. for i in f1 f2 f3; do
+	8. for i in *.txt
+	9. for i in $(ls *.txt)
+		for in 语句与``和$()合用，利用``或$()的将多行合为一行的缺陷，实际是合为一个字符串数组。
+	10. LIST="rootfs usr data data2"
+	    for d in $LIST; do
+		    用for in语句自动对字符串按空格进行遍历的特性，对多个目录遍历。
+	11. for i in {1..10}
+	12. for i in stringchar{1..10}
+	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
+	#注意：awk中的for循环写法和C语言是一样的
+#if then else
+	#then部分不执行任何指令
+		if [ -d $tmp ]
+		then
+			:
+		else
+			mkdir -p $tmp
+		fi
+#脚本中实现pause效果
+	read -n1 -p "Press any key to continue"
+#控制通配符（Globbing）
+	$set noglob 或 $set -f	#关闭通配符，再试试`ls *`试试
+	$set +f	#恢复通配符
+#内置命令启用关闭
+	$enable -n pwd	#关闭pwd命令
+	$enable pwd	#开启pwd命令
+#判断读取字符串值
+	表达式		含义
+	${var}		变量var的值，与$var相同
+	${var-DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
+	${var:-DEFAULT}	如果var没有被声明，或者其值为空，那么就以$DEFAULT作为其值
+	${var=DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
+	${var:=DEFAULT}	如果var没有被声明，或者其值为空，那么就以$DEFAULT作为其值
+	${var+OTHER}	如果var被声明了，那么其值就是$OTHER，否则就为null字符串
+	${var:+OTHER}	如果var被设置了，那么其值就是$OTHER，否则就为null字符串
+	${var?ERR_MSG}	如果var没被声明，那么就打印$ERR_MSG
+	${var:?ERR_MSG}	如果var没被设置，那么就打印$ERR_MSG
+	${!varprefix*}	匹配之前所有以varprefix开头进行声明的变量
+#PS1支持的变量说明
+	#默认：[\u@\h \W]\$
+	\t	当前时间是HH:MM:SS格式
+	\d	日期是“星期 月 日”格式
+	\n	换行符
+	\s	shell的名字，$0的基名
+	\w	当前工作目录
+	\W	当前工作目录的基名
+	\u	当前用户名
+	\h	主机名
+	\#	该命令的编号
+	\!	该命令的历史编号
+	\$	如果UID是0，则为#，否则是$
+	#以下为bash 2.x版才支持的
+	\@	以12小时am/pm格式表示当前时间
+	\H	主机名
+	\T	以12小时格式表示当前时间
+#取出两个目录中不同的文件
+	$cat dir1.list dir2.list | sort | uniq -u
+#取得一个正在运行进程的PID
+	$pidof servername
+	$pgrep servername
+#取得昨天的日期
+	yesterday=`date -d "1 day ago" +%Y%m%d`	#相应的，两天前改为 2 day ago
 #shell的命令行输入
 	CTRL + a —— 相当于<HOME>键
 	CTRL + e —— 相当于<END>键
@@ -18,18 +101,29 @@
 	CTRL + l —— 相当于执行clear清屏命令
 	CTRL + r —— 向前搜索键入的命令
 	CTRL + p —— 上翻前面键入的命令
-#判断读取字符串值
-	表达式		含义
-	${var}		变量var的值，与$var相同
-	${var-DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
-	${var:-DEFAULT}	如果var没有被声明，或者其值为空，那么就以$DEFAULT作为其值
-	${var=DEFAULT}	如果var没有被声明，那么就以$DEFAULT作为其值
-	${var:=DEFAULT}	如果var没有被声明，或者其值为空，那么就以$DEFAULT作为其值
-	${var+OTHER}	如果var被声明了，那么其值就是$OTHER，否则就为null字符串
-	${var:+OTHER}	如果var被设置了，那么其值就是$OTHER，否则就为null字符串
-	${var?ERR_MSG}	如果var没被声明，那么就打印$ERR_MSG
-	${var:?ERR_MSG}	如果var没被设置，那么就打印$ERR_MSG
-	${!varprefix*}	匹配之前所有以varprefix开头进行声明的变量
+#输入时屏幕不显示（比较输入密码）
+	stty -echo	#关闭屏幕的echo
+	stty echo	#恢复屏幕原echo
+#数组操作
+	#把一个文件里面一列的字符串都赋值到一个数组里面并调用
+		$cat test
+			test-001
+			test-002
+			test-003
+			test-004
+		$filename=(`cat test|sed -e :a -e '$!N;s/\\n/ /;ta'`)	
+		$set | grep filename
+			filename=([0]="test-01" [1]="test-02" [2]="test-03" [3]="test-04")
+		$echo ${filename[2]}
+	#用数组形式存放10变量值，然后用for输出
+		#!/bin/sh
+		name=(a b c d e f g h j i)
+		for i in ${name[*]}
+		do
+			echo $i
+		done
+#统计重复行
+	$sort file | uniq -c
 	${!varprefix@}	匹配之前所有以varprefix开头进行声明的变量
 #字符串操作（长度，读取，替换）
 	表达式				含义
@@ -44,23 +138,14 @@
 	${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
 	${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
 	${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
-#for循环
-	1. for((i=1; i<=10; i++));
-       		do echo $(expr $i \* 4);
-	done
-	2. 在shell中常用的是for i in $(seq 10)
-	3. for i in `ls`
-	4. for i in ${arr[@]}
-	5. for i in $*; do
-	6. for File in /proc/sys/net/ipv4/conf/*/accept_redirects; do
-	7. for i in f1 f2 f3; do
-	8. for i in *.txt
-	9. for i in $(ls *.txt)
-		for in 语句与``和$()合用，利用``或$()的将多行合为一行的缺陷，实际是合为一个字符串数组。
-	10. LIST="rootfs usr data data2"
-	    for d in $LIST; do
-		    用for in语句自动对字符串按空格进行遍历的特性，对多个目录遍历。
-	11. for i in {1..10}
-	12. for i in stringchar{1..10}
-	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
-	#注意：awk中的for循环写法和C语言是一样的
+#$@等特定shell变量的含义
+	$#	传递到脚本的参数个数
+	$*	以一个单字符串显示所有向脚本传递的参数。与位置变量不同，此选项参数可超过9个
+	$$	脚本运行的当前进程ID号
+	$!	后台运行的最后一个进程的进程ID号
+	$@	与$#相同，但是使用时加引号，并在引号中返回每个参数
+	$-	显示shell使用的当前选项，与set命令功能相同
+	$?	显示最后命令的退出状态，0表示没有错误，其他任何值表明有错误
+#()和{}区别
+	(cmds)在子shell中执行
+	{cmds}在当前shell中执行
