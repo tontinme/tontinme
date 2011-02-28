@@ -1,13 +1,36 @@
-﻿1. linux 光盘刻录软件包
+﻿#!/bin/sh
+#linux 光盘刻录软件包
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3
 	mkisofs-2.01-10
-2. 刻录设备检测
-	cdrecord -scanbus	#用于SCSI光驱
-	cdrecord -scanbus dev=APAPI
-3. 查看是否为64位的cpu
+#linux系统调用汇总
+	NAME		FUNCTION			MODULE
+	restart_syscall
+	exit		终止进程			进程控制
+	fork		创建进程			进程控制
+	read		读文件				文件控制
+	write		写文件				文件控制
+	open		打开文件			文件控制
+	close		关闭文件			文件控制
+	waitpid		等待指定的子进程结束		进程控制
+	creat		创建文件			文件控制
+	link		创建链接			文件控制
+	unlink		取消链接			文件控制
+	execve		运行可执行文件			进程控制
+	chdir		改变当前工作目录		文件控制
+	time		取得系统时间			系统控制
+	mknod		创建索引节点			文件控制
+	chmod		改变文件方式			文件控制
+	lchown		参照chown			文件控制
+	break		估计应该是被brk这个系统调用替代了内存管理
+	#mknod内容
+		用于创建特殊文件，linux内有一个同名的命令，用于封装这个功能。通过\
+			这个系统调用可以创建块专用文件、字符专用文件以及FIFO命名管道。
+	#break相关内容
+		这个应该被brk替代了，没有找到网上有break这个系统调用的介绍
+#查看是否为64位的cpu
 	#打入以下命令
-	grep flags /proc/cpuinfo
+	$grep flags /proc/cpuinfo
 	输出：
 	flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov \
 		pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm nx lm
@@ -15,3 +38,6 @@
 	lm	Long Mode —— 64位CPU
 	rm	Read Mode —— 16位CPU
 	pm	Protected Mode —— 32位CPU
+#刻录设备检测
+	cdrecord -scanbus	#用于SCSI光驱
+	cdrecord -scanbus dev=APAPI
