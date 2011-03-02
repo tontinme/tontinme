@@ -23,11 +23,30 @@
 	chmod		改变文件方式			文件控制
 	lchown		参照chown			文件控制
 	break		估计应该是被brk这个系统调用替代了内存管理
+	oldlstat		
+	lseek		移动文件指针			文件控制
+	getpid		获取进程标识号			进程控制
+	mount		安装文件系统			文件控制
+	umount		卸载文件系统			文件控制
+	setuid		设置用户标识号			用户管理
+	getuid		获取用户标识号			用户管理
+	stime		设置系统日期和时间		系统控制
+	ptrace		进程跟踪			进程控制
+	alarm		设置进程的闹钟			系统控制
+	oldfstat
+	pause		挂起进程，等待信号		进程控制
+	utime		改变文件的访问修改时间		文件控制
 	#mknod内容
 		用于创建特殊文件，linux内有一个同名的命令，用于封装这个功能。通过\
 			这个系统调用可以创建块专用文件、字符专用文件以及FIFO命名管道。
 	#break相关内容
 		这个应该被brk替代了，没有找到网上有break这个系统调用的介绍
+	#lstat
+		对于link文件返回link文件本身的信息，而不是所指向的文件
+	#fstat
+		使用fd而不是文件名路径作为参数
+	#为了支持64位系统，Linux增加了几个64bit版本的stat系统调用
+		stat64,fstat64,lstat64
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
@@ -38,6 +57,10 @@
 	lm	Long Mode —— 64位CPU
 	rm	Read Mode —— 16位CPU
 	pm	Protected Mode —— 32位CPU
+#查看系统的发行版本
+	$lsb_release -a
+#查看系统的内核版本
+	$uname -a
 #刻录设备检测
 	cdrecord -scanbus	#用于SCSI光驱
 	cdrecord -scanbus dev=APAPI

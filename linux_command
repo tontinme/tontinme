@@ -16,7 +16,11 @@
 		$alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
 		$alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
 #chroot
-	
+	#即change root directory，经过chroot后，系统读取到的目录和文件将不再是旧系统根下的而是新\
+		根下（即被指定的新的位置）的目录结构和文件，因此带来三个好处：
+		1. 增加了系统的安全性，限制了用户的权利
+		2. 建立一个与原系统隔离的系统目录结构，方便用户的开发
+		3. 切换系统的根目录位置，引导linux系统启动以及急救系统等。
 #crontab
 	#field		allowed values
 	minute		0-59		#每分钟用*或*/1表示
