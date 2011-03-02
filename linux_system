@@ -36,6 +36,8 @@
 	oldfstat
 	pause		挂起进程，等待信号		进程控制
 	utime		改变文件的访问修改时间		文件控制
+	stty		未实现
+	gtty		未实现
 	#mknod内容
 		用于创建特殊文件，linux内有一个同名的命令，用于封装这个功能。通过\
 			这个系统调用可以创建块专用文件、字符专用文件以及FIFO命名管道。
@@ -47,6 +49,19 @@
 		使用fd而不是文件名路径作为参数
 	#为了支持64位系统，Linux增加了几个64bit版本的stat系统调用
 		stat64,fstat64,lstat64
+	#linux0.12中定义了许多系统调用，相当多没有实现，应该是考虑向后兼容一些UNIX功能
+	#这个页面列出了linux2.6定义仍然没有实现的系统调用
+		http://www.kernel.org/doc/man-pages/online/pages/man2/mpx.2.html
+		afs_syscall,  break,  ftime, getpmsg, gtty, lock, madvise1, mpx, \
+			prof, profil,putpmsg, security, stty, tuxcall, ulimit, vserver
+	#其中还提供了一些有用的信息：
+		ftime,profil,ulimit这几个系统调用在用户空间以lib的方式实现了，因此\
+			没有必要提供系统调用
+		一些系统调用只有在特定的CPU上支持：alloc_hugepages,free_hugepages,ioperm,\
+			ioperm,iopl,vm86
+		一些系统调用只有打开了编译选项才会包括进来（比如：ipc,create_module,\
+			init_module,delete_module）
+		
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
