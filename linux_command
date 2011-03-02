@@ -68,6 +68,10 @@
 		0 11 4 * mon-wed /home/tontinme/test.sh
 		#一月一号的4点执行脚本
 		0 4 1 jan * /home/tontinme/test.sh
+	#crontab无法运行分析
+		1.crontab是nologin shell，运行时的一些环境变量与直接登录后在命令行下运行不同所致。
+		2.添加在crontab中的命令含有%，%在crontab上有特殊意义，不同的shell对crontab的实现有差异，因此\
+			为了安全起见，应该在命令中对%进行转义，或者尽量不要在crontab中使用%。
 #find
 	#忽略大小写的查找
 		$find -iname 'xxx'
