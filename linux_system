@@ -38,6 +38,25 @@
 	utime		改变文件的访问修改时间		文件控制
 	stty		未实现
 	gtty		未实现
+	access		当前进程对于文件的可存取性	系统控制
+	nice		调整调用进程的优先级		进程控制
+	ftime		未实现				
+	sync		无参数，将内存缓冲区数据写回硬盘 内存管理
+	kill		向进程或进程组发信号		进程管理
+	rename		文件改名			文件控制
+	mkdir		创建目录			文件控制
+	rmdir		删除目录			文件控制
+	dup		复制已打开的文件描述符		文件控制
+	pipe		创建管道			管道
+	times		取进程运行时间			系统控制
+	prof		未实现				
+	brk		改变数据段空间的分配		内存管理
+	setgid		设置当前进程的组标识号		用户管理
+	getgid		获取当前进程的组标识号		用户管理
+	signal		参见signal			信号
+	geteuid		获取当前进程的有效用户标识号	用户管理
+	getegid		获取当前进程的有效组标识号	用户管理
+	acct		启用或禁止进程记账		系统控制
 	#mknod内容
 		用于创建特殊文件，linux内有一个同名的命令，用于封装这个功能。通过\
 			这个系统调用可以创建块专用文件、字符专用文件以及FIFO命名管道。
@@ -61,7 +80,10 @@
 			ioperm,iopl,vm86
 		一些系统调用只有打开了编译选项才会包括进来（比如：ipc,create_module,\
 			init_module,delete_module）
-		
+	#dup
+		请移步：http://blog.csdn.net/AllanZeng/archive/2009/06/12/4264111.aspx
+	#有关effective ID和Real ID的区别
+		请移步：http://whatilearned2day.wordpress.com/2007/01/09/uid-gid-real-and-effective-difference/	
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
