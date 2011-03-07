@@ -43,6 +43,8 @@
 	\n	换行
 	\r	回车
 	\t	制表符
+#export
+	#export用于导出一个变量或者function到环境变量
 #for循环
 	1. for((i=1; i<=10; i++));
        		do echo $(expr $i \* 4);
