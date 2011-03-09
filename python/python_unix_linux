@@ -25,4 +25,14 @@
 			#若不是某字符串的子串，find()返回-1,index()抛出ValueError异常
 	#string[index:] & string[:index]
 		查找从index开始到string结尾的每一个字符，& 查找从string开始到index所在位子的所有字符
+	#split() & splitlines() & join()
+		根据某个指定的分隔符对一个字符串进行提取
+		()内可以放0,1,2个参数
+		splitlines()用于分割多行文本
+		join()用于连接多个字符串	注：如果传递给join()的是一系列整数，需要稍作改变（P93）
+	#replace()
+		用于创建和修改文本字符
+		与切分操作以及strip()方法一样，replace()会创建一个新字符串，而不是对字符串进行行内修改
+	#unicode
+		python可以对unicode进行处理
 	
