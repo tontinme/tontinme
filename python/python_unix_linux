@@ -25,4 +25,31 @@
 			#若不是某字符串的子串，find()返回-1,index()抛出ValueError异常
 	#string[index:] & string[:index]
 		查找从index开始到string结尾的每一个字符，& 查找从string开始到index所在位子的所有字符
+	#startswith() & endswith()
+		判断字符串是否以某一特定字串开始，或是以某一特定子串结束
+	#lstrip(),rstrip(),strip()
+		不带任何参数时分别用来删除前导空白，结尾空白和前后空白的方法。
+		空白可以包括tab,空格，回车和换行。
+		它们都有一个可选参数，可以根据需要删除任何内容。
+			eg1. some_example = "<some_tag>"
+			     print some_example.lstrip("<")
+			eg2. print some_example.lstrip("<").rstip(">")
+			eg3. print some_example.strip("<>")
+			注：eg3.中并不意味着将删除准确匹配的"<>"，而是可以删除任何"<"">"的组合
+			eg4. foo_str = "<fooooo>blah<foo>"
+			     print foo_str.strip("<foo>")
+			     	'blah'
+			注：eg4.中可以看到strip()删除了字符串中包含的全部5个字符
+	#upper() & lower()
+		返回字符串的大写/小写原始字符串
+	#split() & splitlines() & join()
+		根据某个指定的分隔符对一个字符串进行提取
+		()内可以放0,1,2个参数
+		splitlines()用于分割多行文本
+		join()用于连接多个字符串 注：如果传递给join()的是一系列整数，需要稍作改变（P93）
+	#replace()
+		用于创建和修改文本字符
+		与切分操作以及strip()方法一样，replace()会创建一个新字符串，而不是对字符串进行行内修改
+	#unicode
+		python可以对unicode进行处理
 	
