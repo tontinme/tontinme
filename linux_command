@@ -9,6 +9,7 @@
 ------top
 ------wget
 ------whoami,id,groups,newgrp
+------zip,tar.gz,tar.bz2
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
 		$alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
@@ -266,3 +267,47 @@
 	groups		#用于显示指定用户所属的组
 	id		#用于显示用户身份
 	newgrp		#用于转换用户的当前组到指定的附加组，用户必须属于该组才可以进行
+#zip,tar.gz,tar.bz2
+	zip	
+		压缩
+		$zip -r archive_name.zip directory_to_compress
+		解压
+		$unzip archive_name.zip
+	tar
+		压缩
+		$tar -cvf archive_name.tar directory_to_compress
+		解压
+		$tar xvf archive_name.tar
+		解压到指定目录
+		$tar xvf archive_name.tar -C /tmp/extract_here/
+	tar.gz
+		$tar -zcvf archive_name.tar.gz directory_to_compress
+		$tar -zxvf archive_name.tar.gz -C /tmp/extract_here/
+	tar.bz2
+		$tar -jcvf archive_name.tar.bz2 directory_to_compress	
+		$tar -zxvf archive_name.tar.bz2 -C /tmp/extract_here/
+	.gz
+		$gzip FileName
+		$gunzip FileName.gz
+		$gzip -d FileName.gz
+	.bz2
+		$bzip2 -z FileName
+		$bzip2 -d FileName.bz2
+		$bunzip2 FileName.bz2
+	.Z
+		$compress FileName
+		$uncompress FileName.Z
+	.tar.Z
+		$tar Zcvf FileName.tar.Z DirName
+		$tar Zxvf FileName.tar.Z
+	.tgz
+		$tar zxvf FileName.tgz
+	.tar.tgz
+		$tar zcvf FileName.tar.tgz FileName	
+		$tar zxvf FileName.tar.tgz 
+	.rar
+		$rar e FileName.rar FileName
+		$rar a FileName.rar
+	rpm	
+		解包
+		$rpm2cpio FileName.rpm | cpio -div
