@@ -1,4 +1,10 @@
-﻿#连接成功后运行命令
+﻿#putty中文显示
+	打开putty主程序，选择window-〉Appearance-〉Font settings-〉Change...,选择Fixedsys字体,字符集选择CHINESE_GB2312。
+在window-〉Appearance-〉Translation中，Received data assumed to be in which character set 中,把Use font encoding改为UTF-8.
+如果经常使用,把这些设置保存在session里面.
+	现在打开putty,登录成功后,在shell中输入:export LC_ALL='zh_CN.utf8',现在已经可以完美的支持中文了
+	可以打开vim输入中文测试一下,而且也不会出现删除半个汉字的问题.
+#连接成功后运行命令
 	#只想运行单个命令的话，直接把命令附加在ssh命令之后即可。如：
 		$ssh freebsd uname -a
 		Linux bebop 2.6.32-24-generic #39-Ubuntu SMP Wed Jul 28 05:14:15 UTC 2010 x86_64 GNU/Linux
@@ -35,5 +41,4 @@
 	#略
 #通过authorized_keys指定登录后要执行的命令
 	#该命令定义在authorized_keys中，ssh连上后，只能执行该命令，并且执行完后立即退出。比如：
-		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(其中ssh-dss AAAA...就是原有的public key了)
-	
+		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(其中ssh-dss AAAA...就是原有的public key了)	
