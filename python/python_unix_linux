@@ -96,4 +96,11 @@
 		如果需要将一个字符串作为文件来处理，StringIO会很有帮助
 		urllib.urlopen()	从web服务器读取文件
 	#日志解析
-		·
+		
+	#ElemntTree
+		三种方法处理XML
+			simple API for XML / SAX
+			Document Object Model / DOM
+			ElementTree
+#Chapter Documentation and Reporting
+	
