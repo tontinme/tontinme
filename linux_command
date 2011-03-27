@@ -6,6 +6,7 @@
 ------find
 ------ls
 ------su & sudo
+------tmpwatch
 ------top
 ------wget
 ------whoami,id,groups,newgrp
@@ -207,6 +208,8 @@
 			兼职管理员(jalala, sonar和huge)可以在任何主机上运行 BROWSE、PROCESSES、USERS 中的命令
 			允许sys 组的成员运行 networking, software, service 等管理命令
 			WEBMASTERS(will, wendy,和 wim)中的用户都能够在主机www上以www的身份执行任何命令，或者使用 su www 命令
+#tmpwatch
+	/usr/sbin/tmpwatch -m 240 /opt/resin/log/	删除某目录下1周后的过期日志
 #top
 	#根据一些参数将性能排序
 		使用-O选项进入选择菜单，选择相关字母（大写向上调整，小写向下调整）即可根据参数排序
