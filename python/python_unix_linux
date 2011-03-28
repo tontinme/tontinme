@@ -1,4 +1,4 @@
-#!/bin/usr/python
+#!/usr/bin/env python
 
 #chapter 3
 	#python的转义序列
@@ -103,4 +103,10 @@
 			Document Object Model / DOM
 			ElementTree
 #Chapter Documentation and Reporting
-	
+	#收取邮件
+	#手工信息收集
+		reStructureText(reST)
+			$sudo yum install python-docutils
+		Textile
+			$sudo easy_install textile & $sudo yum install python-textile
+			(附：安装easy_install	$sudo yum install python-setuptools.noarch)
