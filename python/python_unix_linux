@@ -110,3 +110,5 @@
 		Textile
 			$sudo easy_install textile & $sudo yum install python-textile
 			(附：安装easy_install	$sudo yum install python-setuptools.noarch)
+	#信息格式化
+		#graphical images
