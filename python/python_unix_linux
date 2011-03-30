@@ -112,3 +112,11 @@
 			(附：安装easy_install	$sudo yum install python-setuptools.noarch)
 	#信息格式化
 		#graphical images
+			import gdcharg	柱状图，饼图
+		#PDF
+			ReportLab PDF
+	#信息发布
+		#发送email
+			低级别的smtplib		可以发送email
+			email	帮助解析和产生email
+		#发送带附件的email
