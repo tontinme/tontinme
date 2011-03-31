@@ -3,9 +3,10 @@
 #监控MySQL复制是否运行，并且根据具体的错误代码自动判断是否忽略
 #
 
-now=`date + "%Y%m%d%H%M%S"`
+MYSQL_PATH=/usr/local/mysql
+now=`date +%Y-%m-%d_%H:%M`
 statFile="./slave_status.$now"
-echo "show slave status\G" | mysql -uroot > $statFile
+echo "show slave status\G" | $MYSQL_PATH/bin/mysql -uroot > $statFile
 
 ioStat=`cat $statFile | grep Slave_IO_Running | awk '{print $2}'`
 sqlStat=`cat $statFile | grep Slave_SQL_Running | awk '{print $2}'`

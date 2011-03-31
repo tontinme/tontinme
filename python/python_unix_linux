@@ -102,7 +102,7 @@
 			simple API for XML / SAX
 			Document Object Model / DOM
 			ElementTree
-#Chapter Documentation and Reporting
+#Chapter 4 Documentation and Reporting
 	#收取邮件
 	#手工信息收集
 		reStructureText(reST)
@@ -120,3 +120,9 @@
 			低级别的smtplib		可以发送email
 			email	帮助解析和产生email
 		#发送带附件的email
+	#Trac
+		Trac是一个wiki和问题追踪系统。Trac是用python编写的，它非常适合我们所讨论的所有三个类别：信息\
+				收集，格式化和发布。
+#Chapter 5 Networking
+	#网络客户端
+		#socket
