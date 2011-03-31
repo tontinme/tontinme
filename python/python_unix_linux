@@ -126,3 +126,4 @@
 #Chapter 5 Networking
 	#网络客户端
 		#socket
+			socket(),connect(),send(),recv(),close()
