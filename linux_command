@@ -2,9 +2,11 @@
 ---Index
 ------alias
 ------chroot
+------cp
 ------crontab
 ------find
 ------ls
+------rsync
 ------su & sudo
 ------tmpwatch
 ------top
@@ -23,6 +25,14 @@
 		1. 增加了系统的安全性，限制了用户的权利
 		2. 建立一个与原系统隔离的系统目录结构，方便用户的开发
 		3. 切换系统的根目录位置，引导linux系统启动以及急救系统等。
+#cp
+	#取消覆盖提示
+		有时使用$cp -f file dir，系统仍然会有覆盖提示
+		原因是系统将cp命令alias为cp -i
+		两种解决办法：
+			1.修改该alias	仅针对当前用户的，在用户的home目录下修改.bashrc即可
+			  		针对全局的，修改/etc/bashrc
+			2.使用如下命令	$\cp -f file dir
 #crontab
 	#field		allowed values
 	minute		0-59		#每分钟用*或*/1表示
@@ -138,6 +148,12 @@
 	#显示文件的uid和gid：
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
+#rsync
+	#参数
+		-z	开启压缩功能
+		-v	打印详细信息
+		-r	递归同步
+		-a	同步时间戳
 #su & sudo
 	#su
 		直接切换为超级用户

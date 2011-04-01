@@ -1,4 +1,5 @@
-﻿1. vim、gvim在windows下中文乱码的终极解决方案
+﻿#!/bin/bash
+#vim、gvim在windows下中文乱码的终极解决方案
 
 	set encoding=utf-8
 	set fileencodings=utf-8,chinese,latin-1
@@ -12,7 +13,27 @@
 	source $VIMRUNTIME/menu.vim
 	"解决consle输出乱码
 	language messages zh_CN.utf-8
-2. 退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
+#vim的标签功能
+	:tabnew			在当前标签页之后打开带空窗口的新标签页
+	:tabc[lose]		关闭当前标签页
+	:tabc[lose] {count}	关闭第{count}个标签页
+	:tabo[nly]		关闭所有其他的标签页
+	:tabn[ext] {count}	转到下一个标签页。最后一个标签页则回绕到第一个,{count}可选
+	:tabp[revious] {count}	转到前一个标签页。首个标签页则回绕到最后一个，{count}可选
+	:tabfir[st]		转到第一个标签页
+	:tabl[ast]		转到最后一个标签页
+	:tabs			列出标签页和它们包含的窗口
+				当前窗口显示">"
+				修改过的缓冲区显示"+"
+	:tabm[ove] [N]		把当前标签页移到第N个标签页之后。第一个标签页的编号为0，如果没有\
+					N，当前标签页被移动到最后一个
+	:tabd[o] {cmd}		对每个标签页执行 {cmd}
+				只对每个标签页的当前窗口进行操作。如果某个标签页出现错误，不再继续访问其余的标签页
+				{cmd}可以包含'|'以连接多个命令
+				{cmd}不能打开标签页、关闭标签页或重排标签页
+	:{count}gt		转到第{count}个标签页。首个标签页编号为1
+	:{count}gT		转到前面{count}个标签页，首个标签页则回绕到最后一个
+#退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
 	在你的/etc/vim/gvimrc或/etc/vim/gvimrc.local中加入以下两行（在vim的配置文件中加入即可）
 	au VimLeave * exe 'if exists("g:cmd") && g:cmd == "gvims" | if strlen(v:this_session) | exe "wviminfo! " . v:this_session . ".viminfo" | else | exe "wviminfo! " . "~/.vim/session/" . g:myfilename . ".session.viminfo" | endif | endif '
 	au VimLeave * exe 'if exists("g:cmd") && g:cmd == "gvims" | if strlen(v:this_session) | exe "mksession! " . v:this_session | else | exe "mksession! " . "~/.vim/session/" . g:myfilename . ".session" | endif | endif'
