@@ -1,0 +1,14 @@
+#!/bin/bash
+chapter 5
+section 5.1
+	#简单描述了MySQL服务器和服务器相关程序
+		mysqld	#SQL后台程序
+		mysqld-max	#包括更多特性的一个服务器版本
+		mysqld_safe	#服务器启动脚本。如果mysqld-max存在，则mysqld_saft试图启动它，否则启动mysqld
+		mysql.server	#服务器启动脚本。它调用mysqld_safe来启动MySQL服务器
+		mysqld_multi	#服务器启动脚本。可以启动或停止系统上安装的多个服务器
+		mysql_install_db	#该脚本用默认权限创建MySQL授权表。通常只在系统上首次安装mysql时执行一次
+		mysql_fix_privilege_tables	#用于升级授权表
+		myisamchk	#用来描述，检查，优化和维护myisam表的实用工具
+		mysqlbug	#mysql缺陷报告脚本
+	#mysqld_max扩展mysql服务器
