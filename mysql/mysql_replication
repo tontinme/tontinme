@@ -1,0 +1,20 @@
+#!/bin/bash
+
+------克隆一份主服务器的数据
+#克隆一份主服务器的数据
+	#如果数据库使用的是MyISAM表类型，按如下方式操作
+		$mysqldump --all-databases --master-data=1 > data.sql
+		#注：master-data选项缺省打开lock-all-tables，并写入CHANGE MASTER TO语句
+		#如果数据库使用InnoDB表类型的话，应该使用single-transcation
+		$mysqldump --all-databases --single-transaction --master-data=1 > data.sql
+	#将数据传输到从服务器上并导入
+		$mysql < data.sql
+	#整个过程也可以用管道符一次性操作
+		$mysqldump --host=<MASTER_HOST> ... | mysql --host=<SLAVE_HOST> ...
+	#直接拷贝数据文件
+		#先锁定数据，再获得相关的日志信息（File & Position）
+		mysql> flush tables with read lock;
+		mysql> show master status;
+		#如果是MyISAM表类型的话，直接拷贝即可；如果是InnoDB表类型的话，一定要先停止\
+			MySQL服务再拷贝，否则拷贝文件可能无法使用。把拷贝的数据文件直接复制到\
+			从服务器的数据目录。

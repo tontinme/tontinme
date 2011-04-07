@@ -6,6 +6,7 @@
 ------crontab
 ------find
 ------ls
+------nmon
 ------rsync
 ------su & sudo
 ------tmpwatch
@@ -148,6 +149,27 @@
 	#显示文件的uid和gid：
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
+#nmon
+	http://nmon.sourceforge.net/pmwiki.php
+	#nmon工具可以为AIX和Linux提供监视和分析性能数据的功能，其中包括：
+		*CPU使用率
+		*内存使用情况
+		*内核统计信息和运行队列信息
+		*文件系统中的可用空间
+		*磁盘适配器
+		*网络I/O速度、传输和读/写比率
+		*页面空间和页面速度
+		*CPU和AIX规范
+		*消耗资源最多的进程
+		*IBM HTTP Web缓存
+		*用户自定义的磁盘组
+		*计算机详细信息和资源
+		*异步I/O，仅适用于AIX
+		*工作负载管理器（WLM），仅适用于AIX
+		*IBM TotalStorage Enterprise Storage Server(Ess)磁盘，仅适用于AIX
+		*网络文件系统（NFS）
+		*动态LPAR(DLPAR)更改，仅适用于面向AIX或Linux的pSeries p5和OpenPower
+		#还包括一个用来从nmon的输出生成图形并创建可以在Web站点显示的.gif文件的新工具
 #rsync
 	#参数
 		-z	开启压缩功能
