@@ -7,10 +7,13 @@
 ------find
 ------ls
 ------nmon
+------paste
+------rpm
 ------rsync
 ------su & sudo
 ------tmpwatch
 ------top
+------watch
 ------wget
 ------whoami,id,groups,newgrp
 ------zip,tar.gz,tar.bz2
@@ -170,6 +173,20 @@
 		*网络文件系统（NFS）
 		*动态LPAR(DLPAR)更改，仅适用于面向AIX或Linux的pSeries p5和OpenPower
 		#还包括一个用来从nmon的输出生成图形并创建可以在Web站点显示的.gif文件的新工具
+#paste
+	#用于文件合并
+	#paste f1 f2 f3
+#rpm
+	1.通过文件查找它属于哪个软件包
+		$rpm -qf /usr/bin/multitail
+		multitail-5.2.6-1.el5.rf
+	2.查看rpm包大量信息
+		$rpm -qip XXX.rpm
+	3.查看rpm包软件里面文件列表
+		$rpm -qlp XXX.rpm
+	4.列出rpm包的依赖关系
+		$rpm -qRp XXX.rpm
+>>>>>>> 24f785c7b0462c8bfedb28ac44de7822caae39d8
 #rsync
 	#参数
 		-z	开启压缩功能
@@ -259,6 +276,14 @@
 		按c键
 	#设定top查看性能次数-当刷新指定次数后自动退出
 		$top -n 你指定的次数
+#watch
+	#当想重复一个命令或者shell脚本（只间隔几秒），可以使用watch
+	1.方便查看日志文件以及其他增长型文件的速度
+		$watch ls
+	2.-d选项高亮，对变化的数值突出显示
+		$watch -d free -m
+	3.-n选项指定watch间隔，-t选项去掉第一行多余信息
+		$watch -n 10 -t free -m
 #wget
 	#通常下载单个文件的方式
 		$wget http://hotfile.com/dl/97851370/9727f76/backups-DN22006-sUN.part03.rar	
