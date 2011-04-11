@@ -127,3 +127,17 @@
 	#网络客户端
 		#socket
 			socket(),connect(),send(),recv(),close()
+		#httplib
+		#ftplib
+			全功能的ftp客户端库
+		#urllib
+		#urllib2
+			是对urllib的扩展。例如能够更友好的支持认证和cookie
+	#远程过程调用
+		#XML-RPC
+			XML-RPC在两个进程之间交换指定格式的XML文档，以实现远程过程调用。
+			XML-RPC具有一些限制
+		#Pyro
+			Pyro是能够避免XML-RPC缺点的框架。Pyro(Python Remote Objects
+			Pyro能完成任何XML-RPC能够实现的功能，而不需将对象字典化。
+			Pyro仅能够与Python使用，XML-RPC也可以与其他语言一起使用。
