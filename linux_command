@@ -5,14 +5,26 @@
 ------cp
 ------crontab
 ------find
+------free
+------iostat
+------iptraf
 ------ls
+------mpstat
+------netstat
 ------nmon
 ------paste
+------pmap
+------ps
 ------rpm
 ------rsync
+------ss
 ------su & sudo
+------tcpdump
 ------tmpwatch
 ------top
+------uptime
+------vmstat
+------w
 ------watch
 ------wget
 ------whoami,id,groups,newgrp
@@ -136,6 +148,16 @@
 			#find . -size +20M
 		#查找小于1M的文件
 			#find . -size -1M
+#free
+	#display the total amount of free and used physical and swap memory in the system,\
+		as well as the buffers used by the kernel
+#iostat
+	$report cpu statistics and I/O statistics for devices,partitions and NFS
+#iptraf
+	#iptraf command is interactive colorful IP LAN monitor. It is an ncurses-based IP LAN\
+		monitor that generates various network statistics including TCP info, UDP counts,\
+		ICMP and OSPF information,Ethernet load info, node stats, IP checksum errors, and \
+		others. 
 #ls
 	#显示最后一次执行的命令中修改的文件
 		$ls -t
@@ -152,6 +174,12 @@
 	#显示文件的uid和gid：
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
+#mpstat
+	#display activities for each available processor, processor, processor 0 being the first\
+		one. 
+		$mpstat -P ALL	#display average CPU utilization per processor
+#netstat
+	#display network connections, routing tables, interface statistics, masquerade connections, and multicast memberships.
 #nmon
 	http://nmon.sourceforge.net/pmwiki.php
 	#nmon工具可以为AIX和Linux提供监视和分析性能数据的功能，其中包括：
@@ -176,6 +204,44 @@
 #paste
 	#用于文件合并
 	#paste f1 f2 f3
+#pmap
+	#report memory map of a process. Use this command to find out causes of memory bottlenecks
+		$pmap -d PID
+#ps
+	#select all processes
+		$ps -A ( $ps -e )
+	#show long format output
+		$ps -Al
+		$ps -AlF	#turn on extra full mode
+	#see threads(LWP and NLWP)
+		$ps -AlFH
+	#see threads after processes
+		$ps -AlLm
+	#print all process on the server 
+		$ps ax
+		$ps aux
+	#print a process tree
+		$ps -ejH
+		$ps axjf
+		$pstree
+	#print security information
+		$ps -eo euser,ruser,suser,fuser,f,comm,label
+		$ps axZ
+		$ps -eM
+	#see every process running as user cinder
+		$ps -U cinder -u cinder u
+	#see output in a user-defined format
+		$ps axo stat,euid,ruid,tty,tpgid,sess,pgrp,ppid,pid,pcpu,comm
+	#display only the process IDs of lighttpd
+		$ps -C lighttpd -o pid=
+		$pgrep lighttpd
+		$pgrep -u cinder php-cgi
+	#display the name of pid 55977
+		$ps -p 55977 -o comm=
+	#find out the top 10 memory consuming process
+		$ps -auxf | sort -nr -k 4 | head -10
+	#find out top 10 cpu consuming process
+		$ps -auxf | sort -nr -k 3 | head -10
 #rpm
 	1.通过文件查找它属于哪个软件包
 		$rpm -qf /usr/bin/multitail
@@ -193,6 +259,10 @@
 		-v	打印详细信息
 		-r	递归同步
 		-a	同步时间戳
+#ss
+	#ss command is used to dump socket statistics. It allows showing information similar to\
+		netstat.
+
 #su & sudo
 	#su
 		直接切换为超级用户
@@ -263,6 +333,8 @@
 			兼职管理员(jalala, sonar和huge)可以在任何主机上运行 BROWSE、PROCESSES、USERS 中的命令
 			允许sys 组的成员运行 networking, software, service 等管理命令
 			WEBMASTERS(will, wendy,和 wim)中的用户都能够在主机www上以www的身份执行任何命令，或者使用 su www 命令
+#tcpdump
+	
 #tmpwatch
 	/usr/sbin/tmpwatch -m 30d /opt/resin/log/	删除某目录下30天后的过期日志，日期默认是小时，这里指定为天
 #top
@@ -276,6 +348,31 @@
 		按c键
 	#设定top查看性能次数-当刷新指定次数后自动退出
 		$top -n 你指定的次数
+	#display summary information off/on
+		按t
+	#display memory information off/on
+		按m
+	#快速列出使用各类资源的top consumers
+		按A
+	#定制top默认能显示的项
+		按f
+	#issues kill command
+		按k
+#uptime
+	#tell how long the system has been running
+	the uptime command can be used to see how long the server has been running .\
+		the current time, how long the system has been running, how many users\
+		are currently logged on, and the system load averages for the past 1,5,\
+		and 15 minutes
+#vmstat
+	#reports information about processes,memory,paging,block IO,traps,and cpu activity
+		for example	$vmstat 3
+		$vmstat -m	#display memory utilization slabinfo
+		$vmstat -a	#get information about active/inactive memory pages
+#w
+	#display information about the users currently on the machine, and their processes
+		$w username
+		$w cinder
 #watch
 	#当想重复一个命令或者shell脚本（只间隔几秒），可以使用watch
 	1.方便查看日志文件以及其他增长型文件的速度
