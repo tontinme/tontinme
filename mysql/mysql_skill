@@ -1,0 +1,12 @@
+#!/bin/bash
+
+------mysqlÖØÖÃÃÜÂë
+#mysqlÖØÖÃÃÜÂë
+	$/usr/local/mysql/share/mysql/mysql.server stop
+	$/usr/local/mysql/bin/mysqld_safe --user=mysql --skip-grant-tables --skip-networking &
+	$/usr/local/mysql/bin/mysql -u root mysql
+	mysql> update user set password=PASSWORD("newpassword") where user='root';
+	mysql> flush privileges;
+	mysql> quit
+	$/usr/local/mysql/share/mysql/mysql.server restart
+	$/usr/local/mysql/bin/mysql -u root -p

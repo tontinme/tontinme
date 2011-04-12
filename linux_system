@@ -1,4 +1,26 @@
 ﻿#!/bin/sh
+
+------linux安全关机
+------linux 光盘刻录软件包
+------linux系统调用汇总
+------查看是否为64位的cpu
+------查看系统的发行版本
+------查看系统的内核版本
+------刻录设备检测
+
+#linux安全关机
+	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
+		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
+		几个键，按完b系统就会重启。
+	解释一下：按住Alt-Print的时候就相当于按住了Sys Rq键，这个时候输入的一切都会直接由linux内核来处理\
+		它可以进行许多低级操作。这个时候reisub中的每一个字母都是一个独立操作，分别表示：
+		unRaw		将键盘控制从X Server那里抢回来
+		tErminate	给所有进程发送SIGTERM信号，让它们自己解决善后
+		kIll		给所有进程发送SIGKILL信号，强制他们马上关闭
+		Sync		将所有数据同步至磁盘
+		Unmount		将所有分区挂载为只读模式
+		reBoot		重启
+	这6个字母的顺序可以这样记，单词busier(busy的比较级)反过来。
 #linux 光盘刻录软件包
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3

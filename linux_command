@@ -18,6 +18,7 @@
 ------rpm
 ------rsync
 ------ss
+------strace
 ------su & sudo
 ------tcpdump
 ------tmpwatch
@@ -263,6 +264,9 @@
 	#ss command is used to dump socket statistics. It allows showing information similar to\
 		netstat.
 
+#strace
+	#trace system calls and signals.This is useful for debugging webserver and other server \
+		problems.
 #su & sudo
 	#su
 		直接切换为超级用户
@@ -334,7 +338,11 @@
 			允许sys 组的成员运行 networking, software, service 等管理命令
 			WEBMASTERS(will, wendy,和 wim)中的用户都能够在主机www上以www的身份执行任何命令，或者使用 su www 命令
 #tcpdump
-	
+	#detailed network traffic analysis
+	#display traffic info about http
+		$tcpdump -i eth0 'tcp port 80'
+	#display all FTP session to 202.54.1.5
+		$tcpdump -i eth1 'dst 202.54.1.5 and port 20 or 21'
 #tmpwatch
 	/usr/sbin/tmpwatch -m 30d /opt/resin/log/	删除某目录下30天后的过期日志，日期默认是小时，这里指定为天
 #top
