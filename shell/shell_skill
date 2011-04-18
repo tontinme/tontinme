@@ -1,5 +1,37 @@
 #!/bin/sh
 
+#diff对比远程文件跟本地文件
+	$ssh user@host cat /path/to/remotefile | diff /path/to/localfile -
+	-指从stdin读入
+#man介绍
+	man命令的第二个参数是区域码，用来区分索引词的范围，比如printf,在C标准库里面的printf跟bash当中的printf是不同的\
+		前者的查询是man 3 printf，后者是man 1 printf。如果这个区域码省略，就会从1开始搜索，直到找到为止。
+	$man man 可以看到详细的解释
+
+#netstat查看系统中占用端口的进程
+	$netstat -tulnp
+		-t	显示TCP连接信息
+		-u	显示UDP连接信息
+		-l	显示监听状态的端口
+		-n	直接显示IP
+		-p	显示相应的进程PID以及名称
+	如果要查看关于sockets更详细的占用信息等，可以使用lsof工具
+#ssh创建端口转发通道
+	$ssh -N -L 2001:remotehost:80 user@somemachine
+	这个命令在本机打开了2001端口，对本机2001端口的请求通过somemachine作为跳板，转发到remotehost的80端口上
+#ssh挂载远程主机上的文件夹
+	$sshfs name@server:/path/to/folder /path/to/mount/point
+	该命令让你通过ssh加载远程主机上的文件系统为本地磁盘，前提是你需要安装fuse和sshfs这两个软件
+	卸载的话使用fusermount
+		$fusermount -u /path/to/mount/point
+#查看ASCII表
+	$man 7 ascii
+#重置终端
+	$reset
+	如果你不小心cat了某个二进制文件，很可能整个终端就傻掉了。这时敲入reset，就能恢复正常了。
+#更友好的显示当前挂载的文件系统
+	$mount | column -t
+	column用于把输出结果进行列表格式化操作
 #快速备份一个文件
 	$cp filename{,.bak}
 	这道命令把filename文件拷贝成filename.bak，filename{,.bak}这一段会被bash展开成filename filename.bak再\
@@ -10,6 +42,16 @@
 #切换会上一个目录
 	$cd -
 	-代表上一个目录的路径
+#实时查看某个目录下的最新改动过的文件
+	$watch -d -n 1 'df; ls -FlAt /path'
+	更改path为想要监控的目录，watch是实时监控工具，-d会高亮显示变化的区域，-n 1参数表示刷新间隔为1s\
+		df;ls -FlAt /path运行了两条命令，df是输出磁盘使用情况，ls -FlAt则列出path下所有文件
+	ls -FlAt解释：
+		-F	在文件后面加一个文件符号表示文件类型，共有*/=>@这几种类型
+			*表示可执行文件，/表示目录，=表示socket接口，>表示门，@表示符号链接，|表示管道
+		-l	以列表方式显示
+		-A	显示全部文件
+		-t	根据时间排序文件
 #替换上一条命令中的一个短语
 	$^foo^bar^
 	在需要重复运行调试一道常常的命令，需要测试某个参数的石油，用这个命令会比较实用
@@ -26,6 +68,12 @@
 	在已经敲完的命令后按<CTRL-x CTRL-e>，会打开一个你指定的编辑器（比如vim,通过环境变量$EDITOR指定）。\
 	这特别适合那些参数异常复杂的程序。保存退出后自动执行这个程序。
 	如果你特别喜欢别的编辑器，可以在~/.bashrc里面放上比如export EDITOR=nana的命令
+#运行前一个shell命令，同时用"bar"替换掉命令行中的每一个"foo"
+	$!!:gs/foo/bar
+#在午夜执行某个命令
+	$echo cmd | at midnight
+	说的是at这个组件，通常跟cron相提并论。at主要用于定时执行一次性任务，而cron执行周期性任务。
+	关于at的详细，查看手册man at
 #在以普通用户打开的vim中保存一个root用户文件
 	:w !sudo tee %
 	:w!{cmd} 让vim执行一个外部命令{cmd}，然后把当前缓冲区的内容从stdin传入
