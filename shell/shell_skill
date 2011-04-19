@@ -7,7 +7,8 @@
 	man命令的第二个参数是区域码，用来区分索引词的范围，比如printf,在C标准库里面的printf跟bash当中的printf是不同的\
 		前者的查询是man 3 printf，后者是man 1 printf。如果这个区域码省略，就会从1开始搜索，直到找到为止。
 	$man man 可以看到详细的解释
-
+	man 1 intor	一篇对从未接触过linux的用户的简明教程
+	man 2 syscall	内核系统请求的列表，按内核版本注释分类，系统编程必备
 #netstat查看系统中占用端口的进程
 	$netstat -tulnp
 		-t	显示TCP连接信息
@@ -36,6 +37,9 @@
 	$cp filename{,.bak}
 	这道命令把filename文件拷贝成filename.bak，filename{,.bak}这一段会被bash展开成filename filename.bak再\
 		传给cp。
+#利用中间管道嵌套使用ssh
+	$ssh -t host_A ssh host_B
+	理论上这个过程是可以无限嵌套的
 #免密码ssh登录主机
 	$ssh-copy-id remote-machine
 	这个命令把当前用户的公钥串写入到远程主机的~/.ssh/authorized_keys内。
