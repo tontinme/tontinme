@@ -141,3 +141,9 @@
 			Pyro是能够避免XML-RPC缺点的框架。Pyro(Python Remote Objects
 			Pyro能完成任何XML-RPC能够实现的功能，而不需将对象字典化。
 			Pyro仅能够与Python使用，XML-RPC也可以与其他语言一起使用。
+		#SSH
+			通过编写脚本来使用SSH协议，不仅能使用SSH协议的全部功能，还能够\
+					使用Python的全部功能
+		#Twisted
+			Twisted是一个事件驱动的Python网络框架，可以处理大量与网络相关的任务类型
+
