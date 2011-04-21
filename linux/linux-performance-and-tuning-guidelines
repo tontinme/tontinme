@@ -1,0 +1,19 @@
+#Linux performance metrics
+	#Processor metrics
+		#CPU utilization
+			It describes the overall utilization per processor
+			If the CPU utilization exceeds 80% for a sustained period of time,a processor\
+				bottleneck is likely
+		#User time	
+			Depicts the CPU percentage spent on user processes,including nice time.
+			High values in user time shows that the system performs actual work.
+		#System time
+			Depicts the CPU percentage spent on kernel operations including IRQ and softirq time
+			High and sustained system time values can point you to bottlenecks in the \
+				network and driver stack.
+		#Waiting
+			Total amount of CPU time spent waiting for an I/O operation to occur.
+			A system should not spend too much time waiting for I/O operations.
+		#Idle time
+			
+
