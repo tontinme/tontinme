@@ -15,5 +15,30 @@
 			Total amount of CPU time spent waiting for an I/O operation to occur.
 			A system should not spend too much time waiting for I/O operations.
 		#Idle time
-			
-
+			Depicts the CPU percentage the system was idle waiting for tasks.
+		#Nice time
+			Depicts the CPU percentage spent on re-nicing processes that change the execution \
+				order and priority of processes.
+		#Load average
+			The load average is the rolling average of tht sum of the following:
+			 - The number of porcesses in queue waiting to be processesed
+			 - The number of processes waiting for uninterruptable task to be completed.
+			If processes that request CPU time are blocked (which means that the CPU has no \
+				time to process them), the load average will increase. On the other hand,\
+				the load will decrease.				
+		#Runable processes
+			This value depicts the processes that are ready to be executed.
+			This value should not exceed 10 times the amount of physical processors for a sustained \
+				period of time.
+		#Blocked
+			Processes that cannot execute while they are waiting for an I/O operation to finish.
+			Blocked processes can point you toward an I/O bottleneck.
+		#Context switch
+			Amount of switches between threads that occur on the system.
+			High numbers of context switches in connection with a large number of interrupts can \
+				signal driver or application issues.
+		#Interrupts
+			The interrupts value contains hard interrupts(more adverse effect) and soft interrupts.
+			High interrupt values are an indication of a software bottleneck, either in the kernel \
+				or a driver.
+			Remember that the interrupt value includes the interrupts caused by the CPU clock.
