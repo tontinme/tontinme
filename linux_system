@@ -3,6 +3,7 @@
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
+------linux下用文件的inode删除文件
 ------查看是否为64位的cpu
 ------查看系统的发行版本
 ------查看系统的内核版本
@@ -106,6 +107,12 @@
 		请移步：http://blog.csdn.net/AllanZeng/archive/2009/06/12/4264111.aspx
 	#有关effective ID和Real ID的区别
 		请移步：http://whatilearned2day.wordpress.com/2007/01/09/uid-gid-real-and-effective-difference/	
+#linux下用文件的inode删除文件
+	如果不小心创建了含有特殊字符的文件和目录，比如带有?*^的文件名，就很难删除
+	#找出文件和目录的inode
+		stat & ls -il
+	#通过inode删除该文件
+		find . -inum [inode num] -exec rm -i {} \;
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
