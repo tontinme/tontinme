@@ -1,5 +1,6 @@
 ﻿#!/bin/sh
 
+------/etc/fstab格式解释
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
@@ -9,6 +10,28 @@
 ------查看系统的内核版本
 ------刻录设备检测
 
+#/etc/fstab格式解释
+	Example:
+	  LABEL=/		/        	ext3    defaults     			1 1
+	  /dev/scd0       	/media/floppy0  auto    rw,user,noauto,exec,utf8 	0 0
+	1./dev/device就是需要挂载的设备
+	2.mountpoint就是挂载点
+	3.type指文件系统类型
+	4.rules指挂载时的规则。
+	  auto		开机时自动挂载
+	  default	按照大多数永久文件系统的缺省值设置挂载定义
+	  noauto	开机时不自动挂载
+	  nouser	只有超级用户可以挂载
+	  ro		按只读权限挂载
+	  rw		按可读可写权限挂载
+	  user		任何用户都可以挂载
+	  noexec	不允许可执行文件执行(注意不要把根分区挂为noexec，那样会导致系统无法使用)
+	  nodev		不允许挂载设备文件
+	  nosuid,nosgid	不允许有suid和sgid属性
+	 注意光驱只有在装有介质时才可以进行挂载，因此它是noauto
+	 5.0是指dump(系统备份工具)。这一项为0，就表示从不备份。如果上次使用dump备份，将显示备份至今的天数
+	 6.order指fsck(启动时fsck检查的顺序)。为0就表示不检查，(/)分区永远都是1，其他的分区只能从2开始，\
+		 当数字相同时就同时检查（但不能有两个1）
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
