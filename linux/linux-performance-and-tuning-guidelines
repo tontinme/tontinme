@@ -95,4 +95,28 @@
 		#Kilobytes per second read/write
 			Reads and writes from/to the block device in kilobytes represent the amount of actual data \
 				transferred to and from the block device.
-			
+#Monitoring and benchmark tools			
+	#Overview of tool functions
+		top			process activity
+		vmstat			system acitve, hardware and system information
+		uptime,w		average system load
+		ps,pstree		displays the processes
+		free			memory usage
+		iostat			average CPU load, disk activity
+		sar			collect and report system activity
+		mpstat			multiprocessor usage
+		numstat			NUMA-related statistics
+		pmap			process memory usage
+		netstat			network statistics
+		iptraf			real-time network statistics
+		tcpdump,ethereal	detailed network traffic analysis
+		nmon			collect and report system activity
+		strace			system calls
+		proc file system	various kernel statistics
+		KDE system guard	real-time systems reporting and graphing
+		gnome system monitor	real-time systems reporting and graphing
+
+		lmbench			microbenchmark for operating system functions
+		iozone			file system benchmark
+		netperf 		network performacd benchmark
+		netperf			network perfor
