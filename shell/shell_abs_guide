@@ -1,3 +1,7 @@
+calalogue
+------chapter 3 特殊字符
+------chapter 4 变量和参数的介绍
+
 #chapter 3 特殊字符
   ;	命令分隔符，可以用来在一行中来写多个命令
   ;;	终止"case"选项
@@ -44,3 +48,79 @@
   {} \;	路径名.一般都在find命令中使用，这不是一个shell内建命令
 	注意：
 	  ";"用来结束find命令序列的-exec选项
+  []	test.
+  	test的表达式将在[]中
+	注意：
+	  [是shell内建test命令的一部分，并不是/use/bin/test中的扩展命令的一个连接。
+  [[]]	test.
+  	test的表达式放在[[]]中。
+  []	数组元素
+  	  array[1]=slot_1
+	  echo ${array[1]}
+  []	字符范围
+  	在正则表达式中使用，作为字符匹配的一个范围
+  (())	数学计算的扩展
+  >&>>&>><
+  	重定向
+	command&>2	重定向command的stdout到stderr
+	scriptname&>filename	重定向stdout和stderr到文件中
+  << 	重定向，用在"here document"
+  <<<	重定向，用在"here string"
+  <,>	ASCII比较
+  \<,\>	正则表达式中的单词边界
+  	  $grep '\<the\>' textfile
+  |	管道
+  >|	强制重定向，这将强制覆盖一个现存文件
+  ||	或-逻辑操作
+  &	后台运行命令
+  &&	与-逻辑操作
+  -	选项，前缀。在所有的命令内如果要想使用选项参数的话，前边都要加上"-"
+  -	用于重定向stdin或stdout
+  	  grep linux file1 | diff file2 -
+  -	之前的工作目录
+	  $cd -
+	注意：
+	  一定要和之前讨论的重定向功能分开
+  -	算术减号
+  =	算术等号
+  +	算术加号
+  +	选项，对于特定的命令来说使用"+"来打开特定的选项，用"-"来关闭特定的选项
+  %	算术取模运算，也用在正则表达式中
+  ~	home目录。相当于$HOME
+  	  ~cinder是cinder的home目录
+	  $echo ~cinder
+	  /home/cinder
+	  ~/就是当前用户的home目录
+  ~+	当前工作目录，相当于$PWD变量
+  ~-	之前的工作目录，相当于$OLDPWD内部变量
+  =~	用于正则表达式，这个操作将在正则表达式匹配部分讲解，只有version3才支持
+  ^	行首
+  控制字符
+  	Ctl-B	光标后退，这应该依赖于bash输入的风格，默认是emacs风格的
+	Ctl-C	Break,终止前台工作
+	Ctl-D	从当前shell登出(和exit很像)
+		"EOF"(文件结束符)。这也能从stdin中终止输入
+		在console或者在xterm window中输入的时候，Ctl-D将删除光标下字符
+		当没有字符时，Ctrl-D将推出当前会话。在xterm window也有关闭窗口的效果
+	Ctl-G	beep。在一些老的终端，将响铃
+	Ctl-H	backspace,删除光标前边的字符
+	Ctl-I	就是tab健
+	Ctl-J	新行
+	Ctl-K	垂直tab
+		作用就是删除光标到行尾的字符
+	Ctl-L	clear,清屏
+	Ctl-M	回车
+	Ctl-Q	继续（等价于XON字符），这个继续的标准输入在一个终端里
+	Ctl-S	挂起，这个被挂起的stdin在一个终端里，用Ctl-Q恢复
+	Ctl-U	删除光标到行首的所有字符,在某些设置下,删除全行
+	Ctl-V	当输入字符时,Ctl-V允许插入控制字符
+	Ctl-W	删除当前光标到前边的最近一个空格之间的字符
+	Ctl-Z	终止前台工作
+  注意事项:
+  	[1]	shell做大括号的命令扩展,但是命令本身需要对扩展的结果作处理
+	[2]	例外:在pipe中的一个大括号中的代码可能运行在一个子shell中
+		$ls | {read first line; read secondline;}
+		#错误,在大括号中的代码段将运行在子shell中,所以ls的输出将不能传递到代码块中.
+	[3]	换行符也被认为是空白,因此一个空行也会被认为是空白
+
+#chapter 4 变量和参数的介绍
