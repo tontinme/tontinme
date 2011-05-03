@@ -1,4 +1,26 @@
 #!/bin/sh
+
+------编写高质量的bash脚本
+------echo相关参数
+------export
+------for循环
+------if then else
+------脚本中实现pause效果
+------控制通配符（Globbing）
+------内置命令启用关闭
+------判断读取字符串值
+------PS1支持的变量说明
+------取出两个目录中不同的文件
+------取得一个正在运行进程的PID
+------取得昨天的日期
+------shell的常用快捷键
+------输入时屏幕不显示（比较输入密码）
+------数组操作
+------统计重复行
+------字符串操作（长度，读取，替换）
+------$@等特定shell变量的含义
+------()和{}区别
+
 #=============================================
 #编写高质量的bash脚本
 	1.一定要用简短的标题注释脚本
@@ -119,25 +141,26 @@
 	$pgrep servername
 #取得昨天的日期
 	yesterday=`date -d "1 day ago" +%Y%m%d`	#相应的，两天前改为 2 day ago
-#shell的命令行输入
+#shell的常用快捷键
 	CTRL + a —— 相当于<HOME>键
 	CTRL + e —— 相当于<END>键
 	CTRL + x —— 连续按两下的话，首尾交替
 	CTRL + m —— 输入完命令后，这个动作相当于按下<ENTER>
 	CTRL + j —— 输入完命令后，这个动作相当于按下<ENTER>
 	CTRL + o —— 输入完命令后，这个动作相当于按下<ENTER>，不同的是，你在按下CTRL+o时它会记住上一次你CTRL+o的命令
-	CTRL + c —— 丢弃上一行所有的内容，重新开始下一行
-	CTRL + u —— 删除光标前的所有字母
-	CTRL + k —— 删除光标后的所有字母
+	CTRL + c —— 终止命令
+	CTRL + u —— 剪切光标前的所有字母
+	CTRL + k —— 剪切光标后的所有字母
 	CTRL + w —— 删除光标所指的一个单词（从光标到单词的开头）
 	CTRL + y —— 粘贴，剪切板的内容是CTRL+u
-	CTRL + d —— 相当于<Delete>
+	CTRL + d —— 退出shell
 	CTRL + h —— 相当于<Backspace>
 	CTRL + b —— 相当于<left>
 	CTRL + f —— 相当于<Right>
 	CTRL + l —— 相当于执行clear清屏命令
-	CTRL + r —— 向前搜索键入的命令
+	CTRL + r —— 在历史命令中查找
 	CTRL + p —— 上翻前面键入的命令
+	CTRL + z —— 转入后台运行
 #输入时屏幕不显示（比较输入密码）
 	stty -echo	#关闭屏幕的echo
 	stty echo	#恢复屏幕原echo
@@ -162,19 +185,25 @@
 #统计重复行
 	$sort file | uniq -c
 	${!varprefix@}	匹配之前所有以varprefix开头进行声明的变量
-#字符串操作（长度，读取，替换）
+#字符串操作
+	字符串判断
+	  str1=str2			当两个串有相同内容、长度时为真
+	  str1!=str2			当串str1和str2不等时为真
+	  -n str1				当串的长度大于0时为真（串非空）
+	  -z str1				当串的长度为0时为真（空串）
+	  str1				当串str1非空时为真
 	表达式				含义
-	${#string}			$string的长度
-	${string:position}		在$string中，从位置$position开始提取子串
-	${string:position:length}	在$string中，从位置$position开始提取子串
-	${string#substring}		从变量$string的开头，删除最短匹配$substring的子串
-	${string##substring}		从变量$string的开头，删除最长匹配$substring的子串
-	${string%substring}		从变量$string的结尾，删除最短匹配$substring的子串
-	${string%%substring}		从变量$string的结尾，删除最长匹配$substring的子串
-	${string/substring/replacement}	使用$replacement，来代替第一个匹配的$substring
-	${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
-	${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
-	${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
+	  ${#string}			$string的长度
+	  ${string:position}		在$string中，从位置$position开始提取子串
+	  ${string:position:length}	在$string中，从位置$position开始提取子串
+	  ${string#substring}		从变量$string的开头，删除最短匹配$substring的子串
+	  ${string##substring}		从变量$string的开头，删除最长匹配$substring的子串
+	  ${string%substring}		从变量$string的结尾，删除最短匹配$substring的子串
+	  ${string%%substring}		从变量$string的结尾，删除最长匹配$substring的子串
+	  ${string/substring/replacement}	使用$replacement，来代替第一个匹配的$substring
+	  ${string//substring/replacement}	使用$replacement，来代替所有匹配的$substring
+	  ${string/#substring/replacement}	如果$string的前缀匹配$substring，那么就用$replacement来代替匹配到的$substring
+	  ${string/%substring/replacement}	如果$string的后缀匹配$substring，那么就用$replacement来代替匹配到的$substring
 #$@等特定shell变量的含义
 	$#	传递到脚本的参数个数
 	$*	以一个单字符串显示所有向脚本传递的参数。与位置变量不同，此选项参数可超过9个

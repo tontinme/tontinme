@@ -1,6 +1,7 @@
 ﻿#!/bin/sh
 
-------/etc/fstab格式解释
+------/etc/fstab格式解释（附ulimit使用）
+------/etc/security/limits.conf参数解释
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
@@ -32,6 +33,58 @@
 	 5.0是指dump(系统备份工具)。这一项为0，就表示从不备份。如果上次使用dump备份，将显示备份至今的天数
 	 6.order指fsck(启动时fsck检查的顺序)。为0就表示不检查，(/)分区永远都是1，其他的分区只能从2开始，\
 		 当数字相同时就同时检查（但不能有两个1）
+#/etc/security/limits.conf参数解释（附ulimit使用）
+	<domain>      <type>  <item>         <value>
+	1.domain
+	  <domain> can be:
+        	- an user name
+        	- a group name, with @group syntax
+        	- the wildcard *, for default entry
+        	- the wildcard %, can be also used with %group syntax,for maxlogin limit
+	2.type
+	  <type> can have the two values:
+        	- "soft" for enforcing the soft limits
+		  #指当前系统的设置值
+        	- "hard" for enforcing hard limits
+		  #表明系统中所能设定的最大值，soft的限制不能比hard限制高
+		#用-就表示同时设置了soft和hard的值
+	3.item
+	  <item> can be one of the following:
+	        - core - limits the core file size (KB)
+	        - data - max data size (KB)
+	        - fsize - maximum filesize (KB)
+	        - memlock - max locked-in-memory address space (KB)
+	        - nofile - max number of open files
+	        - rss - max resident set size (KB)
+	        - stack - max stack size (KB)
+	        - cpu - max CPU time (MIN)
+	        - nproc - max number of processes
+	        - as - address space limit
+	        - maxlogins - max number of logins for this user
+	        - maxsyslogins - max number of logins on the system
+	        - priority - the priority to run user process with
+	        - locks - max number of file locks the user can hold
+	        - sigpending - max number of pending signals
+	        - msgqueue - max memory used by POSIX message queues (bytes)
+	        - nice - max nice priority allowed to raise to
+	        - rtprio - max realtime priority
+	#要使limits.conf文件配置生效，必须要确保pam_limits.so文件被加入到启动文件中。
+	  echo "session required /lib/security/pam_limits.so" >> /etc/pam.d/login
+	  #64位系统可能是下面一行
+	  echo "session required /lib64/security/pam_limits.so" >> /etc/pam.d/login
+	  #暂时地，适用于通过ulimit命令登录shell会话期间
+	  #永久的，通过将一个相应的ulimit语句添加到由登录shell读取的文件之一（例如:~/.profile）
+	#ulimit使用参数说明
+	  -a	列出所有当前资源极限
+	  #其他参数的说明参见"$ulimit -a"给出的注释
+	  #example
+	  $ulimit -u 10000	#设置各linux用户的最大进程数
+	  $ulimit -n 10000	#设置每个进程可以打开的文件数
+	  $ulimit -d unlimited	#数据段长度
+	  $ulimit -m unlimited	#最大内存大小
+	  $ulimit -s unlimited	#堆栈大小
+	  $ulimit -t unlimited	#CPU时间
+	  $ulimit -v unlimited	#虚拟内存
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\

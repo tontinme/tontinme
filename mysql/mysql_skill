@@ -1,6 +1,6 @@
-#!/bin/bash
-
+------mysql bin-log 清除(purge)
 ------mysql重置密码
+
 #mysql重置密码
 	$/usr/local/mysql/share/mysql/mysql.server stop
 	$/usr/local/mysql/bin/mysqld_safe --user=mysql --skip-grant-tables --skip-networking &
@@ -10,3 +10,20 @@
 	mysql> quit
 	$/usr/local/mysql/share/mysql/mysql.server restart
 	$/usr/local/mysql/bin/mysql -u root -p
+#mysql bin-log 清除(purge)
+	>purge {master | binary} logs to 'log_name'
+	>purge {master | binary} logs before 'date'
+	#example
+	  >purge master logs to 'mysql-bin.002';
+	  >purge master logs before '2010-12-31 24:00:00';
+	  #清楚3天前的binlog
+	  >purge master logs before date_sub(now(),interval 3 day);
+	#如果您有一个活动的从服务器，该服务器当前正在读取您正在试图删除的日志之一，则本语句不会起作用，而是会\
+		失败，并伴随一个错误。不过，如果从服务器是休止的，并且您碰巧清理了其想要读取的日志之一，则从服务器\
+		启动后不能复制。当从服务器正在复制时，本语句可以安全运行，您不需要停止它们。
+	#清理日志的步骤：
+	1.在每个从服务器上，使用show slave status来检查它正在读取哪个日志。
+	2.使用show master logs获得主服务器上的一系列日志
+	3.在所有从服务器中判定最早的日志，这个是目标日志。如果所有的从属服务器是更新的，这是清单上的最后一个日志
+	4.制作您想要删除的所有日志的备份
+	5.清理所有的日志，但是不包括目标日志
