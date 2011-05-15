@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#set textwidth=111
+#set nowrap
 
 #chapter 3
 	#python的转义序列
@@ -169,3 +171,21 @@
 		追踪，删除，移动，重命名或是复制某一类型的文件
 		  fnmatch	#返回True或False
 		  glob		#返回匹配模式的路径列表
+	#包装rsync
+		python可以帮助控制监控rsync方法
+	#元数据：关于数据的数据
+		描述文件是如何组织和使用的数据，对于应用程序或是恢复一个备份来说都是十分关键的。python可以在这\
+			方面有所作为。
+	#存档，压缩，映像和恢复
+		使用tarfile模块创建tar归档
+		bzip2拥有比tar更高的压缩比
+		使用tarfile模块检查tar文件的内容
+		  tarfile可以查看，解压tar文档中的内容，并且对归档中的文件进行随机MD5校验，并将结果与备份之前生\
+			成的MD5校验和进行比较
+#chapter 7 SNMP
+	SNMP可以用来监测CPU负载，磁盘使用情况和内存空闲状态
+	#Net-SNMP可以使用两类不同的API。一是使用subprocess模块来封装Net-SNMP命令行工具；二是使用新的Python绑定。
+	###暂时略过该章###
+#chapter 8 OS Soup
+	使用python采集系统信息
+	使用python管理多台系统
