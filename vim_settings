@@ -1,4 +1,12 @@
 ﻿#!/bin/bash
+#set nowrap
+#set textwidth=111
+
+------vim、gvim在windows下中文乱码的终极解决方案
+------vim的标签功能
+------vim多行操作(缩进、注释)
+------退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
+
 #vim、gvim在windows下中文乱码的终极解决方案
 
 	set encoding=utf-8
@@ -33,6 +41,18 @@
 				{cmd}不能打开标签页、关闭标签页或重排标签页
 	:{count}gt		转到第{count}个标签页。首个标签页编号为1
 	:{count}gT		转到前面{count}个标签页，首个标签页则回绕到最后一个
+#vim多行操作(缩进、注释)
+	#多行缩进
+	1.按v进入visual状态，选择多行，用>或<缩进或缩出
+	2.通常根据语言特征使用自动排版功能：在当前状态下对当前行用==，或对多行使用n==表示自动缩进从当前行起的向下n行，相当于IDE里面的code formart。使用gg=G可以对整篇代码进行排版。
+	#多行注释
+	1.ctrl+v进入列编辑模式，上下移动光标，选择多行，然后按大写的I，再插入注释符，比如'#'，再按Esc，就会全部注释了。
+	2.使用sed进行多行操作
+	  :line1,line2s/^/#/
+	#取消多行注释
+	1.先按v，进入visual模式，选中多列，然后按ctrl+v进入列选择模式，上下选择多行。然后按d删除选中部分。
+	2.使用sed对多行进行操作。
+	  :line1,line2s/#//
 #退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
 	在你的/etc/vim/gvimrc或/etc/vim/gvimrc.local中加入以下两行（在vim的配置文件中加入即可）
 	au VimLeave * exe 'if exists("g:cmd") && g:cmd == "gvims" | if strlen(v:this_session) | exe "wviminfo! " . v:this_session . ".viminfo" | else | exe "wviminfo! " . "~/.vim/session/" . g:myfilename . ".session.viminfo" | endif | endif '
@@ -48,3 +68,4 @@
 	fi
 	
 	当用gvim编辑完后，退出时，文件是以当前子窗口的名字保存窗口信息的，所以下次打开时，要用到那个窗口名字作为gvim的参数
+
