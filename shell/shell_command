@@ -97,6 +97,7 @@
 		else
 			mkdir -p $tmp
 		fi
+	#if判断条件
 #脚本中实现pause效果
 	read -n1 -p "Press any key to continue"
 #控制通配符（Globbing）
