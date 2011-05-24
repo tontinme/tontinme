@@ -38,7 +38,9 @@
 	ssh self
 	ssh github.com
 #端口转发
-	#略
+	ssh -D 8888 username@proxyhost.com -N
+	-D	建立一个动态的SOCKS4/5的代理通道，紧接着的是本地监听的端口号。
+	-N	不执行远程的命令。这个参数在这里是可选的。
 #通过authorized_keys指定登录后要执行的命令
 	#该命令定义在authorized_keys中，ssh连上后，只能执行该命令，并且执行完后立即退出。比如：
 		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(其中ssh-dss AAAA...就是原有的public key了)	
