@@ -1,4 +1,4 @@
-abs_guide					p56
+abs_guide					p67
 python_unix_linux_cn				p250
 python_study_notes				p11
 linux_performance_and_tunning_guidelines	p55
