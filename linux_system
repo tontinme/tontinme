@@ -2,6 +2,7 @@
 
 ------/etc/fstab格式解释（附ulimit使用）
 ------/etc/security/limits.conf参数解释
+#------/etc/sysconfig/iptables解释
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
@@ -85,6 +86,8 @@
 	  $ulimit -s unlimited	#堆栈大小
 	  $ulimit -t unlimited	#CPU时间
 	  $ulimit -v unlimited	#虚拟内存
+#/etc/sysconfig/iptables解释
+	
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
