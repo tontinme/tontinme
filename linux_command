@@ -366,6 +366,9 @@
 		按f
 	#issues kill command
 		按k
+	#top中PR和NI(priority和nice)的区别
+		PR表示目前系统分配给该process的优先权，而若是特别要调整该process的优先权的话，通过提高或降低NI的数值可让PR变化。
+		PR由系统内定自行调整，要把所有process的NI值都考虑进来，调度程序才能决定一个process的PR。
 #uptime
 	#tell how long the system has been running
 	the uptime command can be used to see how long the server has been running .\
