@@ -6,6 +6,7 @@
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
+------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
 ------查看是否为64位的cpu
 ------查看系统的发行版本
@@ -186,6 +187,13 @@
 		请移步：http://blog.csdn.net/AllanZeng/archive/2009/06/12/4264111.aspx
 	#有关effective ID和Real ID的区别
 		请移步：http://whatilearned2day.wordpress.com/2007/01/09/uid-gid-real-and-effective-difference/	
+#linux下rws文件属性解释
+	有些时候可能需要将文件的权限设置成rws属性。
+		比如普通用户执行/usr/bin/crontab时，需要将属性设置为rwsr-sr-x才可以。
+	有这个's'属性的档案可以让一般的使用者去share,动一些root才可以动的档案。例如有些系统的passwd指令就有's'\
+		属性.本来/etc/passwd是只有root才可以修改，而设置为rws属性后，普通用户在执行时会将执行的使用者\
+		本身setuid设置为0，也就是成为root等效使用者，这样就有能力去修改/etc/passwd了。当然执行完passwd\
+		后，使用者uid又变回原先的值了。
 #linux下用文件的inode删除文件
 	如果不小心创建了含有特殊字符的文件和目录，比如带有?*^的文件名，就很难删除
 	#找出文件和目录的inode
