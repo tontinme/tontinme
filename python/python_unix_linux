@@ -2,6 +2,10 @@
 #set textwidth=111
 #set nowrap
 
+#chapter 1
+	#在python中执行命令
+		import subprocess
+		subprocess.call(["some_command", "some_argument", "another_argument_or_path"])
 #chapter 3
 	#python的转义序列
 		\	newline Ignored忽略换行符
