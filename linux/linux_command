@@ -1,5 +1,6 @@
 #!/bin/bash
 ---Index
+------at
 ------alias
 ------chroot
 ------cp
@@ -30,6 +31,21 @@
 ------wget
 ------whoami,id,groups,newgrp
 ------zip,tar.gz,tar.bz2
+#at
+	at命令允许用户向cron守护提交作业，使其在稍后的时间运行。
+	一旦一个作业被提交，at命令将会保留所有当前的环境变量。不像crontab，只提供缺省的环境。
+	该作业的所有输出都将以电子邮件形式发送给用户，除非你对其输出进行了重定向。
+	和crontab一样，根用户可以通过/etc目录下的at.allow和at.deny文件来控制哪些用户可以使用at命令。
+	at [-f script][-m -l -r][time][date]
+		-f script	所要提交的命令或脚本
+		-l 		列出当前所有等待运行的作业。$at q 具有相同的作用
+		-r		清除作业。为了清除某个作业，还要提供相应的作业标识ID；有些linux变体只接受$at rm作为
+					清除命令
+		-m		作业完成后给用户发邮件
+	at的时间格式非常灵活：可以是H、HH、HHMM、HH:MM或者H:M，其中H和M分别是小时和分钟。还可以使用am或pm
+	使用at提交命令
+		可以通过命令行方式，也可以使用at命令提示符($at 21:00)
+		eg. $at 3.00pm tomorrow -f example.sh
 #alias
 	#工作中可能会经常删除一些core文件，可以这样定义到profile文件
 		$alias rmcore="find . iname core -exec rm {} \;"	#iname表示忽略大小写
@@ -51,6 +67,15 @@
 			  		针对全局的，修改/etc/bashrc
 			2.使用如下命令	$\cp -f file dir
 #crontab
+	#注意：
+	  最好建立一个crontab的副本进行编辑，然后执行
+	  $crontab ${NAME_CRON}
+	  导入配置防止对crontab的误删操作
+	系统管理员通过cron.deny和cron.allow这两个文件来禁止或允许用户拥有自己的crontab文件。
+	-u	用户名
+	-e 	编辑crontab文件
+	-l	列出crontab文件的内容
+	-r	删除crontab文件
 	#field		allowed values
 	minute		0-59		#每分钟用*或*/1表示
 	hour		0-23		#0表示0点
@@ -99,8 +124,13 @@
 		0 4 1 jan * /home/tontinme/test.sh
 	#crontab无法运行分析
 		1.crontab是nologin shell，运行时的一些环境变量与直接登录后在命令行下运行不同所致。
+		  crontab默认调用PATH是/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin或者更少。
+		  解决办法：
+			所有命令和工具使用绝对路径，或者在脚本前面执行一下profile文件：source ~/.bash_profile
 		2.添加在crontab中的命令含有%，%在crontab上有特殊意义，不同的shell对crontab的实现有差异，因此\
 			为了安全起见，应该在命令中对%进行转义，或者尽量不要在crontab中使用%。
+		3.crontab添加任务时最好将输出(标准输出和错误输出)重定向(2>&1)，没有输出可以重定向到/dev/null,否则crontab将输出以mail的\
+			方式发送给你。并且有些程序没有重定向输出会导致执行失败。
 #find
 	#忽略大小写的查找
 		$find -iname 'xxx'
