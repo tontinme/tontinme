@@ -21,6 +21,7 @@
 ------ss
 ------strace
 ------su & sudo
+------tail
 ------tcpdump
 ------tmpwatch
 ------top
@@ -367,6 +368,10 @@
 			兼职管理员(jalala, sonar和huge)可以在任何主机上运行 BROWSE、PROCESSES、USERS 中的命令
 			允许sys 组的成员运行 networking, software, service 等管理命令
 			WEBMASTERS(will, wendy,和 wim)中的用户都能够在主机www上以www的身份执行任何命令，或者使用 su www 命令
+#tail
+	-f	可以及时看到文件的变化。如果再加上一个grep命令，可能看到的就不那么及时了。因为grep在buffer写不\
+			满时就不输出，可以通过选项--line-buffered来搞定。
+		eg. $tail -f file.txt | grep something --line-buffered
 #tcpdump
 	#detailed network traffic analysis
 	#display traffic info about http
