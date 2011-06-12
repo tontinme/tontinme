@@ -7,6 +7,7 @@
 ------crontab
 ------find
 ------free
+------grep
 ------iostat
 ------iptraf
 ------ls
@@ -183,6 +184,10 @@
 #free
 	#display the total amount of free and used physical and swap memory in the system,\
 		as well as the buffers used by the kernel
+#grep
+	#find+xargs+grep	并行grep
+	xargs使用-P参数，可以启动多个grep来并发控制
+	  eg. find ./ -name "*.log" -print0 | xargs -0 -n1 -P14 grep -H "baidu" > /dev/null
 #iostat
 	$report cpu statistics and I/O statistics for devices,partitions and NFS
 #iptraf
