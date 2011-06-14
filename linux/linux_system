@@ -6,6 +6,7 @@
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
+------linux下的硬链接和软连接
 ------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
 ------查看是否为64位的cpu
@@ -187,6 +188,27 @@
 		请移步：http://blog.csdn.net/AllanZeng/archive/2009/06/12/4264111.aspx
 	#有关effective ID和Real ID的区别
 		请移步：http://whatilearned2day.wordpress.com/2007/01/09/uid-gid-real-and-effective-difference/	
+#linux下的硬链接和软连接
+	#inode	
+		inode是linux中记录文件信息的一种数据结构，每个文件都有一个inode，其中存放了这个文件的各种信息,\
+			以及文件的存储位置
+		以硬盘为例，硬盘进行分区之后，一部分是inode区，一部分是block区。后者存放数据，前者存放block区中\
+			每个文件的inode	。每个文件都有自己的inode
+		$ls -li	查看文件的inode编号（第一项是inode编号，第二项是该文件拥有的硬链接数）
+	#硬链接
+		ln source hardlink_of_source 
+		创建硬链接后，source和hardlink_of_source具有相同的inode编号及文件属性，并且硬链接数相同.
+		修改source_of_source的内容，source的内容会跟着改变
+		因此我们可以这样认为，为文件a增加一个硬链接，只是让a的inode结构中的硬链接数目增加1，并没有为硬\
+			链接文件产生一个inode。无论删除source还是source_of_hardlink，只会使硬链接数减1，减到0时,\
+			文件才会被删除
+		硬链接不能跨设备建立
+	#软链接(符号链接)
+		ln -s source softlink_of_source
+		创建软链接后inode编号不同，文件属性不同，硬链接数均为1，而且softlink_of_source右边显示->，指向source
+		修改其中之一的内容，另一个的内容会跟着改变，这点和硬链接一样。
+		但是如果把source删了，softlink_of_source会访问出错
+		软链接可以跨设备建立
 #linux下rws文件属性解释
 	有些时候可能需要将文件的权限设置成rws属性。
 		比如普通用户执行/usr/bin/crontab时，需要将属性设置为rwsr-sr-x才可以。
