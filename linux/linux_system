@@ -3,6 +3,7 @@
 ------/etc/fstab格式解释（附ulimit使用）
 ------/etc/security/limits.conf参数解释
 #------/etc/sysconfig/iptables解释
+------RHEL & CentOS YUM 免费源
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux系统调用汇总
@@ -90,6 +91,37 @@
 	  $ulimit -v unlimited	#虚拟内存
 #/etc/sysconfig/iptables解释
 	
+#RHEL & CentOS YUM 免费源
+	#网易163源
+		以超级用户登路
+		先关闭fastestmirror
+		$vi /etc/yum/pluginconf.d/fastestmirror.conf     
+		and set “enable=0″
+		$cd /etc/yum.repos.d/
+		wget http://mirrors.163.com/.help/CentOS-Base-163.repo
+		yum makecache
+		yum update
+		now enjoy it！
+	#http://apt.sw.be 
+		perl模块包非常全
+		安装方法(64bit):rpm -Uhv http://apt.sw.be/redhat/el5/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
+	#http://download.fedora.redhat.com
+		开源软件非常丰富，比如puppet,nagios等
+		安装方法(64bit):rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+	#Atomic Yum Repository(http://www.atomicorp.com/)
+		更新速度较快
+		安装方法:首先下载http://www.atomicorp.com/installers/atomic文件，然后执行 sh ./atomic就会自动将repo文件安装好
+	#utterramblings Repository(http://www.jasonlitka.com/)
+		更新速度较快
+		安装方法:    
+		vi /etc/yum.repos.d/utterramblings.repo，加入如下内容
+		[utterramblings]
+		name=Jasons Utter Ramblings Repo
+		baseurl=http://www.jasonlitka.com/media/EL$releasever/$basearch/
+	        enabled=1
+		gpgcheck=1
+	        gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+		保存退出即可
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
