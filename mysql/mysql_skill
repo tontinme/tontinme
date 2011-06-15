@@ -11,6 +11,15 @@
 	mysql> quit
 	$/usr/local/mysql/share/mysql/mysql.server restart
 	$/usr/local/mysql/bin/mysql -u root -p
+	#更优雅一点儿
+	把用到的语句保存到一个文本文件中(比如/path/to/init/file)
+	update user set password=PASSWORD("newpassword") where user='root';
+	flush privileges;
+	接着使用init-file参数启动mysql
+	$/usr/local/mysql/share/mysql/mysql.server stop
+	$/usr/local/mysql/bin/mysqld_safe --init-file=/path/to/init/file &
+	此时，密码就已经被重置了。最后别忘了删除文件内容，以免密码泄漏
+	官方关于mysql重置密码的介绍：http://dev.mysql.com/doc/refman/5.5/en/resetting-permissions.html
 #mysql bin-log 清除(purge)
 	>purge {master | binary} logs to 'log_name'
 	>purge {master | binary} logs before 'date'
