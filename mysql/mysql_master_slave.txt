@@ -1,0 +1,130 @@
+#master<->slave切换场景
+
+简单记录一下主备切换发生的场景，以及我们在这些场景下，应该怎么操作？场景分为已计划和未计划：
+已计划：升级硬件
+未计划：磁盘损坏、master机房掉电
+
+#已计划：
+
+1、利用read_only(flush tables with read lock也行，区别在(《How to stop master and slave in turn》篇中讲过)让应用停止写入
+
+mysql> SET global read_only=1;
+Query OK, 0 rows affected (0.00 sec)
+
+2、选择其中一台slave作为master，确认slave已赶上master
+
+master:
+
+mysql> SHOW master STATUS;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000057 |      456 |              |                  |
++------------------+----------+--------------+------------------+
+
+slave:
+
+mysql> SHOW slave STATUS \G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting FOR master TO send event
+                  Master_Host: 192.168.201.10
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000057
+          Read_Master_Log_Pos: 456
+               Relay_Log_File: dg2-relay-bin.000035
+                Relay_Log_Pos: 251
+        Relay_Master_Log_File: mysql-bin.000057
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+                      .......
+                   Last_Errno: 0
+                   Last_Error: 
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 456
+
+3、在新的master上执行stop slave
+
+mysql> stop slave;
+Query OK, 0 rows affected (0.00 sec)
+
+4、新的master上执行change master to master_host=”及reset slave，断开与老的master之间连接信息
+
+mysql> CHANGE master TO master_host='';
+Query OK, 0 rows affected (0.12 sec)
+mysql> reset slave;
+Query OK, 0 rows affected (0.16 sec)
+
+5、重启新master的实例，查看新master的binlog信息
+
+[root@dg2 var]# mysqladmin shutdown
+[root@dg2 bin]# ./mysqld_safe --user=mysql &
+mysql> SHOW master STATUS;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000001 |      106 |              |                  |
++------------------+----------+--------------+------------------+
+
+6、修改老的master的my.cnf文件，关闭log_bin，重启mysqld
+7、把老的master及slave指向新的master
+
+mysql> CHANGE MASTER TO
+    ->   MASTER_HOST='192.168.201.12',
+    ->   MASTER_USER='repl',
+    ->   MASTER_PASSWORD='repl',
+    ->   MASTER_PORT=3306,
+    ->   MASTER_LOG_FILE='mysql-bin.000001',
+    ->   MASTER_LOG_POS=106;
+Query OK, 0 rows affected (0.27 sec)
+ 
+mysql> start slave;
+Query OK, 0 rows affected (0.00 sec)
+ 
+mysql> SHOW slave STATUS \G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting FOR master TO send event
+                  Master_Host: 192.168.201.12
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000001
+          Read_Master_Log_Pos: 106
+               Relay_Log_File: dg1-relay-bin.000009
+                Relay_Log_Pos: 251
+        Relay_Master_Log_File: mysql-bin.000001
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+                     .......
+                   Last_Errno: 0
+                   Last_Error: 
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 106
+
+#未计划:
+
+1、观察每台slave中续日志的使用情况，查到最新的master_log_file及read_master_log_pos
+
+mysql> SHOW slave STATUS \G;
+
+2、把查到最新位置的slave做为新的master(尽量较少数据丢失)，并stop slave、change master to master_host=”、reset slave
+
+mysql> stop slave;
+Query OK, 0 rows affected (0.00 sec)
+mysql> CHANGE master TO master_host='';
+Query OK, 0 rows affected (0.21 sec)
+mysql> reset slave;
+Query OK, 0 rows affected (0.32 sec)
+
+3、修改老的master的my.cnf文件，开启log_bin，重启mysqld，观察新master的binlog信息
+
+mysql> SHOW master STATUS ;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000003 |      106 |              |                  |
++------------------+----------+--------------+------------------+
+
+4、把所有slave指向新的master
+
