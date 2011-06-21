@@ -11,6 +11,7 @@
 ------linux下的硬链接和软连接
 ------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
+------loop device
 ------查看是否为64位的cpu
 ------查看系统的发行版本
 ------查看系统的内核版本
@@ -265,6 +266,13 @@
 		stat & ls -il
 	#通过inode删除该文件
 		find . -inum [inode num] -exec rm -i {} \;
+#loop device
+	我们平时挂载一个img文件一般是通过mount -o loop来挂载，而它实际上等价于下面两步:
+	$losetup /dev/loop0 example.img
+	$mount /dev/loop0 /home/you/dir
+	第一步是把文件和某个空闲的loop设备相关联起来，这里是/dev/loop0。用的是系统调用ioctl(LOOP_SET_FD),这样\
+		以来对/dev/loop0的读写就会转换为对example.img的读写了
+	第二步就容易理解了，和挂载普通块设备没什么区别了。mount之所以和两步为一步是想省去手工搜索空闲的loop设备
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
