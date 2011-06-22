@@ -6,10 +6,12 @@
 ------RHEL & CentOS YUM 免费源
 ------linux安全关机
 ------linux 光盘刻录软件包
+------linux开机启动过程
 ------linux系统调用汇总
 ------linux下的硬链接和软连接
 ------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
+------loop device
 ------查看是否为64位的cpu
 ------查看系统的发行版本
 ------查看系统的内核版本
@@ -139,6 +141,16 @@
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3
 	mkisofs-2.01-10
+#linux开启启动过程
+	加载内核
+		此时计算机内存中还不存在任何操作系统，内核必须完整的加载到可用RAM的第一个兆字节内。为了\
+			实现这个目的，内核是被压缩了。
+	执行内核
+		内核在内存中解压缩之后，就可以开始运行了。内核启动运行，挂载根文件系统，启动init进程
+	init进程
+		init的配置文件是/etc/inittab(/etc/init)	
+	rc命令脚本程序
+		/etc/rc.local中的命令脚本在引导过程的最后一步执行
 #linux系统调用汇总
 	NAME		FUNCTION			MODULE
 	restart_syscall
@@ -254,6 +266,13 @@
 		stat & ls -il
 	#通过inode删除该文件
 		find . -inum [inode num] -exec rm -i {} \;
+#loop device
+	我们平时挂载一个img文件一般是通过mount -o loop来挂载，而它实际上等价于下面两步:
+	$losetup /dev/loop0 example.img
+	$mount /dev/loop0 /home/you/dir
+	第一步是把文件和某个空闲的loop设备相关联起来，这里是/dev/loop0。用的是系统调用ioctl(LOOP_SET_FD),这样\
+		以来对/dev/loop0的读写就会转换为对example.img的读写了
+	第二步就容易理解了，和挂载普通块设备没什么区别了。mount之所以和两步为一步是想省去手工搜索空闲的loop设备
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo

@@ -1,0 +1,7 @@
+1.Problem:	
+	error: insufficient permission for adding an object to repository database .git/objects
+	error: Error building trees
+  Solution:
+	Usually this problem is caused by wrong user and group permission on your git servers filesystem
+        $sudo chown -R cinder:cinder .git/objects/	
+
