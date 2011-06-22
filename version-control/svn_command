@@ -1,0 +1,19 @@
+1.创建一个项目仓库
+	svnadmin create /home/cinder/test_svn
+2.import初始文件到项目仓库
+	svn import -m source_file_path ${URL}
+3.checkout文件到本地目录
+	svn checkout ${URL}
+4.检查文件状态或日志
+	svn status [file/dir]
+	svn log [file/dir]
+	svn log -r6:8 [file/dir] 	#查看版本6到8之间的日志
+5.文件/目录比较(工作拷贝与项目仓库中的比较)
+	svn diff [file/dir] OR svn diff -rHEAD [file/dir]	#-rHEAD表示最新版本
+6.更新本地工作拷贝，提交工作修改
+	svn update(up) [file/dir]	svn commit(ci) -m 'comments' [file/dir]
+7.冲突
+	svn update后产生冲突时，若要放弃本地修改:
+	OR 不小心删除了文件:
+	$svn revert [file/dir]	
+
