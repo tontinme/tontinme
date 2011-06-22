@@ -6,11 +6,11 @@
 
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
-from email.MIMEImage import MIMEImage
+#from email.MIMEImage import MIMEImage
 from email.header import Header
 import smtplib
 import socket
-import re
+#import re
 import sys
 import time
 
