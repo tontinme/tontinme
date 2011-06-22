@@ -1,0 +1,41 @@
+1.对查询进行优化，应尽量避免进行全表扫描，首先应考虑在where及order by涉及的列上建立索引
+2.应尽量避免在where子句对字段进行Null值判断，否则将导致引擎放弃使用索引而进行全表扫描
+  eg.	mysql>select id from t where num is mull;
+	--可以在Num上设置默认值0，确保表中num列没有Null值，然后这样查询
+	mysql>select id from t where num=0; 
+3.应尽量避免在where字句中使用!=或<>操作符，否则引擎将放弃使用索引而进行全表扫描
+4.应尽量避免在where字句中使用or来连接条件，否则将导致引擎放弃使用索引而进行全表扫描
+  eg.	mysql>select id from t where num=10 or num=20;
+  	--可以这样查询
+ 	mysql>select id from t where num=10
+       	      union all
+      	      select id from t where num=20;	      
+5.in和not in也要慎用，否则会导致全表扫描
+  eg.	mysql>select id from t where num in(1,2,3);
+  	--对于连续的数值，能用between就不要用in了
+	mysql>select id from t where num between 1 and 3;
+6.下面的查询也会导致全表扫描
+  eg.	mysql>select id from t where name like '%abc%';
+  	--若要提高效率，可以考虑全表检索
+7.如果在where子句中使用参数，也会导致全表扫描
+  eg.	mysql>select id from t where num=@num;
+  	--可以改为强制查询使用索引
+  	mysql>select id from t with(index(索引名)) where num=@num;
+8.应尽量避免在where字句中对字段进行表达式操作，这将导致引擎放弃使用索引而进行全表扫描
+  eg.	mysql>select id from t where num/2=100;
+9.应尽量避免在where子句中对字段进行函数操作，这将导致引擎放弃使用索引而进行全表扫描
+  eg.	mysql>select id from t where substring(name,1,3)='abc';			#name以abc开头的id
+  	mysql>select id from t where datediff(day,createdate,'2005-11-30')=0;	#'2005-11-30'生成的id
+	--应改为
+	mysql>select id from t where name like 'abc%'
+	mysql>select id from t where createdate>='2005-11-30' and createdate<'2005-12-1';
+10.不要在where字句中的"="左边进行函数、算数运算或其他表达式运算，否则系统将可能无法正确使用索引
+11.在使用索引字段作为条件时，如果该索引是复合索引，那么必须使用到该索引中第一个字段作为条件时才能保证系统使用\
+	该索引，否则该索引将不会被使用。并且应尽可能的让字段顺序与索引顺序一致
+12.不要写一些没有意义的查询
+  eg.	mysql>select clo1,clo2 into #t from t where 1=0
+  	--这类代码不会返回任何结果集，但会消耗系统资源
+	mysql>create table #t(...);
+13.很多时候用exist代替in是一个好选择
+  eg.	mysql>select num from a where num in(select num from b);
+  	mysql>select num from a where exists(select 1 from b where num=a.num);
