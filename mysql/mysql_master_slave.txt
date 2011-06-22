@@ -1,4 +1,4 @@
-#master<->slave切换场景
+ter<->slave切换场景
 
 简单记录一下主备切换发生的场景，以及我们在这些场景下，应该怎么操作？场景分为已计划和未计划：
 已计划：升级硬件
@@ -17,9 +17,9 @@ master:
 
 mysql> SHOW master STATUS;
 +------------------+----------+--------------+------------------+
-| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
+| File | Position | Binlog_Do_DB | Binlog_Ignore_DB |
 +------------------+----------+--------------+------------------+
-| mysql-bin.000057 |      456 |              |                  |
+| mysql-bin.000057 | 456 | | |
 +------------------+----------+--------------+------------------+
 
 slave:
@@ -40,7 +40,7 @@ mysql> SHOW slave STATUS \G;
             Slave_SQL_Running: Yes
                       .......
                    Last_Errno: 0
-                   Last_Error: 
+                   Last_Error:
                  Skip_Counter: 0
           Exec_Master_Log_Pos: 456
 
@@ -62,21 +62,21 @@ Query OK, 0 rows affected (0.16 sec)
 [root@dg2 bin]# ./mysqld_safe --user=mysql &
 mysql> SHOW master STATUS;
 +------------------+----------+--------------+------------------+
-| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
+| File | Position | Binlog_Do_DB | Binlog_Ignore_DB |
 +------------------+----------+--------------+------------------+
-| mysql-bin.000001 |      106 |              |                  |
+| mysql-bin.000001 | 106 | | |
 +------------------+----------+--------------+------------------+
 
 6、修改老的master的my.cnf文件，关闭log_bin，重启mysqld
 7、把老的master及slave指向新的master
 
 mysql> CHANGE MASTER TO
-    ->   MASTER_HOST='192.168.201.12',
-    ->   MASTER_USER='repl',
-    ->   MASTER_PASSWORD='repl',
-    ->   MASTER_PORT=3306,
-    ->   MASTER_LOG_FILE='mysql-bin.000001',
-    ->   MASTER_LOG_POS=106;
+    -> MASTER_HOST='192.168.201.12',
+    -> MASTER_USER='repl',
+    -> MASTER_PASSWORD='repl',
+    -> MASTER_PORT=3306,
+    -> MASTER_LOG_FILE='mysql-bin.000001',
+    -> MASTER_LOG_POS=106;
 Query OK, 0 rows affected (0.27 sec)
  
 mysql> start slave;
@@ -98,7 +98,7 @@ mysql> SHOW slave STATUS \G;
             Slave_SQL_Running: Yes
                      .......
                    Last_Errno: 0
-                   Last_Error: 
+                   Last_Error:
                  Skip_Counter: 0
           Exec_Master_Log_Pos: 106
 
@@ -121,10 +121,9 @@ Query OK, 0 rows affected (0.32 sec)
 
 mysql> SHOW master STATUS ;
 +------------------+----------+--------------+------------------+
-| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
+| File | Position | Binlog_Do_DB | Binlog_Ignore_DB |
 +------------------+----------+--------------+------------------+
-| mysql-bin.000003 |      106 |              |                  |
+| mysql-bin.000003 | 106 | | |
 +------------------+----------+--------------+------------------+
 
 4、把所有slave指向新的master
-
