@@ -12,6 +12,7 @@
 ------iostat
 ------iptraf
 ------ls
+------lsof
 ------mpstat
 ------netstat
 ------nmon
@@ -229,6 +230,48 @@
 	#显示文件的uid和gid：
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
+#lsof
+        1.查看对某个文件的使用情况
+          查看哪些进程对某个文件进行了调用
+          eg.   $lsof /var/log/mysqld.log
+        2.查看对文件系统的使用
+          /tmp目录被垃圾文件塞满了，但是，用ls又看不到太大文件，谁干的
+          eg.   $lsof /tmp
+        3.查找打开，但是不能连接的文件
+          一个进程打开一个文件，然后将其设为unlinked状态，则此文件资源仍能被进程使用，但是其访问路径已经被删除了\
+                因此，使用ls不能将其列出，只有当进程结束时，才能释放文件占用的资源
+          查找unlinked文件，选项+L，作用：列出打开文件的连接数
+          eg.   $lsof +L
+          指定连接数的上限
+          $lsof +L1
+          同时指定文件系统，则需要使用-a(AND)选项
+          $lsof -a +L1 /home
+        4.无法卸载
+          查看谁令mount的分区无法卸载
+          $lsof <file_system_name>
+        5.查看监听socket
+          查看网络服务
+          $lsof -i
+        6.查看某个网络连接
+          $lsof -i @aaa.bbb.ccc
+          $lsof -i tcp@aaa.bbb.ccc:ftp-data     #指定协议
+          $lsof -i 4    #指定IP版本
+          $lsof -i 6
+        7.识别netstat链接
+          6中的aaa.bbb.ccc:port可以通过"$netstat -ptn"得到
+        8.查找针对某个命令打开的文件
+          使用命令的PID
+          $lsof -p <PID>
+          使用命令名称
+          $lsof -c <first_characters_of_command_name_that_interest_you>
+          $lsof -c mysqld
+          查看是谁在使用设备文件
+          $lsof /dev/sda6
+        9.查看某个用户的操作
+          $id -u cinder
+          502
+          $lsof -u 502 or $lsof -u cinder
+          $lsof -u ^cinder #是取反的意思
 #mpstat
 	#display activities for each available processor, processor, processor 0 being the first\
 		one. 
