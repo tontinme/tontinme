@@ -13,6 +13,7 @@
 ------iptraf
 ------ls
 ------lsof
+------man
 ------mpstat
 ------netstat
 ------nmon
@@ -272,6 +273,18 @@
           502
           $lsof -u 502 or $lsof -u cinder
           $lsof -u ^cinder #是取反的意思
+man
+        -a      显示所有匹配项
+        -d      显示man查照手册文件时候，搜索路径信息，不显示手册页内容
+        -D      同-d，显示手册页内容
+        -f      同命令whatis，将在whatis数据库查找以关键字开头的帮助索引信息
+        -h      显示帮助信息
+        -k      同命令apropos，将搜索whatis数据库，模糊查找关键字
+        ...       
+        通常遇到一个不是很熟悉的命令，可以先通过：
+        $man -k command1        查找所有类似帮助文件信息，这样输出最多
+        $man -f command1        查询以command1开头所有相关帮助信息列表
+        $man 5 command1         通过直接定位5获得帮助信息
 #mpstat
 	#display activities for each available processor, processor, processor 0 being the first\
 		one. 
