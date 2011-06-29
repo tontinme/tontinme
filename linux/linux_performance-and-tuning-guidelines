@@ -121,6 +121,12 @@
 		netperf 		network performacd benchmark
 		netperf			network perfor
         #benchmark tools
-                LMbench
-                        LMbench is a suite of microbenchmarks that can be used to analyze different operating \
-                                system settings. Such as an SELinux enabled system versus a non SELinux system
+          LMbench
+                LMbench is a suite of microbenchmarks that can be used to analyze different operating \
+                  system settings. Such as an SELinux enabled system versus a non SELinux system
+	  IOzone
+		IOzone is a file sstem benchmark that can be utilized to simulate a wide variety of different\
+		  disk access patterns
+		Since the configuration possibilities of IOzone are detailed,it is possible to simulate a \
+		  targeted workload profile precisely. IOzon writes one or multiple files of varible size using\
+		    block sizes
