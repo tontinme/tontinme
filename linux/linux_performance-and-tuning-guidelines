@@ -121,12 +121,49 @@
 		netperf 		network performacd benchmark
 		netperf			network perfor
         #benchmark tools
-          LMbench
+          #LMbench
                 LMbench is a suite of microbenchmarks that can be used to analyze different operating \
                   system settings. Such as an SELinux enabled system versus a non SELinux system
-	  IOzone
+	  #IOzone
 		IOzone is a file sstem benchmark that can be utilized to simulate a wide variety of different\
-		  disk access patterns
+		        disk access patterns
 		Since the configuration possibilities of IOzone are detailed,it is possible to simulate a \
-		  targeted workload profile precisely. IOzon writes one or multiple files of varible size using\
-		    block sizes
+		        targeted workload profile precisely. IOzon writes one or multiple files of varible size using\
+		        block sizes
+          #netperf
+                netperf is a performance benchmark tool that focuses on TCP/IP networking performance.It support\
+                        UNIX domain socket and SCTP benchmarking
+          #other useful tools
+                bonnie          Disk I/O and ifle system benchmark
+                bonnie++        Disk I/O and ifle system benchmark
+                NetBench        File server benchmark. It runs on Windows
+                dbench          File system benchmark. Commonly used for file server benchmark
+                iometer         Disk I/O and network benchmark
+                ttcp            Simple network benchmark
+                nttcp           Simple network benchmark
+                iperf           Network benchmark
+                ab(Apache Bench)Simple web server benchmark. It comes with Apache HTTP server
+                WebStone        used mainly for web server performance benchmarking.
+                fsstone,smtpstone
+                                Mail server benchmark. They come with Postfix
+                nhfsstone       Network File System benchmark. Comes with nfs-utils package
+                DirectoryMark   LDAP benchmark
+#chapter 3 Aanlyzing performance bottlenecks
+        #identifying bottlenecks
+                Step:
+                  1.know your system
+                  2.back up the system
+                  3.monitor and analyze the system performance
+                  4.Narrow down the bottleneck and find its cause
+                  5.fix the bottleneck cause by trying one change at a time
+                  6.go back to step 3 until you are satisfied with the performance of the system
+                Gathering information
+                  a complete description of the server
+                  -model
+                  -age
+                  -configuration
+                  -peripheral equipment
+                  -operating system version and update level
+                  describle problem
+                  -what are the symptoms
+                  -describe any error messages
