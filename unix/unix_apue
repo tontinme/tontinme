@@ -49,3 +49,19 @@
 	  从用户角度讲，系统调用和库函数的区别并不非常重要。但是必要时，我们可以替换库函数，而通常不能替换系统调用
 	  我们可以自己实现调用系统调用的库函数，以替代原有的库函数
 	  系统调用和库函数的另一个差别是：系统调用通常提供一种最小接口，而库函数通常提供比较复杂的功能
+#chapter 2 UNIX标准化及实现
+	#ISO C
+	  ISO C标准的意图是提供C程序的可移植性，使其能适合于大量不同的操作系统，而不只是UNIX系统。
+	  此标准不仅定义了C程序设计语言的语法和语义，还定义了其标准库。所有现今的UNIX系统都提供C标准中定义的库例程
+	#IEEE POSIX
+	  POSIX指可移植的操作系统接口(Portable Operating System Interface)
+	  它原来指的只是IEEE标准1003.1-1998(操作系统接口)，后来则扩展成包括很多标记为1003的标准及标准草案，包括shell
+	  	和实用程序
+	  POSIX.1包括ISO C标准库
+	#Single UNIX Specification
+	  Single UNIX Specification(单一UNIX规范)是POSIX.1标准的一个超集，定义了一些附加的接口，这些接口扩展了\
+		  基本的POSIX.1规范所提供的功能。相应的系统接口全集被称为X/Open系统接口(XSI,X/Open System Interface)
+	  XSI还定义了实现必须支持POSIX.1词典哪些可选部分才能认为是遵循XSI(XSI conforming)的，它们包括文件同步，\
+		  存储映射文件，存储保护及线程接口。
+	  只有遵循XSI的实现才能被成为UNIX系统
+	  
