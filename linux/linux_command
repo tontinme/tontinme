@@ -1,5 +1,6 @@
 #!/bin/bash
 ---Index
+------adduser&useradd
 ------at
 ------alias
 ------chroot
@@ -36,6 +37,19 @@
 ------wget
 ------whoami,id,groups,newgrp
 ------zip,tar.gz,tar.bz2
+#adduser&useradd
+	#Debian/Ubuntu
+		useradd is a command itself, and you can create users and define options to them using this \
+			command.
+		adduser is a perl command, that uses useradd to create the account. asking you the password \
+			full-name,phone, and others...
+	#Fedora/Centos
+		adduser is just a symbolic link to useradd, but may try to copy the script from a Debian system\
+			to the Centos one
+	#Gentoo
+		on Gentoo systems, is the same as in Centos or Fedora, adduser is just a symbolic link to useradd
+	#使用
+		请咨询man手册
 #at
 	at命令允许用户向cron守护提交作业，使其在稍后的时间运行。
 	一旦一个作业被提交，at命令将会保留所有当前的环境变量。不像crontab，只提供缺省的环境。
