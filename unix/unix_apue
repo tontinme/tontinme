@@ -64,4 +64,28 @@
 	  XSI还定义了实现必须支持POSIX.1词典哪些可选部分才能认为是遵循XSI(XSI conforming)的，它们包括文件同步，\
 		  存储映射文件，存储保护及线程接口。
 	  只有遵循XSI的实现才能被成为UNIX系统
-	  
+	#UNIX系统实现
+	  SVR4(UNIX System V Release 4)是AT&T的UNIX系统实验室(USL)的产品
+	  BSD(Berkeley Software Distrribution)版是由加州大学伯克利分销的计算机系统研究组(CSRG)研究开发和分发的
+	  FreeBSD的基础是4.4BSD-Lite.FreeBSD产生的所有软件都是免费使用的
+	  NetBSD项目类似于FreeBSD，但是更注重不同硬件平台之间的可移植性
+	  OpenBSD项目也类似于FreeBSD，但是更注重安全性
+	  linux是一种提供丰富的UNIX编程环境的操作系统
+	  Mac OS X使用了与上面完全不同的技术，其核心操作系统被称为Darwin,它基于Mach内核和FreeBSD操作系统的组合\
+		  类似于FreeBSD和Linux，Darwin是一个开放源代码项目
+	  Solaris基于SVR4，它是唯一在商业上取得成功的SVR4后裔
+	  AIX是IBM版的UNIX系统
+	  HP-UX是HP版的UNIX系统
+	  IRIX，Silicon Graphics版的UNIX系统
+	  Unix ware是SVR4派生的UNIX系统，现由SCO销售
+	#限制
+	  UNIX系统实现定义了很多幻数和常量，以下两种类型的限制是必须的：
+	  	1.编译时限制（例如，短整型的最大值是什么）
+	  	2.运行时限制（例如，文件名可以有多少个字符）
+	  ISO C限制都是编译时限制
+	  POSIX.1定义了很多涉及操作系统实现限制的常量
+	  XSI定义的常量比POSIX多几个
+	#标注之间的冲突
+	  就整体而言，这些不同的标准之间配合的相当好。但是它们之间也有一些差异，特别是ISO C标准和POSIX.1之间的差别
+#chapter 3 文件I/O
+	
