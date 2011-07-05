@@ -4,6 +4,7 @@
 ------echo相关参数
 ------export
 ------for循环
+-----getopts
 ------if then else
 ------脚本中实现pause效果
 ------控制通配符（Globbing）
@@ -89,6 +90,8 @@
 	12. for i in stringchar{1..10}
 	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
 	#注意：awk中的for循环写法和C语言是一样的
+#getopts
+        coming soon!!!
 #if then else
 	#then部分不执行任何指令
 		if [ -d $tmp ]
