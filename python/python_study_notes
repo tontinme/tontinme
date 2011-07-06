@@ -190,3 +190,48 @@
 		>>>	print "There is no error!"
 	  如果没有任何异常发生，上面的else语句的内容将会执行.else语句一定放在所有except语句的后面
 #chapter 11 类和对象
+	#用户定义数据类型
+	  类的定义方式如下：
+	  	class Point:
+			pass
+	  class表明Point是我们定义的类，类Point的内容暂时没有，但又不能为空，所以用pass代替	
+	  类的定义可以放在程序的任何地方，通常是放在程序开始部分，import语句之后
+	  如果创建一个类的对象，需要调用名为Point的函数：
+	  	blank = Point()
+	  变量blank指向一个实际的对象。函数Point创造对象的过程叫做构造
+	#属性
+	  	>>>class Point:
+			pass
+		>>>blank = Point()
+		>>>blank.x = 3.0
+		>>>blank.y = 4.0
+	  blank.x表示的是对象blank的x属性
+	#同一性
+	  我们可以用 == 操作符判断两个对象是否为同一个对象
+		如果两个对象具有相同的值(p1=Point(),p1.x=1;p2=Point(),p2.x=1)，那么不一定是同一个对象
+		如果p1=p2(即p1和p2是同一个对象的两个别名), 那么p1 == p2为真
+	#长方形类
+	#拷贝  
+	  别名增加了程序阅读的困难，因为在一个地方改变了对象的值，但在另一个地方可能是不希望的。并且追踪对象\
+		所有的别名，又是很困难的。
+	  解决的方法是拷贝对象,生成一个新的对象实例
+	  copy模块的方法copy能够复制任何对象
+	  	>>>import copy
+		>>>p1 = Point()
+		>>>p2 = Point()
+		>>>p2 = copy.copy(p1)
+	  一些简单的对象，比如点，没有包含任何嵌入的对象，copy方法已经足够了，这种复制叫做浅拷贝
+	  对于像长方形类的对象，它的属性中包含点对象，再用copy方法进行复制，虽然生成了新的长方形对象，但这\
+		两个对象的点对象是同一个对象
+		>>>r1 = Rectangle()
+		>>>r1.width = 1
+		>>>r1.height = 2
+		>>>r1.corner.x = 0
+		>>>r1.corner.y = 0
+		>>>r2 = copy.copy(r1)
+		>>>id(r1.corner) == id(r2.corner)
+		   True
+	  copy模块包含了一个命名为deepcopy的方法，它可以拷贝任何嵌入的对象。这种拷贝称为深拷贝
+	  	>>>r2 = copy.deepcopy(r1)
+		>>>id(r1.corner) == id(r2.corner)
+		   False
