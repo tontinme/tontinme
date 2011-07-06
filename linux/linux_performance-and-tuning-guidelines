@@ -150,20 +150,82 @@
                 DirectoryMark   LDAP benchmark
 #chapter 3 Aanlyzing performance bottlenecks
         #identifying bottlenecks
-                Step:
-                  1.know your system
-                  2.back up the system
-                  3.monitor and analyze the system performance
-                  4.Narrow down the bottleneck and find its cause
-                  5.fix the bottleneck cause by trying one change at a time
-                  6.go back to step 3 until you are satisfied with the performance of the system
-                Gathering information
-                  a complete description of the server
+          Step:
+                1.know your system
+                2.back up the system
+                3.monitor and analyze the system performance
+                4.Narrow down the bottleneck and find its cause
+                5.fix the bottleneck cause by trying one change at a time
+                6.go back to step 3 until you are satisfied with the performance of the system
+          Gathering information
+                a complete description of the server
                   -model
                   -age
                   -configuration
                   -peripheral equipment
                   -operating system version and update level
-                  describle problem
+                describle problem
                   -what are the symptoms
                   -describe any error messages
+                Who is experiencing the problem?
+                  one person, one particular group of people, or?
+                  This helps determine whether the problem exists in one particular part of the network, whether\
+                        it is application-dependent, and so on
+                Can the problem be reproduced
+                  All reproducible problems can be solved.
+                Document the sequence of actions that are necesary to reproduce the problem
+                  -What are the steps to reproduce the problem
+                  -Is it an intermittent problem
+                  -Does it occur at certain times of the day or certain days of the week
+                  -Is it unusual 
+                When did the problem start? Was it gradual or did it occur very quickly
+                  If the performance issue appeared gradually, then it is likely to be a sizing issue; if it appeared \
+                        overnight, thne the problem could be caused by a change made to the server or peripherals
+                Have any changes been made to the server(minor or major) or are there any changes in the way clients\
+                        are using the server
+                Demands could change based on business changes, which could affect demands on a server and network systems
+                  >Are there any other servers or hardware components involved
+                  >Ary any logs available
+                  >Whats is the priority of the problem? When does it have to be fixed
+          Analyzing the server's performance '
+                #Note: Before taking any troublesshooting actions, back up all data and the configuration information\
+                        to prevent a partial or complete loss
+                A performance log of the server should be created during its peak time of operation; it will depend on \
+                        what services are being provided and on who is using these services. If available, the following\
+                        objects should be included:
+                  >Processor
+                  >System
+                  >Server work queues
+                  >Memory
+                  >Page file
+                  >Physical disk
+                  >Redirector
+                  >Network interface
+                Our recommended process, which you can use for your server performance tuning process, is as follow:
+                  1.Understand the factors affecting server performance
+                  2.Measure the current performance to create a performance baseline to compare with your future \
+                        measurements and to identify system bottlenecks
+                  3.Use the monitoring tools to identify a performance bottleneck.
+                  4.Work with the component that is causing the bottleneck by performing some actions to improve\
+                        server performance in response to demands 
+                  5.Measure the new performance. This helps you compare performance before and after the tuning steps
+                When attempting to fix a performance problem, remember the following:
+                  >Application should be compiled with an appropriate optimization level to reduce the path length
+                  >Take measuerments before you upgrade or modify anything so that you can tell whether the change\
+                        had any effect
+                  >Examine the options that involve reconfiguring existing hardware, not just those that involve \
+                        adding new hardware
+        #CPU bottlenecks
+          finding CPU bottlenecks
+                uptime  we can get a rough idea of what has been happening in the system for the past 15 minutes
+                top
+                sar     or $sar -u or $sar -U PROCESSOR_NUMBER
+                vmstat
+          SMP
+                SMP-based systems can present their own set of interesting problems that can be difficult to detect
+          Performance tuning options 
+                The first step s to ensure that the system performance problem is being caused by the CPU. then a \
+                        number of actions can be takenn to improve performance.
+                  >Ensure that no unnecessary programs are running in the background by using ps -ef. 
+                  >Identify non-critical, CPU-intensive processes by using top and modify their priority using renice
+                  >In an SMP-based machine, try using taskset 
