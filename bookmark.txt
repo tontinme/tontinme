@@ -2,6 +2,6 @@ abs_guide_cn					p78
 abs_guide_en					p70
 python_unix_linux_cn				p250
 python_study_notes				p86
-linux_performance_and_tunning_guidelines	p91
+linux_performance_and_tunning_guidelines	p105
 unix_apue_paper					p47
   unix_apue_ebook_en                            p36
