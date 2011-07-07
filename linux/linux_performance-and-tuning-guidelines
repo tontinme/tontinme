@@ -228,4 +228,94 @@
                         number of actions can be takenn to improve performance.
                   >Ensure that no unnecessary programs are running in the background by using ps -ef. 
                   >Identify non-critical, CPU-intensive processes by using top and modify their priority using renice
-                  >In an SMP-based machine, try using taskset 
+                  >In an SMP-based machine, try using taskset to bind processeds to CPUs to make sure that processes\
+                        are not hoping between processors, causing cache flushes
+                  >BAsed on he running application, it might be better to scale up(bigger CPUs) than to scale out(more\
+                        CPUs)
+                  >General options include making sure you are using the latest drivers and firmware
+        #Memory bottlenecks
+          Note:Page space is a file created by the OS on a disk partition to store user programs that are not currently\
+                in use. Typically, page sizes are 4KB or 8KB
+          Finding memory bottlenecks
+                Memory available        This indicates how much physical memory is available for use.
+                Page faults             soft page faults -- when the page is found in memory
+                                        hard page faults -- when the page is not found in memory and must be fetched from disk
+                                        the $sar -B command can provide useful information for analyzing page faults
+                File system cache       This is the common memory space used by the file system cache.
+                                        Use the $free -l -t -o command for additional information
+                Private memory for process
+                                        This represents the memory used by each process running on the server
+                                        You can use the $pmap command to see how much memory is allocated to a specific process
+          Paging and swapping indicators
+                There are differences between paging and swapping. Paging moves individual pages to swap space on the disk;
+                  Swapping is a bigger operation that moves the entire address space of a process to swap space in one operation
+                Swapping can have one of two causes:
+                  A process enters sleep mode.
+                  A process behaves poorly. 
+                If your server is always paging to disk (a high page-out rate), consider adding more memory.
+                  However, for systems with a low page-out rate, it might not affect performance
+          Performance tuning options
+                >Tune the swap space using bigpages, hugetlb, shared memory
+                >Increase or decrease the size of pages
+                >Improve the handling of active and inactive memory
+                >Adjust the page-out rate
+                >Limit the resources used for each user on the server
+                >Stop the services that are not needed
+                >Add memory
+        #Disk bottleneck
+          Note: The most common disk bottleneck is having too few disks. Most disk configurations are based on \
+                  capacity requirements,not performance
+                The second most common problem is having too many logical disks on the same way
+          Finding disk bottlenecks
+                A server exhibiting the following symptoms might be suffering from a disk bottleneck(or a hidden memory problem)
+                  >show disks will result in:
+                          -Memory buffers filling with write data(or waiting for read data)
+                          -Insufficient memory, as in the case of not enough memory buffers for network requests, \
+                                will cause synchronous disk I/O
+                  >Disk utilization, controller utilization, or both will typically be very high
+                  >Most LAN transfers will happen only after disk I/O has completed, causing very long response \
+                          times and low network utilization
+                  >Disk I/O can take a relatively long time and disk queues will become full
+                Note: Given the I/O profile of 70% reads and 30% writes of the average commercial workload. a \
+                        RAID-10 implementation will perform 50% to 60% better than a RAID-5
+                There are two ways to approach disk bottleneck analysis: real-time monitoring and tracing.
+                  >Real-time monitoring must be done while the problem is coming 
+                  >Tracing is the collecting of performance data over time to diagnose a problem
+                vmstat
+                  The columns in vmstat with respect to I/O are the bi and bo fields. These fields monitor the\
+                        movement of blocks in and out of the disk subsystem
+                iostat
+                  Performance problems can be encountered when too many files are opened, read and written to,\
+                        then closed repeatedly.
+                  Using then iostat tool, you can monitor the I/O device loading in real time
+          Performance tuning options
+                After verifying that the disk subsystem is a system bottleneck, several solutions are possible:
+                  >If the workload is of a sequential nature and it is stressing the controller bandwidth, the \
+                        solution is to add a faster disk controller
+                  >Add more disk drives in a RAID environment. This improves performance for both reads and writes
+                     Also, use hardware RAID instead of the software implementation provided by Linux. If \
+                        hardware RAID is hidden from the OS   
+                  >Consider using Linux logical volumes with striping instead of large single disks or logical\
+                        volumes without striping
+                  >Offload processing to another system in the network(users, applications, or services)
+                  >Add more RAM, Adding memory increases system memory disk cache, which in effect improve \
+                        disk rsponse times
+        #Network bottlenecks
+          Finding network bottlenecks
+                Indicators for network analysis
+                  Packets received      shows the number of packets that are coming in and going out of the\
+                  Packets sent                  specified network interface
+                  Collision packets     Collisions occur when there are many systems on the same domain
+                  Dropped packets       packets may be dropped for a variety of reasons, but the result can \
+                                                affect performance
+                  Errors                Errors occur if the communication lines are of poor quality
+                  Faulty adapters       Network slowdowns often result from faulty network adapters
+          Performance tuning options
+                What you should do to solve problems
+                  >Ensure that the network card configuration matches router and switch configurations(eg. frame size)
+                  >Modify how your subnets are organized
+                  >Use faster network cards
+                  >Tune the appropriate IPv4 TCP kernel parameters.
+                  >If possible, change network cards and recheck performance
+                  >Add network cards and bind them together to form an adapter team, if possible
+#chapter 4 Tuning the operating system
