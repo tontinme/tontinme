@@ -319,3 +319,19 @@
                   >If possible, change network cards and recheck performance
                   >Add network cards and bind them together to form an adapter team, if possible
 #chapter 4 Tuning the operating system
+	#Tuning principles
+	  The first stop should be to analyze and evaluate the current system configuration.
+	  And also prior should have a minimumu of unnecessary tasks and subsystems running
+	  Finally when moving towards specific systems tuning, it should be noted that tuning often tailors a \
+		system towards a specific workload. So, the system will perform better under the intended load \
+		characteristics but it will probably perform worse for different workload patterns
+	  Change management
+	  	>Implement a proper change management process before tuning any Linux system
+		>Never start tweeking settings on a production system
+		>Never change more than one variable during the tuning process
+		>Retest parameters that supposedly improved performance, sometimes statistics come into play
+		>Document successful parameters and share them with the community no matter how trivial you\
+			think they are
+	#Installation considerations
+	  Installation
+		
