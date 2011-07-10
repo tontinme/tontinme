@@ -280,4 +280,20 @@
 	  假如已经定义了一个父类BaseClass，那么子类的定义方式如下：
 	  class DerivedClass(BaseClass):
 	  	...
-	
+	  如果要引用子类的某个属性，首先在子类中寻找，没有就去到父类中寻找它的定义，再没有的话，就一直往上找
+	  子类的方法可以重定义父类的方法
+	  有时候，子类的方法中可以直接调用父类中的方法:
+	  	BaseClass.method(self,arguments)
+	#定义一个父类
+	#继承父类的子类
+	#私有方法
+	  在python中，类的私有方法和私有属性，不能够从类的外面调用
+	  类的方法和属性是私有还是共有，可以从它的名字判断：
+	  	如果名字是以两个下划线开始，但并不以两个下划线结束，则是私有的；其余的都是公有的
+		class Line:
+			def __init__(self, p1=Point(), p2=Point()):
+				self.__p1 = p1		#私有属性
+				self.__p2 = p2
+			def __distance(self):		#私有方法
+				pass		
+			def __
