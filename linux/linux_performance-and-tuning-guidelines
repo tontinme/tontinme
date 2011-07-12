@@ -334,4 +334,39 @@
 			think they are
 	#Installation considerations
 	  Installation
-		
+		Select the correct kernel
+		  Standard	Single processor machines
+		  SMP		Kernel has support for SMP and hyper-threaded machines.
+				Some packages also include support for NUMA
+				There may be some variant, depending on the amount of memory,CPU,and so on
+		  Xen		Includes a version of the Linux kernel which runs in a Xen virtual machine
+		What partition layout to choose
+		  The partition layout will be given in most cases. Our only suggestion is that you should use\
+		  a swap partition if possible
+		What file system to use
+		Package selection:minial or everything
+		Netfilter configuration
+		  The netfilter firewall should be used to protect the system from malicious attacks
+		  Having too many complicated firewall rules could decrease performance in high data traffic environment
+		SELinux
+		Runlevel selection
+		  Unless you have a specific need to run your system in runlevel 5(graphical user mode), we \
+			strongly suggest using runlevel 3 for all server systems
+	  Check the current configuration
+		dmesg
+		  The main purpose of dmesg is to display kernel messages
+		  dmesg can provide helpful information in case of hardware problems or problems with loading\
+			a module into the kernel
+		  In addition, with dmesg, you can determine what hardware is installed on your server
+		  View these logs using the command /bin/dmesg
+		ulimit
+		  This command is used to provide control over the resources available to the shell and to the\
+		 	processes started by it on systems that allow such control
+		  -a 	list all parameters that we can set
+		  -H & -S	specify the hard and soft limits that can be sent for the given resource.
+	  Minimize resource use
+		Tunable daemons started on a default installation
+		  apmd		Advanced power management daemon
+				apmd will usually not be used on a server
+		  arptables_if	User space program for the arptables network filter
+				Unless you plan to use arptables, you can safely disable this daemon
