@@ -1,0 +1,11 @@
+#circular dependencies
+  USE="-fam"
+  emerge gamin
+  emerge glib
+#graphic card driver
+  VIDEO_CARDS="vmware"
+#startx
+  emerge -av xf86-input-keyboard
+  emerge -av xf86-input-mouse
+  emerge -av xf86-input-evdev
+  emerge -av xterm
