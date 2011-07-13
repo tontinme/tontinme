@@ -367,6 +367,55 @@
 	  Minimize resource use
 		Tunable daemons started on a default installation
 		  apmd		Advanced power management daemon
-				apmd will usually not be used on a server
+				#apmd will usually not be used on a server
 		  arptables_if	User space program for the arptables network filter
-				Unless you plan to use arptables, you can safely disable this daemon
+				#Unless you plan to use arptables, you can safely disable this daemon
+		  autofs	Automatically mounts file systems on demand(eg. mounts a CD-ROM automatically)
+				#On server system, file system rarely have to be mounted automatically
+		  cpuspeed	Daemon to dynamically adjust the frequency of the CPU
+				#In a server environment, this daemon is recomended off
+		  cups		Comman UNIX Printing System.	
+				#If you plan to provide print services with your server, do not disable this service
+		  gpm		Mouse server for the text console.
+				#Do not disable if you want mouse support for the local text console
+		  hpoj		HP OfficeJet support.
+				#Do not disable if you plan to use an HP OfficeJet printer with your server
+		  irqbalance	Balances interrupts between multiple processors
+				#You may safely disable this daemon on a singe CPU system or if you plan to \
+					#balance IRQ statically
+		  isdn		ISDN mmodem support
+				#Do not disable if you plan to use an ISDN modem with your server
+		  kudzu		Detects and configure new hardwares
+				#Should be run manually in case of a hardware change
+		  netfs		Used in support of exporting NFS shares
+				#Do not disable if you plan to provide NFS shares with your server
+		  nfslock	Used for file locking with NFS
+				#Do not disable if you plan to provide NFS shares with your server
+		  pcmcia	PCMCIA support on a server
+				#Server  systems rarely rely on a PCMCIA adapter so disabling this daemon is \
+					#safe in most instances
+	  	  portmap	Dynamic port assignment for RPC services(such as NIS and NFS)
+				#If the system does not provide RPC-based services there is no need for this daemon
+		  rawdevices	Provides support for raw device bindings
+				#If you do not intend to use raw devices you may safely turn if off
+		  rpc*		Various remote procedure call daemon mainly used for NFS and Samba
+				#If the system does not provide RPC-based services there is no need for this daemon
+		  sendmail	Mail Transport Agent
+				#Do not disable this daemon if you plan to provide mail services with the \
+					#respective system
+		  smartd	Self Monitor and Reporting Technology daemon that watches S.M.A.R.T.compatible\
+					 devices for error
+		  		#Unless you use an IDE/SATA technology based disk subsystem, there is no need \
+					#for S.M.A.R.T.Mnoitoring	
+		  xfs		Font server for X Windows
+				#If you will run in runlevel 5, do not disable this daemon
+		/sbin/chkconfig		provides the administrator with an easy-to-use interface to change \
+						start options for various daemons
+					#Note:Instead of wasting time waiting for a reboot to complete, simple\
+						#change the run level to 1 and back to 3 or 5, respectively
+		/sbin/service		this enables an administrator to immediately change the status of any \
+						registered
+					Or use /etc/init.d/
+	  Changing runlevels
+		
+	#Changing kernel parameters
