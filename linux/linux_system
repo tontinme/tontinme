@@ -12,6 +12,7 @@
 ------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
 ------loop device
+------tmpfs
 ------查看是否为64位的cpu
 ------查看系统的发行版本
 ------查看系统的内核版本
@@ -278,6 +279,32 @@
 	第一步是把文件和某个空闲的loop设备相关联起来，这里是/dev/loop0。用的是系统调用ioctl(LOOP_SET_FD),这样\
 		以来对/dev/loop0的读写就会转换为对example.img的读写了
 	第二步就容易理解了，和挂载普通块设备没什么区别了。mount之所以和两步为一步是想省去手工搜索空闲的loop设备
+#tmpfs
+	tmpfs is a file system which keeps all files in virtual memory
+	tmpfs中的文件都是临时的，即不写入磁盘.如果你umount tmpfs实例，那么其中的所有数据都将丢失
+	tmpfs puts everything into the kernel internal caches and grows and shrinks to accommodate the files \
+		it contains and is able to swap unneeded pages out to swap space. It has maximum size limits\
+		which can be adjusted on the fly via 'mount -o remount ...'
+	tmpfs vs ramfs
+		ramfs is the template to create tmpfs
+	tmpfs vs RAM disk(/dev/ram*)
+		RAM disk simulates a fixed size hard disk in physical RAM, where you have to create an ordinary\
+			filesystem on top. Ramdisks cannot swap and you do not have the possibility to resize them
+	glibc 2.2 and above expects tmpfs to be mounted at /dev/shm fr POSIX shared memory
+	some people find it very convenient to mount it e.g. on /tmp and /var/tmp and have a big swap partition.\
+		and now loop mounts of tmpfs files do work
+	tmpfs has three mount options for sizing:
+		size:		The limit of allocated bytes for this tmpfs instance.
+				The default is half of your physical RAM without swap
+				If you oversize your tmpfs instance the machine will deadlock since the OOM handler will\
+					not be able to free the memory
+		nr_blocks:	The same as size, but in blocks of PAGE_CACHE_SIZE
+		nr_inodes:	The maximum number of inodes for this instance
+				The default is half of number of yor physical RAM pages, or(on a machine with \
+					highmem)the num of lowmem RAM pages
+	#example
+		$mount -t tmpfs -o size=10G, nr_inodes=10k, mode=700 tmpfs /mytmpfs
+		tmpfs instance on /mytmpfs which can allocate 10GB RAM/SWAP in 10240 inodes and it is only accessible by root
 #查看是否为64位的cpu
 	#打入以下命令
 	$grep flags /proc/cpuinfo
