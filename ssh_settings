@@ -1,9 +1,44 @@
-﻿#putty中文显示
+------putty中文显示
+------ssh挂载远程目录文件系统
+------比较本地和远程文件
+------从某主机的80端口开启到本地主机2001端口的隧道
+------端口转发
+------复制ssh密钥到目标主机
+------连接成功后运行命令
+------使用别名
+------通过authorized_keys指定登录后要执行的命令
+------通过中间主机建立ssh连接
+
+#putty中文显示
 	打开putty主程序，选择window-〉Appearance-〉Font settings-〉Change...,选择Fixedsys字体,字符集选择CHINESE_GB2312。
 在window-〉Appearance-〉Translation中，Received data assumed to be in which character set 中,把Use font encoding改为UTF-8.
 如果经常使用,把这些设置保存在session里面.
 	现在打开putty,登录成功后,在shell中输入:export LC_ALL='zh_CN.utf8',现在已经可以完美的支持中文了
 	可以打开vim输入中文测试一下,而且也不会出现删除半个汉字的问题.
+#ssh挂载远程目录文件系统
+	sshfs 可以把ssh连接到的主机资源，映射到本机的文件系统中。然后用户可以像操作本地文件一样操作，而实际的\
+		文件改动将通过ssh传输到远程主机当中
+	$sshfs user@hostname:path local_mount_path
+	卸载目录
+	$fusermount -u local_mount_path
+	也可以在/etc/fstab中自动挂载
+#比较本地和远程文件
+	$vimdiff cat /path/localfile <( ssh user@host 'cat /path/remotefile')
+	OR
+	$ssh user@host 'cat /path/remotefile' | vimdiff /path/localfile -
+#从某主机的80端口开启到本地主机2001端口的隧道
+	$ssh -N -L2001:localhost:80 somemachin
+	现在你可以直接在浏览器中输入http://localhost:2001访问这个网站
+#端口转发
+	ssh -D 8888 username@proxyhost.com -N
+	-D	建立一个动态的SOCKS4/5的代理通道，紧接着的是本地监听的端口号。
+	-N	不执行远程的命令。这个参数在这里是可选的。
+#复制ssh密钥到目标主机
+	$ssh-copy-id user@host
+		install your public key in a remote machine's authorized_keys    '
+		-i 可以指定某个公钥
+	如果没有ssh-copy-id命令
+	$cat ~/.ssh/id_rsa.pub | ssh user@machine "mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys"
 #连接成功后运行命令
 	#只想运行单个命令的话，直接把命令附加在ssh命令之后即可。如：
 		$ssh freebsd uname -a
@@ -37,10 +72,9 @@
 	ssh alice
 	ssh self
 	ssh github.com
-#端口转发
-	ssh -D 8888 username@proxyhost.com -N
-	-D	建立一个动态的SOCKS4/5的代理通道，紧接着的是本地监听的端口号。
-	-N	不执行远程的命令。这个参数在这里是可选的。
 #通过authorized_keys指定登录后要执行的命令
 	#该命令定义在authorized_keys中，ssh连上后，只能执行该命令，并且执行完后立即退出。比如：
 		from="10.1.1.1",command="/home/remoteuser/command" ssh-dss AAAA...(其中ssh-dss AAAA...就是原有的public key了)	
+#通过中间主机建立ssh连接
+	$ssh -t reachable_host ssh unreachable_host
+	unreachable_host表示从本地网络无法直接访问的主机，但可以从reachable_host所在网络访问
