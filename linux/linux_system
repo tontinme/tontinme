@@ -7,10 +7,12 @@
 ------linux安全关机
 ------linux 光盘刻录软件包
 ------linux开机启动过程
+------linux守护进程
 ------linux系统调用汇总
 ------linux下的硬链接和软连接
 ------linux下rws文件属性解释
 ------linux下用文件的inode删除文件
+------linux运行级别
 ------loop device
 ------tmpfs
 ------查看是否为64位的cpu
@@ -157,6 +159,10 @@
 		init的配置文件是/etc/inittab(/etc/init)	
 	rc命令脚本程序
 		/etc/rc.local中的命令脚本在引导过程的最后一步执行
+#linux守护进程
+	守护进程(daemon)是运行在后台的一种特殊进程。它独立于控制终端并且周期性的执行某种任务或等待处理某些发生\
+		的事件。Linux的大多数服务器都是用守护进程实现的。
+		比如，internet服务器inetd，web服务器httpd。同时，守护进程完成许多系统任务，比如crond，打印任务lpd等
 #linux系统调用汇总
 	NAME		FUNCTION			MODULE
 	restart_syscall
@@ -272,6 +278,19 @@
 		stat & ls -il
 	#通过inode删除该文件
 		find . -inum [inode num] -exec rm -i {} \;
+#linux运行级别
+	run level 0	是作关机用的，一开机就会作关机的动作
+			(Do not set initdefault to this or the server will shut down immediately after \
+				finishing the boot process)
+	run level 1	Single user mode模式，只允许root登录，主要做一些系统维护的工作
+	run level 2	所有用户可以登录，但不会启动NFS working，即没有网络功能
+	run level 3	所有用户可以登录，并拥有完整的功能。但开机后是文本模式
+	run level 4	使用者自定义，但是默认情况下和run level 3完全相同
+	run level 5	和run level 3几乎一样，但是是图形界面
+	run level 5	重启，开机后立刻重启
+			(Do not set initdefault to this or the server machine will confinuously reboot\
+				at startup)
+	/sbin/chkconfig改变进程运行级别
 #loop device
 	我们平时挂载一个img文件一般是通过mount -o loop来挂载，而它实际上等价于下面两步:
 	$losetup /dev/loop0 example.img
