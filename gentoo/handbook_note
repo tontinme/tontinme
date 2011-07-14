@@ -1,0 +1,33 @@
+1.Portage入门
+  了解emerge提供的选项
+  	$man emerge
+  Portage树
+  	Portage树是ebuilds文件的集合，这些文件包含了Portage管理工具维护软件时所需要的所有信息，并被默认放置在\
+		/usr/portage目录中
+	每当用Portage对系统中的软件包执行一些操作时，它会以系统中的ebuilds文件作基础
+	$emerge --sync			#更新portage树
+	$emerge-webrsync		#自动将最新的portage快照下载并安装到系统中
+  软件包维护
+  	$emerge --search pdf		#查找名字包含pdf的软件包
+	$emerge --searchdesc pdf	#查找与pdf相关的软件包
+	$emerge gnumeric		#安装gnumeric
+	$emerge --pretend gnumeric	#查看安装gnumeric的同时会安装哪些软件，只是查看，并不安装任何软件
+	当使用portage安装一个软件时，必要时会从internet上下载相应源代码并默认保存至/usr/portage/distfiles目录中\
+		，然后解压缩，编译并安装
+	$emerge --fetchonly gnumeric	#只下载gnumeric的源码包而不安装
+	$emerge -vp alsa-lib		#查看是否存在alsa-lib的doc的USE标记
+					#最好的启动doc的方式是在/etc/portage/package.use里对想要启用的包单独启用
+	当一个软件包安装结束后，它的文档通常会放在/usr/share/doc目录下以软件包命名的子目录中
+	$equery	files alsa-lib | less	#列出安装alsa-lib后生成的所有文件，这个工具来自app-portage/gentoolkit包
+	$emerge --unmerge gnumeric	#从系统中删除gnumeric
+					#从系统中移除一个软件时，之前哪些为了满足其依赖关系而自动被一并安装的\
+						#软件包将被保留
+	$emerge --depclean		#移除那些完全没有被其他包依赖的软件包
+	$emerge --update --ask world	#当portage树更新后，使用该命令更新系统
+	$emerge --update --deep --newuse world
+					#系统会检查新的USE标记的变动，并查看该变动是否导致需要安装新的软件包或\
+						#将现有的包重新编译
+	$emerge --update --deep --newuse world ; $emerge --depclean; $revdep-rebuild
+					#移除孤立依赖的软件包
+
+
