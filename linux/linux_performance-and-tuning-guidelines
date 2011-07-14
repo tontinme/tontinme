@@ -416,6 +416,10 @@
 		/sbin/service		this enables an administrator to immediately change the status of any \
 						registered
 					Or use /etc/init.d/
-	  Changing runlevels
-		
+	  	Changing runlevels
+	  	  $runlevel	Determine which run level the machine is running
+	  	  		eg. N 5 means that there was no previous run level and that the current run level is 5
+	  	  $init		To switch between run levels, use the init command
+	  	  To set the initial runlevel of a machine at boot, modify the /etc/inittab file
+	  	Limiting local terminals
 	#Changing kernel parameters
