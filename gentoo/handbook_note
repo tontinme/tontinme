@@ -1,10 +1,15 @@
-1.Portage入门
+Gentoo HandBook AMD64
+
+
+#chapter 2 使用Gentoo
+
+1.portage入门
   了解emerge提供的选项
   	$man emerge
-  Portage树
-  	Portage树是ebuilds文件的集合，这些文件包含了Portage管理工具维护软件时所需要的所有信息，并被默认放置在\
+  portage树
+  	portage树是ebuilds文件的集合，这些文件包含了Portage管理工具维护软件时所需要的所有信息，并被默认放置在\
 		/usr/portage目录中
-	每当用Portage对系统中的软件包执行一些操作时，它会以系统中的ebuilds文件作基础
+	每当用portage对系统中的软件包执行一些操作时，它会以系统中的ebuilds文件作基础
 	$emerge --sync			#更新portage树
 	$emerge-webrsync		#自动将最新的portage快照下载并安装到系统中
   软件包维护
@@ -29,5 +34,127 @@
 						#将现有的包重新编译
 	$emerge --update --deep --newuse world ; $emerge --depclean; $revdep-rebuild
 					#移除孤立依赖的软件包
+4.初始化脚本
+  gentoo启动顺序 
+  	首先，引导程序把引导程序配置文件中定义的内核镜像加载到内存中，之后它就告诉CPU可以运行内核了。当内核被\
+		加载且运行后，内核会初始化所有内核专有的结构体和任务，并开启init进程
+	然后，这个进程确保所有的文件系统（在/etc/fstab/中定义的）都已被挂载并且能使用。接着，该进程会执行位于\
+		/etc/init.d/下的一些脚本，这些脚本会启动一些你需要的服务，以使你能获得一个成功启动的系统
+	最终，当所有脚本执行完毕，init将激活终端（大多数情况下只是激活虚拟终端，可以用Alt-F1,Alt-F2等访问），\
+		并把一个叫agetty的特殊进程附于其上，这个进程会确保你可以通过运行login从这些终端登录到你的系统
+  init进程是如何工作的
+  	init不会随机的执行/etc/init.d下的脚本，甚至不会执行所有的脚本，它根据/etc/runlevels目录决定如何执行
+	init首先运行所有/etc/runlevels/boot目录下的符号链接所指向的/etc/init.d目录下的脚本，然后执行/etc/runlevels\
+		/default目录下的符号链接所指向的脚本
+	init由/etc/inittab来指定它的工作流程
+  使用初始化脚本
+	每个在/etc/init.d下的脚本都可以在执行时带上以下参数：start,stop,restart  
+	如果你想要停止一个服务，但是不想影响依赖于它的服务，可以使用pause参数
+		#/etc/init.d/postfix pause
+	如果状态信息告诉你服务正在运行，但是你知道它实际上没有运行，你可以使用参数zap将状态信息重设为“停止“
+		#/etc/init.d/postfix zap
+	ineed可以查看这个服务正常工作所依赖的所有必要服务列表，iuse将会显示这个服务可能使用到的所有服务
+		#/etc/init.d/postfix ineed | iuse
+	needsme列出哪些服务需要这个服务
+		#/etc/init.d/postfix needsme
+	broken列出该服务所缺少的依赖关系
+		#/etc/init.d/postfix broken
+  rc-update
+  	rc-update可以从一个运行级别中添加或删除初始化脚本，rc-update会自动调用/sbin/depscan.sh来重新创建依赖关系
+	rc-update add | del | show
+		rc-update -v show	#获得初始化脚本的信息
+		rc-update show		#只查看已经启用的初始化脚本和它们的运行级别
+  改变运行级别的行为
+  	gentoo可以根据你的意愿来改变运行级别的行为，例如你可以创建另一个可以启动的"default"运行级别，并分配其他\
+		的一些初始化脚本给它，然后你可以在启动时选择你想要运行哪个"default"运行级别
+	设置好后，编辑引导程序的配置文件并添加一个你自定义的运行级别的条目
+	可以使用softlevel,bootlevel两种方式
+5.环境变量
+  全局变量
+  	gentoo采用/etc/env.d目录来集中定义全局变量
+  	/etc/env.d中的好几个文件都定义了PATH变量，当你运行env-update的时候，它会在更新环境变量之前把这些定义都\
+  本地变量
+	特定用户
+		~/.bashrc OR ~/.bash_profile
+	特定会话
+		在当前会话中使用export来定义PATH变量
+		追加到PATH中
+#chapter 3 使用Portage
 
+1.Portage文件
+  如果打算改变配置变量，不要变更/etc/make.globals或make.defaults，而应该更改/etc/make.conf，它比前面的几个文件\
+	  有更高的优先级
+  在/etc/portage目录中，你可以创建下列文档:
+	package.mask		#列出了你永远不希望portage安装的软件包
+	package.unmask		#列出了本来Gentoo的开发者不建议安装的，但是你希望能安装的软件包
+	package.keywords	#列出了还未被确认适合你的系统或架构，但是你希望恩你歌安装的软件包
+	package.use		列出了你希望某些特定软件包使用的而不是整个系统使用的USE标记
+	#Note:这些并不需要一定是文件，它们也可以是包含单个软件包信息文件的目录。更多信息查询$man portage
+  Portage树
+  	Portage树的默认位置是/usr/portage
+	PKG规定在/usr/portage/packages中寻找预编译的二进制包
+	DISTDIR规定程序的源代码保存在/usr/portage/distfiles中
+	Portage将系统的状态(装了哪些软件包，什么文件属于哪个软件包)保存在/var/db/pkg中，不要手动改变这些文件
+	Portage缓存(包括修改时间、虚拟包、依赖关系树信息等)存储在/var/cache/edb中
+	PORTAGE_TMPDIR规定portage的临时文件默认保存在/var/tmp
+	BUILD_PREFIX规定，portage为每一个它所安装的软件包在/var/tmp/portage里创建特定的编译目录
+3.使用多个软件分支
+  测试的分支
+  	要让portage使用测试分支的软件，只需在体系结构前加上一个~符号
+		eg. $vim /etc/make.conf		
+		    ACCEPT_KEYWORDS="~x86"
+  混合使用稳定和测试分支
+  	可以让portage使用某些软件的测试分支中的版本，对于系统的其他软件则使用稳定分支
+		eg. $vim /etc/portage/package.keywordsds
+		    app-office/gnumeric ~x86
+  测试特定的版本
+  	可以指定portage使用测试分支中某软件的特定版本，但后续版本不这么做，需要在package.keywords中加入相应版本号
+	需要使用=来指定版本号，或使用<=,<,>,>=来指定版本号范围
+		eg. $vim /etc/portage/package.keywords
+		    =app-office/gnumeric-1.2.13 ~x86
+  使用被屏蔽的包
+  	当一个包被gentoo开发者屏蔽，但你不考虑package.mask文件里所陈述的原因，仍想使用的话，可以在\
+		/etc/portage/package.unmask文件（或该文件夹下的文件）中加入与package.mask里那行一模一样的内容
+  package.mask的位置
+  	如果你希望portage忽略一个特定的软件包或者一个软件包的特定版本，可以在/etc/portage/package.mask文件（或\
+		此目录下的一个文件）中加入一行适当的内容来屏蔽它
+4.Portage附加工具
+  dispatch-conf
+  	dispatch-conf是一个帮助合并._cfg0000_<名称>文件的工具。._cfg0000_<名称>文件是由portage在它要覆盖被\
+		CONFIG_PROTECT变量所保护的某个目录里的文件时建立的
+	dispatch-conf能够在合并配置文件并升级更新的同时保持所有更新记录
+	使用dispatch-conf之前确认编辑了/etc/dispatch-conf.conf并创建了archive-dir变量设定的目录
+	更多查看$man dispatch-conf
+  etc-update
+  	etc-update也用来合并配置文件，但它不像dispatch-conf那昂简单易用，功能也少，但是它提供交互式合并功能\
+		并且能自动合并一些简单的改变
+	另外，etc-update不保留配置文件的旧版本
+  quickpkg
+  	利用quickpkg可以对系统中已安装的包进行打包归类，这些归档文件可以作为预编译包使用
+		eg. $quickpkg curl arts procps		#打包curls,arts,procps
+	预编译包会保存在$PKGDIR/ALL(默认为/usr/portage/packages/all)，指向这些包的符号链接保存在$PKGDIR/<category>中
+5.改造portage树
+  使用portage树的一个子集
+  	可以有选择的更新特定的类别/软件包并且忽略其他类别/软件包，我们通过让$emerge --sync在执行rsync的时候\
+		排除个别类别/软件包来实现这个功能
+		eg. $vim /etc/make.conf
+		    PORTAGE_RSYNC_EXTRA_OPTS="--exclude-from=/etc/portage/rsync_excludes"
+		    $vim /etc/portage/rsync_excludes
+		    games-*/*		#设定排除所有游戏
+	#Note:这可能导致依赖问题
+  添加非官方ebuild
+  	创建一个新的目录（比如/usr/local/portage）用以存放第三方ebuild，请在新目录中使用跟官方portage树一样的\
+		目录结构
+	然后在/etc/make.conf中定义PORTDIR_OVERLAY变量，使它指向刚才创建的目录，再运行$emerge --sync时，这些ebuilds、
+		也会被计算在内，并且不会被覆盖或删除
+  使用多个overlay仓库
+  	app-portage/gentoolkit-dev软件包提供了gensync工具，可以一次更新所有的仓库，也可以选择更新其中的几个
+  非portage维护的软件
+  	可以配置portage让它指到某个软件已经通过手动安装到系统中了，这个过程叫做"注入"，portage通过/etc/portage \
+		/profile/package.provided文件来实现这个功能
+		eg. $vim /etc/portage/profile/package.provided		
+		    sys-kernel/gentoo-sources-2.6.11.6		#告诉protage已经手动安装了gentoo-sources-2.6.11.6
 
+#chapter 4 gentoo网络配置
+1.基本知识
+  所有的网络接口都在/etc/conf.d/net文件里设置
