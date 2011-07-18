@@ -422,4 +422,32 @@
 	  	  $init		To switch between run levels, use the init command
 	  	  To set the initial runlevel of a machine at boot, modify the /etc/inittab file
 	  	Limiting local terminals
+	  SELinux
+		SELinux enforces security on user and process levels
+		Every access from a user or process to a system resource such s an I/O device must be \
+			controlled by SELinux.
+		The prcesses of checking permissions can cause overhead of up to 10%
+		Disable SELinux
+		  1.do not install SELinux
+		  2.append the entry selinux=0 to the line containing kernel in the GRUB boot loader
+		  3.Edit /etc/selinux/config. append or modify parameter "SELINUX=disabled"
+	  Compiling the  kernel
+		performance improvements can be gained with a custom made kernel, but they hardly justify the \
+			challenges your face runing an enterprise environment
+		Do not attemp to use special compiler flags such as -C09 when recompiling the kernel. The \
+			source code for the Linux kernel has been hand tuned to match the GNU C compiler
 	#Changing kernel parameters
+	  To view the current kernel configuration, choose a kernel parameter in the /proc/sys directory and \
+		use the cat command on the repective file
+	  Where the parameters are stored
+		The kernel parameters that control how the kernel behaves are stored in /proc(in particular, /proc/sys)
+		Each process running in the system has a directory in /proc with the process ID(PID) as its name
+		Parameter files in /proc
+		  /proc/sys/abi/*	Used to provide support for "foreign" binaries, not native to Linux
+					By default, this support is installed, although it can be removed during installation
+		  /proc/sys/fs/*	Used to increase the number of open files the OS allows and to handle quota
+		  /proc/sys/kernel/*	For tuning purposes, you can enable hotplug, manipulate shared memory,\
+						 and specify the maximun number of PID files and level of debug in syslog
+		  /proc/sys/net/*	Tuning of network in general, IPv4 and IPv6
+		  /proc/sys/vm/*	Management of cache memory and buffer
+	  Using the ssyctl command
