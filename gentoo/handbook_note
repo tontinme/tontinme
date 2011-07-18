@@ -158,3 +158,15 @@ Gentoo HandBook AMD64
 #chapter 4 gentoo网络配置
 1.基本知识
   所有的网络接口都在/etc/conf.d/net文件里设置
+4.无线网络
+  目前可以使用wireless-tools或wpa_supplicant工具来配置无线网络
+	wpa_supplicant是一个最好的选择，但缺点是不支持所有的驱动，另外，wpa_supplicant目前只能连接到那些你已经\
+		配置好ESSID的无线网络
+	wireless-tools支持几乎所有的无线网卡和驱动，但它不能连接到那些只支持WPA的AP
+6.网络管理
+  ifplugd是一个在插入或拔出网线时启动或停止网络连接的工具
+	$emerge sys-apps/ifplugd
+	ifplugd的配置文件在/etc/conf.d/net中
+  openresolv可以使管理多个DNS服务器和配置更加容易
+	$emerge openresolv
+
