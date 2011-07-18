@@ -246,6 +246,21 @@
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
 #lsof
+	$lsof
+	COMMAND	PID	USER	FD	TYPE	DEVICE	SIZE/OFF	NODE	NAME
+	init	1	root	cwd	VDIR	136,8	1024		2	/
+	vi	2013	cinder	3u	VREG	136,8	0		8501	/var/tmp/ExXDa07d
+	解释：
+	  Command,PID和User列分别表示进程的名称，进程标识符和所有者名称
+	  Device,SIZE/OFF,Node和Name列涉及到文件本身的信息，分别表示指定磁盘的名称，文件的大小，索引节点（文件\
+		在磁盘上的标识）和该文件的确切名称，根据UNIX版本的不同，可能将文件的大小报告为应用程序在文件中\
+		进行读取的当前位置（偏移量）
+	  FD列表示文件描述符，其值可能是cwd(表示应用程序的当前工作目录)，txt(程序代码)，数字+状态(数字是文件\
+		描述符，状态有u(读取/写入),r只读(),w(只写))。大多数应用程序的FD是从3开始的，0,1,2分别表示标准\
+		输入，输出和错误流
+	  Type列提供了关于文件格式的更多描述。根据具体操作系统不同，可能将文件和目录称为REG和DIR（Solaris称为\
+		VREG和VDIR），其他可能的取值是CHR和BLK，分别表示字符和块设备，或者UNIX,FIFO,IPv4，分别表示UNIX\
+		域套接字，先进先出队列和IP套接字
         1.查看对某个文件的使用情况
           查看哪些进程对某个文件进行了调用
           eg.   $lsof /var/log/mysqld.log
@@ -259,16 +274,17 @@
           eg.   $lsof +L
           指定连接数的上限
           $lsof +L1
-          同时指定文件系统，则需要使用-a(AND)选项
-          $lsof -a +L1 /home
+	  同时指定多个参数，需要加上-a参数，否则缺省的情况是显示匹配任何一个参数(OR)
+          $lsof -a -p 605 -d ^txt	#-a参数表示所有参数都必须满足(AND)
         4.无法卸载
           查看谁令mount的分区无法卸载
           $lsof <file_system_name>
         5.查看监听socket
-          查看网络服务
+          查看监听端口的进程
           $lsof -i
-        6.查看某个网络连接
-          $lsof -i @aaa.bbb.ccc
+	  $lsof -i:80		#查看80端口被谁占用
+        6.搜索活动的连接
+          $lsof -i @192.168.1.10
           $lsof -i tcp@aaa.bbb.ccc:ftp-data     #指定协议
           $lsof -i 4    #指定IP版本
           $lsof -i 6
@@ -280,13 +296,18 @@
           使用命令名称
           $lsof -c <first_characters_of_command_name_that_interest_you>
           $lsof -c mysqld
-          查看是谁在使用设备文件
-          $lsof /dev/sda6
+          查看打开某个文件的应用程序
+          $lsof /tmp/mysql.sock
         9.查看某个用户的操作
           $id -u cinder
           502
           $lsof -u 502 or $lsof -u cinder
           $lsof -u ^cinder #是取反的意思
+	10.恢复删除的文件
+	  当进程打开了某个文件，只要该进程保持打开该文件，即使将其删除，它依然存在于磁盘中
+	  eg.删除了apache的error_log
+	  $lsof | grep error_log	#获得error_log的pid和文件描述符(FD)
+	  $cat /proc/$PID/fd/$FD > /$path/error_log	#使用IO重定向将其复制到临时位置，再移到所需位置
 man
         -a      显示所有匹配项
         -d      显示man查照手册文件时候，搜索路径信息，不显示手册页内容
