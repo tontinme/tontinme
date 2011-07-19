@@ -23,6 +23,7 @@
 ------ps
 ------rpm
 ------rsync
+------sar
 ------ss
 ------strace
 ------su & sudo
@@ -223,7 +224,45 @@
 	xargs使用-P参数，可以启动多个grep来并发控制
 	  eg. find ./ -name "*.log" -print0 | xargs -0 -n1 -P14 grep -H "baidu" > /dev/null
 #iostat
-	$report cpu statistics and I/O statistics for devices,partitions and NFS
+	report cpu statistics and I/O statistics for devices,partitions and NFS
+	使用strace查看iostat从哪里得到的IO相关信息
+	  $strace -eopen iostat
+	常用的iostat命令格式
+	  $iostat -dx 1		#每隔一秒显示一次IO扩展信息
+	  [ec2-user@ip-10-161-106-51 ~]$ iostat -dx 1
+  	  	Linux 2.6.34.7-56.40.amzn1.x86_64 (ip-10-161-106-51)    07/19/2011      _x86_64_        (1 CPU)
+  	  	Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
+  	  	xvdap1            0.00     0.05    0.00    0.08     0.05     1.09    13.20     0.00    6.02   2.92   0.03
+  	  	xvdf              0.00     0.00    0.00    0.00     0.00     0.00    46.52     0.00   49.68   3.32   0.00
+  	  	
+  	  	Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
+  	  	xvdap1            0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00   0.00   0.00
+  	  	xvdf              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00   0.00   0.00
+	  #Note: 开头显示的是自系统启动开始的平均值，后面显示的是每段时间间隔里的平均值
+	  相关参数含义：
+		rrqm/s		队列中每秒钟合并的读请求数量
+		wrqm/s		队列中每秒钟合并的写请求数量
+		r/s		每秒钟完成的读请求数量
+		w/s		每秒钟完成的写请求数量
+		rsec/s		每秒钟读取的扇区数量
+		wsec/s		每秒钟写入的扇区数量
+		avgrq-sz	平均请求扇区的大小
+		avgqu-sz	平均请求队列的长度
+		await		平均每次请求的等待时间
+		svctm		平均每次请求的等待时间
+		util		设备的利用率
+	  这些参数的含义（相对重要的是后面几个）
+		util: 设备的利用率。如果它接近100%，通常说明设备能力趋于饱和（并不绝对，比如设备有写缓冲）
+		      有时会出现大于100%的情况，这是因为读取数据的时候并非原子操作
+		svctm: 平均每次请求的服务时间，(r/s+w/s)*(svctm/1000)=util
+		       eg.如果util达到100%，那么svctm=1000/(r/s+w/s),假设IOPS是1000，那么svctm大概在1ms左右，\
+			如果长时间大于这个数值，说明系统出了问题
+		#Note:svctm参数在未来某个版本的iostat会被删除
+		await: 平均每次请求的等待时间，这个时间包括了队列时间和服务时间
+		       也就是说，一般情况下，await大于svctm，它们的差值越小，则说明队列时间越短，反之差值越大\
+			队列时间越长，说明系统出了问题
+		avgqu-sz: 平均请求队列的长度。毫无疑问，队列长度越短越好
+	#Note:有时候iostat会显示一些很离谱的结果，官方FAQ的解释是：http://sebastien.godard.pagesperso-orange.fr/faq.html	
 #iptraf
 	#iptraf command is interactive colorful IP LAN monitor. It is an ncurses-based IP LAN\
 		monitor that generates various network statistics including TCP info, UDP counts,\
@@ -405,6 +444,8 @@ man
 		-v	打印详细信息
 		-r	递归同步
 		-a	同步时间戳
+#sar
+	搜集、报告和存储系统活动信息
 #ss
 	#ss command is used to dump socket statistics. It allows showing information similar to\
 		netstat.
