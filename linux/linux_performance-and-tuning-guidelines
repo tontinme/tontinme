@@ -450,4 +450,52 @@
 						 and specify the maximun number of PID files and level of debug in syslog
 		  /proc/sys/net/*	Tuning of network in general, IPv4 and IPv6
 		  /proc/sys/vm/*	Management of cache memory and buffer
-	  Using the ssyctl command
+	  Using the sysctl command
+		sysctl uses the names of files in the /proc/sys drectory tree as parameters
+		$cat /proc/sys/kernel/shmmax
+		$sysctl kernel.shmmax
+		  -w	#Use this option when you want to change a sysctl setting
+		  -p 	#Load in sysctl settings from the file specified or /etc/sysctl.conf if none given
+		  -a	#Display all values currently available
+	#Tuning the processor subsystem
+	  Tuning process priority
+	  	It is not possible to change the process priority of a process. This is only indirectly possible\
+			through the use of the nice level of the process, but even this is not always possible
+		If a process is running too slowly, you can assign more CPU to it by giving it a lower nice level.
+		Linux supports nice levels from 19(lowest priority) to -20(highest priority). The default value is 0
+		$nice & $renice 	#Change nice of process
+	  CPU affinity for interrupt handling
+		>Bind processes that cause a significant amount of interrupts to a CPU
+		>Let physical processors handle interrupts
+	  Considerations for NUMA systems
+	#Tuning the vm subsystem
+	  #If you do choose to modify the virtual memory parameters(in /proc/sys/vm), we recommend that you \
+		#change only one parameter at a time and monitor how the server performs
+	  Setting kernel swap and pdflush behavior
+		>The parameter stored in /proc/sys/vm/swappiness can be used to define how aggressively memory\
+			 pages are swapped to disk ($sysctl -w vm.swappiness=100)
+		>The value stored in /proc/sys/vm/dirty_background_ratio defines at what percentage of main memory\
+			the pdflush daemon should write data out to the disk
+		  #If larger flushes are desired then increasing the default value of 10% to a larger value \
+			#will cause less frequent flushes
+		>Using the parameter stored in /proc/sys/vm/dirty_ratio the system administrator can define at \
+			what level the actual disk writes will take place
+		  #A value of 10 would mean that data will be written into system memory until the file system \
+			#cache has a size of 10% of the server's RAM
+	  Swap partition
+		The swap device is used when physical RAM is fully in use and the system needs additional memory
+		Linux kernels 2.4 and beyond support swap sizes up to 24GB per partition with an 8TB theoretical\
+			 maximum for 32-bit systems
+		Linux can take advantage of multiple swap partitions or files and perform the reads and writes\
+			in parallel to the disks
+		If you have multiple swap partitions, you can change priority level of them by modifying /etc/fstab
+			eg. $vim /etc/fstab
+			    /dev/sda2	swap	swap	sw,pri=3	0 0 
+			    ...
+			swap partitions are used from the highest priority to tht lowest(where 32767 is the \
+				highest and 0 is the lowest)
+	  HugeTLBfs
+		This memory management feature is valuable for application that use a large virtual address\
+			space. It is especially useful for database applications
+		The CPU's ' Translation Lookaside Buffer(TLB) is a small cache used fro storing virtual-to-physical\
+			mapping information
