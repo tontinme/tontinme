@@ -437,7 +437,6 @@ man
 		$rpm -qlp XXX.rpm
 	4.列出rpm包的依赖关系
 		$rpm -qRp XXX.rpm
->>>>>>> 24f785c7b0462c8bfedb28ac44de7822caae39d8
 #rsync
 	#参数
 		-z	开启压缩功能
@@ -451,8 +450,19 @@ man
 		netstat.
 
 #strace
-	#trace system calls and signals.This is useful for debugging webserver and other server \
-		problems.
+	#trace system calls and signals.This is useful for debugging webserver and other server problems.
+	#trace 能够显示所有由用户空间程序发出的系统调用
+	-f	告诉strace同时跟踪fork和vfork出来的进程
+	-o xxx.txt	输出到某个文件
+	-e execve	只记录execve这类系统调用
+	-p pid	跟踪指定的进程，此参数常用来调试后台进程
+	-r	打印每一个系统调用的相对时间
+	-t	在输出中的每一行前加上时间信息
+	-tt	时间精确到微秒级
+	-ttt	打印相对时间
+	-v	输出所有系统调用。默认情况下，一些频繁调用的系统调用不会输出
+	-c	统计每种系统调用所执行的时间，调用次数，出错次数
+	-e expr	输出过滤器，通过表达式，可以过滤掉你不想要的输出
 #su & sudo
 	#su
 		直接切换为超级用户
