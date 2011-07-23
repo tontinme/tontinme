@@ -1,0 +1,4 @@
+[MACHINES]
+eth1: aws
+[COMMANDS]
+FINGERPRINT: ls /home
