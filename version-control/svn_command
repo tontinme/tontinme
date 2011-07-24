@@ -1,19 +1,80 @@
-1.创建一个项目仓库
-	svnadmin create /home/cinder/test_svn
-2.import初始文件到项目仓库
-	svn import -m source_file_path ${URL}
-3.checkout文件到本地目录
+------checkout文件到本地目录
+------import初始文件到项目仓库
+------svn同步操作(svndump&svnsync&svnhotcopy)
+------冲突
+------创建一个项目仓库
+------更新本地工作拷贝，提交工作修改
+------检查文件状态或日志
+------文件/目录比较(工作拷贝与项目仓库中的比较)
+------
+#checkout文件到本地目录
 	svn checkout ${URL}
-4.检查文件状态或日志
-	svn status [file/dir]
-	svn log [file/dir]
-	svn log -r6:8 [file/dir] 	#查看版本6到8之间的日志
-5.文件/目录比较(工作拷贝与项目仓库中的比较)
-	svn diff [file/dir] OR svn diff -rHEAD [file/dir]	#-rHEAD表示最新版本
-6.更新本地工作拷贝，提交工作修改
-	svn update(up) [file/dir]	svn commit(ci) -m 'comments' [file/dir]
-7.冲突
+#import初始文件到项目仓库
+	svn import -m source_file_path ${URL}
+#svn同步操作(svndump&svnsync&svnhotcopy)
+	#svndump
+	优缺点
+	  比较灵活，可以全量备份也可以增量备份，并提供了版本恢复机制，但是如果版本比较大，如版本数增长\
+		到数万，数十万，那么dump的过程将非常慢，备份耗时，恢复更耗时
+	USAGE
+	  $svnadmin dump REPOS_PATH [-r LOWER[:UPPER] [--incremental]]
+	  $svnadmin help dump
+	  --incremental		#增量备份
+	  -r			#指定备份版本号
+	#svnadmin hotcopy
+	优缺点
+	  原设计目的估计不是用来备份的，只能进行全量拷贝，不能进行增量备份
+	  备份过程较快，灾难恢复也很快，如果备份机上已经搭建了svn服务，甚至不需要恢复，只需要进行简单配置即可切换到备份库上工作
+	USAGE
+	  $svnadmin hotcopy REPOS_PATH NEW_REPOS_PATH
+	  $svnadmin help hotcopy
+	#svnsync
+	什么是svnsync
+	  svnsync将一个版本库的修订版本"重放"到另一个
+	优缺点
+	  实际上是制作两个镜像库，当一个坏了的时候，可以迅速切换到另一个。不过，必须svn1.4版本以上才支持这个功能
+	  缺点，当作为两个镜像库使用时，没办法做到"想完全抛弃今天的修改恢复到昨晚的样子"，而当作为普通备份机制\
+		  每日备份时，操作又相对麻烦
+	使用svnsync时应该注意的事项
+	  *同步用户需要对整个版本库有读/写权限
+	  *同步用户需要能够修改特定修订版本属性
+	  *镜像版本库需要对除同步用户以外的用户只读
+	  *在你同步一个镜像版本库之前，镜像版本库需要在修订版本0
+	svnsync操作
+	  $svnsync SUBCOMMAND DEST_URL  [ARGS & OPTIONS ...]
+	  1.创建镜像Repository
+		  $svnadmin create ${MIRROR_REPO_PATH}
+		  #在目标机上创建要同步到的目录$MIRROR_REPO_PATH，修改${MIRROR_REPO_PATH}/conf目录下的配置文件,设置所\
+			  #有用户只读(只有同步用户可读/写)
+		    eg.[/]
+		       * = r
+		       svnsync = rw		#这里假设同步用户是svnsync
+	  2.修改目标库的脚本pre-revprop-change
+	  	$touch rep/hooks/pre-revprop-change
+	  	$echo "#!/bin/bash" > pre-revprop-change
+	  	$chmod 755 rep/hooks/pre-revprop-change
+	  3.初始化
+	  	$svnsync initialize(init) svn://${MIRROR_REPO_PATH} ${MASTER_REPO_PATH} --username=xxx --password=xxx
+	  4.同步
+	  	$svnsync sync svn://${MIRROR_REPO_PATH}
+	  5.如果同步因为某种原因被意外终止，可以再次运行svnsync再同步
+	  	如果报如下错误:
+	  	$svnsync sync file:///app/rep 
+	  	Failed to get lock on destination repos, currently held bu 'sys.xxx.cn:b4'
+	  	可使用如下命令解锁
+	  	$svn propdel svn:synclock --revprop -r0 file:///app/rep
+	  	然后再次同步就可以了
+#冲突
 	svn update后产生冲突时，若要放弃本地修改:
 	OR 不小心删除了文件:
 	$svn revert [file/dir]	
-
+#创建一个项目仓库
+	svnadmin create /home/cinder/test_svn
+#更新本地工作拷贝，提交工作修改
+	svn update(up) [file/dir]	svn commit(ci) -m 'comments' [file/dir]
+#检查文件状态或日志
+	svn status [file/dir]
+	svn log [file/dir]
+	svn log -r6:8 [file/dir] 	#查看版本6到8之间的日志
+#文件/目录比较(工作拷贝与项目仓库中的比较)
+	svn diff [file/dir] OR svn diff -rHEAD [file/dir]	#-rHEAD表示最新版本
