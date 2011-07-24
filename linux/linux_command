@@ -571,10 +571,13 @@ man
 		PR由系统内定自行调整，要把所有process的NI值都考虑进来，调度程序才能决定一个process的PR。
 #uptime
 	#tell how long the system has been running
-	the uptime command can be used to see how long the server has been running .\
-		the current time, how long the system has been running, how many users\
-		are currently logged on, and the system load averages for the past 1,5,\
-		and 15 minutes
+	[root@www2 init.d]# uptime
+	7:51pm up 2 days, 5:43, 2 users, load average: 8.13, 5.90, 4.94
+	the uptime command can be used to see how long the server has been running .the current time, how many\
+		users are currently logged on, and the system load averages for the past 1,5, and 15 minutes
+	一般来说只要每个CPU的当前活动进程数不大于3那么系统的性能就是良好的，如果每个CPU的任务数大于5，那么就\
+		表示这台的性能有严重问题（比如上面的例子，如果假设有2个CPU，那么每个CPU的当前任务数是：8.13/2=4.65）\
+		，表示该系统的性能是可以接受的
 #vmstat
 	#reports information about processes,memory,paging,block IO,traps,and cpu activity
 		for example	$vmstat 3
