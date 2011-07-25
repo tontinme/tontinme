@@ -4,7 +4,7 @@
 ------echo相关参数
 ------export
 ------for循环
------getopts
+-----getopts ------ coming soon!
 ------if then else
 ------脚本中实现pause效果
 ------控制通配符（Globbing）
@@ -101,6 +101,22 @@
 			mkdir -p $tmp
 		fi
 	#if判断条件
+		-b filename	Block specail file
+		-c filename	Special character file
+		-d directoryname	Check for directory existence
+		-e filename	Check for file existence
+		-f filename	Check for regular file existence not a directory
+		-G filename	Check if file exists and is owned by effective group ID
+		-g filename	true if file exists and is set-group-id
+		-k filename	Sticky bit
+		-L filename	Symbolic link
+		-O filename	True if file exists and is owned by the effective user id
+		-r filename	Check if file is a readable
+		-S filename	Check if file is socket
+		-s filename	Check if file is nonzero size
+		-u filename	Check if file set-ser-id bit is set
+		-w filename	Check if file is writable
+		-x filename	Check if file is executable
 #脚本中实现pause效果
 	read -n1 -p "Press any key to continue"
 #控制通配符（Globbing）
@@ -123,21 +139,21 @@
 	${!varprefix*}	匹配之前所有以varprefix开头进行声明的变量
 #PS1支持的变量说明
 	#默认：[\u@\h \W]\$
-	\t	当前时间是HH:MM:SS格式
 	\d	日期是“星期 月 日”格式
+	\h	主机名
+	\H	主机名
 	\n	换行符
 	\s	shell的名字，$0的基名
+	\t	当前时间是HH:MM:SS格式
+	\T	以12小时格式表示当前时间
 	\w	当前工作目录
 	\W	当前工作目录的基名
 	\u	当前用户名
-	\h	主机名
 	\#	该命令的编号
 	\!	该命令的历史编号
 	\$	如果UID是0，则为#，否则是$
 	#以下为bash 2.x版才支持的
 	\@	以12小时am/pm格式表示当前时间
-	\H	主机名
-	\T	以12小时格式表示当前时间
 #取出两个目录中不同的文件
 	$cat dir1.list dir2.list | sort | uniq -u
 #取得一个正在运行进程的PID
