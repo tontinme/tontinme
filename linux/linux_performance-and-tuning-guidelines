@@ -499,3 +499,42 @@
 			space. It is especially useful for database applications
 		The CPU's ' Translation Lookaside Buffer(TLB) is a small cache used fro storing virtual-to-physical\
 			mapping information
+		To keep translations as fast as possible, the TLB is usually small. It is not uncommon for \
+			large memory applications to exceed the mapping capacity of the TLB
+		To allocate hugepage, you can define the number of hugepages 
+		  $sysctl -w vm.nr_hugepages=125
+		  $cat /proc/sys/vm/nr_hugepages
+		If your application uses huge pages through the mmap() system call, you have to mount a file\
+			system of type hugetlbfs like this :
+		  $mount -t hugetlbfs none /mnt/hugepages
+		/proc/meminfo file will provide information about hugetlb pages
+	#Tunning the disk subsystem
+	  Hardware considerations before installing linux
+	  	If it is necessary to implement a hardware RAID array, you will need a RAID controller for \
+			your system 
+		There are benefits to running Linux on a multipartitioned or even logical volume disk:
+		  >Improved security with finer granularity on file system attributes
+		  >Improved data integrity, so loss of data with a disk crash would be isolated to the affected\
+		  	partition
+		  >New installations and upgrades can be done without affecting other more static partitions
+		  >More efficient backup process
+		Linux partitions and server environments
+		  /home		This is the home directory for all users on the system
+		  /tmp		If you are running a high-performance computing environment, large amounts of \
+		  			temporary space are needed during compute time, then released upon completion
+		  /usr		This is where th kernel source tree and Linux documentation are located. 
+		  		The /usr/local directory stores the executables that must be accessed by all \
+					users on the system and is good location to store custom scripts developed\
+					for your environment
+		  /var		The /var partition is important in mail, Web and print server environment, because\
+		  			it contains the log files for these environments and the overall system log
+				Further separation of this partition is possible by separating out /var/spool/mail\
+					for a mail server or /var/log for system logs
+		  /opt		The installation of some third-party software products
+	  I/O elevator tuning and selection
+	  	Select the rithe I/O elevator in kernel 2.6
+		  The administrator now has the possibility to isolate a specific I/O pattern on a disk subsystem \
+		  	and select the appropriate elevator algorithm
+		Impact of nr_requests
+		  The plugable I/O scheduler implementation of kernel 2.6 also features a way to increase or decrease\
+		  	the number of requests that can be issued to a disk subsystem
