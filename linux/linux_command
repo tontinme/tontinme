@@ -3,10 +3,13 @@
 ------adduser&useradd
 ------at
 ------alias
+------chattr(lsattr)
 ------chroot
 ------cp
 ------crontab
 ------dd
+------df
+------du
 ------find
 ------free
 ------grep
@@ -73,6 +76,29 @@
 	#工作中可能经常要删除一些log文件，可以这样定义：
 		$alias rmlog="find /logs -type f -name *.tar -size +500M -exec rm -i {} \;"
 		$alias rmlg="find / -type f -name *.tar -size +1G -exec rm -i {} \;"
+#chattr
+	$chattr [ -RVf ] [ -v version ] [ mode ] files...
+	#chattr可以改变linux文件系统的文件属性
+	-R	递归执行，即包括子目录
+	-V	输出详细信息
+	-f	隐藏一般的出错信息
+	#The format of a symbolic mode is +-=[acdeijstuADST]
+		+	add attributes
+		-	remove attributes
+		=	specify the only attributes
+		#mode
+		a	append only，只能向文件中添加数据，而不能删除
+		c	compressed，设定文件是否压缩后再存储，读取时需经过自动解压操作
+		d	no dump，设定文件不能称为dump程序的备份目标
+		e	extent format，文件或目录的默认属性
+		i	immutable，设定文件不能被删除、改名、设定链接关系，同时不能写入或新增内容
+		j	data journalling
+		s	secure deletion，保密性的删除文件或目录，即硬盘空间被全部收回
+		u	与s相反，数据内容其实还在磁盘中，可以用于undeletion
+		...
+		#get more information from manual
+	#lsattr
+		另外还有lsattr来显示文件或目录的当前属性
 #chroot
 	#即change root directory，经过chroot后，系统读取到的目录和文件将不再是旧系统根下的而是新\
 		根下（即被指定的新的位置）的目录结构和文件，因此带来三个好处：
@@ -169,6 +195,10 @@
 		seek作用是跳过输出文件中指定大小的部分,这就达到了创建大文件，但是并不实际写入的目的
 		#注意：
 			创建并不实际占用block的大文件后，将其拷贝到新目录，du显示为1G
+#df
+	df命令可以获取硬盘被占用了多少空间，目前还剩下多少信息等
+#du
+	du的功能是逐级进入指定目录的每一个子目录并显示该目录占用文件系统数据块
 #find
 	#忽略大小写的查找
 		$find -iname 'xxx'
@@ -610,6 +640,9 @@ man
 		$w cinder
 #watch
 	#当想重复一个命令或者shell脚本（只间隔几秒），可以使用watch
+	watch runs commands repeatedly, displaying its output and errors ( the first screenfull).
+	This allow you to watch the program output change over time
+	By default, the program is run every 2 seconds
 	1.方便查看日志文件以及其他增长型文件的速度
 		$watch ls
 	2.-d选项高亮，对变化的数值突出显示
