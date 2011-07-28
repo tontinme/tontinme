@@ -18,6 +18,7 @@
 ------查看是否为64位的cpu
 ------查看系统的发行版本
 ------查看系统的内核版本
+------端口状态说明LISTENING,ESTABLISHED,TIME_WAIT,CLOSE_WAIT
 ------刻录设备检测
 
 #/etc/fstab格式解释
@@ -338,6 +339,22 @@
 	$lsb_release -a
 #查看系统的内核版本
 	$uname -a
+#端口状态说明LISTENING,ESTABLISHED,TIME_WAIT,CLOSE_WAIT
+	TCP状态转移要点
+	  TCP协议规定，对于已经建立的连接，网络双方要进行四次握手才能成功断开连接，如果缺少了其中某个步骤，\
+	  	将会使连接处于假死状态，连接本身占用的资源不会被释放。
+	LISTENING状态
+	  FTP服务启动后首先处于侦听(LISTENING)状态
+	ESTABLISHED状态
+	  ESTABLISHED的意思是建立连接，表示两台机器正在通信
+	CLOSE_WAIT
+	  对方主动关闭连接或者网络异常导致连接中断，这时我方的状态会变成CLOSE_WAIT，此时我方要调用close()来\
+	  	使得连接正确关闭
+	TIME_WAIT
+	  我方主动调用close()断开连接，收到对方确认后状态变为TIME_WAIT，TCP协议规定TIME_WAIT状态会一直持续\
+	  	2MSL(即两倍的分段最大生存期)，以此来确保旧的连接状态不会对新连接产生影响。处于TIME_WAIT状态\
+		的连接占用的资源不会被内核释放，所以作为服务器，在可能的情况下，尽量不要主动断开连接，以减少\
+		TIME_WAIT状态造成的资源浪费
 #刻录设备检测
 	cdrecord -scanbus	#用于SCSI光驱
 	cdrecord -scanbus dev=APAPI
