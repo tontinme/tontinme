@@ -538,3 +538,15 @@
 		Impact of nr_requests
 		  The plugable I/O scheduler implementation of kernel 2.6 also features a way to increase or decrease\
 		  	the number of requests that can be issued to a disk subsystem
+		  The correct value that should be used for the number of request largely depends on the underlying\
+		  	disk subsystem and even more on the I/O characteristics of the workload
+		  The impact of different values of nr_requests can also differ from the file system and I/O scheduler
+		Impact of read_ahead_kb
+		  In the case of large streaming reads, increasing the size of the read ahead buffer might increase \
+		  	performance
+		  Remember that increasing this value will not increase performancd for most server workloads because\
+		  	these are mainly random I/O operations
+		  This value stored in /sys/block/<disk_subsystem>/queue/read_ahead_kb defines how large the read \
+		  	operations can be in KB
+	  File system selection and tuning 
+
