@@ -20,3 +20,4 @@
   	layman -f
   layman -a enlightenment
 #Windows_Manager--openbox
+  emerge pcmanfm
