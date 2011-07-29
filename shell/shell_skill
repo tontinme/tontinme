@@ -7,8 +7,28 @@
 	man命令的第二个参数是区域码，用来区分索引词的范围，比如printf,在C标准库里面的printf跟bash当中的printf是不同的\
 		前者的查询是man 3 printf，后者是man 1 printf。如果这个区域码省略，就会从1开始搜索，直到找到为止。
 	$man man 可以看到详细的解释
-	man 1 intor	一篇对从未接触过linux的用户的简明教程
-	man 2 syscall	内核系统请求的列表，按内核版本注释分类，系统编程必备
+	man 7 ascii		查看ASCII码表
+	man 1 intor		一篇对从未接触过linux的用户的简明教程
+	man 2 syscall		内核系统请求的列表，按内核版本注释分类，系统编程必备
+	man 2 select_tut	关于'select()'系统请求的教程
+	man 3 string		在<string.h>头文件内的所有函数
+	man 3 stdio		关于<stdio.h>头文件的使用，标准输入/输出库的说明
+	man 3 errno		所有'errorno'的取值及说明
+	man 4 console_codes	linux的终端控制码及其使用解释
+	man 4 full		介绍'/dev/full'这个总是处于“满“状态的提盘(对应/dev/null这个总是空的设备)
+	man 5 proc		介绍'/proc'下的文件系统
+	man 5 filesystems	各种linux文件系统
+	man 7 bootparam		详细解释内核启动参数
+	man 7 charsets		解释各种语言的编码集
+	man 7 glob		解释glob文件名管理机制的工作过程
+	man 7 hier		解释linux文件系统结构各个部分的作用
+	man 7 operator		C语言的运算符的列表
+	man 7 regex		介绍正则表达式
+	man 7 suffixes		常见文件后缀名的列表跟解释
+	man 7 time		linux的时钟机制解释
+	man 7 units		数值单位及其数值的解释
+	man 7 utf8		描述utf-8编码
+	man 7 url		解释url,uri,urn等的标准
 #netstat查看系统中占用端口的进程
 	$netstat -tulnp
 		-t	显示TCP连接信息
@@ -30,6 +50,9 @@
 #重置终端
 	$reset
 	如果你不小心cat了某个二进制文件，很可能整个终端就傻掉了。这时敲入reset，就能恢复正常了。
+	类似的还有
+	  <ctrl+l> OR
+	  $tput clear
 #更友好的显示当前挂载的文件系统
 	$mount | column -t
 	column用于把输出结果进行列表格式化操作
