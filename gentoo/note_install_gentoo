@@ -1,3 +1,7 @@
+#add user
+  useradd cinder
+  mkdir /home/cinder
+  gpasswd -a cinder wheel	#allow cinder use 'su to root'
 #circular dependencies
   USE="-fam"
   emerge gamin
@@ -20,4 +24,11 @@
   	layman -f
   layman -a enlightenment
 #Windows_Manager--openbox
-  emerge pcmanfm
+  #emerge pcmanfm
+  #menumaker
+  	emerge menumaker
+	$mmaker -v OpenBox3
+	cp ~/.config/openbox/menu.xml /etc/xdg/openbox/menu.xml		#apply for all users
+  #emerge obconf
+  	emerge 
+  #emerge tint2
