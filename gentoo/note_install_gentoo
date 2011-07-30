@@ -24,11 +24,26 @@
   	layman -f
   layman -a enlightenment
 #Windows_Manager--openbox
-  #emerge pcmanfm
-  #menumaker
+  #emerge pcmanfm	#file manager
+  #Edit menu of Right key
+  	#menumaker
   	emerge menumaker
 	$mmaker -v OpenBox3
 	cp ~/.config/openbox/menu.xml /etc/xdg/openbox/menu.xml		#apply for all users
-  #emerge obconf
-  	emerge 
-  #emerge tint2
+	#obmenu		#more powerful than menumaker
+  #theme
+  	#Location	~/.themes/
+  	emerge obconf	#theme manager
+  	emerge gtk-chtheme	#appreance control
+	install openbox-themes
+  #emerge tint2		#taskbar
+  #gtk-icons
+  	First, download and extract the desired icon theme to /usr/share/icons(system-wide access) or ~/.icons(local user access)
+	then, add the following to ~/gtkrc.mine
+	  gtk-icon-theme-name = "[name-of-icon-theme]"	#where [name-of-icon-theme] is the name of the icon theme directory
+	ensure ~/.gtkrc-2.0 is configured to parse ~/.gtkrc.mine
+	  # -- THEME AUTO-WRITTEN DO NOT EDIT
+	  include "/usr/share/themes/TropicBomb/gtk-2.0/gtkrc"
+	  include "/home/cinder/.gtkrc.mine"
+	  # -- THEME AUTO-WRITTEN DO NOT EDIT
+	OR you can use lxappearance to choose GTK icon themes	
