@@ -1,0 +1,9 @@
+------configure/make/make install的作用
+#configure/make/make install的作用
+	这些都是典型的使用GNU的autoconf和automake产生的程序的安装步骤
+	./configure是用来检测你的安装平台的目标特征的，比如它会检测你是不是有CC或GCC，并不是需要CC或GCC，\
+		它是个shell脚本
+	  #这一步用来生成Makefile，你可以在configure后加上参数才对安装进行控制
+	make是用来编译的，它从Makefile中读取指令，然后编译
+	make intall是用来安装的，它也从Makefile中读取指令，安装到指定的位置
+	  #这一步可能需要root权限，因为可能要向系统写入文件
