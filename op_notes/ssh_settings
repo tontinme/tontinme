@@ -1,3 +1,5 @@
+------dsh(代替ssh管理大量计算机)
+------pssh(并行的ssh)
 ------putty中文显示
 ------ssh挂载远程目录文件系统
 ------比较本地和远程文件
@@ -9,6 +11,37 @@
 ------通过authorized_keys指定登录后要执行的命令
 ------通过中间主机建立ssh连接
 
+#dsh(代替ssh管理大量计算机)
+	dsh(Distributed Shell)是专为在远程系统上运行shell命令设计的，可以简化对大量计算机的操作
+	$dsh [-m machinename |-a | -g groupname ] [ -r remoteshellname ] [ -c | -w | -i | -F forklime ] -- commandline
+	eg.
+	  	$dsh --show-machine-names -m aws -m linode -- uptime
+	  	#用-m指定主机，主机名的规则与ssh相同，命令行中的双连字符把dsh命令本身的选项与要运行的命令分隔开
+	  		#--show-machine-names选项在远程命令发出的输出前面加上主机名
+	dsh -a
+	  	指定-a，就会在$HOME/.dsh/machines.list中列出的所有主机上运行指定的命令
+	dsh -g groupname
+	  	可以在$HOME/.dsh/group/groupname文件中创建更小或专门的计算机集合，其中groupname是您指定的有意义的名称
+	dsh --file filename
+	  	在filename中列出的主机列表上执行命令
+	--wait-shell  
+	  	dsh在默认情况下并行的运行命令，如果希望顺序执行，加上--wait-shell
+	#dsh无法复制文件
+#pssh(并行的ssh)
+	除了具备dsh的所有功能之外，pssh还可以把文件从一组系统复制到中心服务器或反向复制，以及杀死一组系统上的进程
+	pssh包含五个实用程序
+		parallel-ssh	在多个主机上并行的运行命令
+		parallel-scp	把文件并行的复制到多个主机上
+		parallel-rsync	通过rsync协议把文件高效的并行复制到多个主机上
+		parallel-slurp	把文件并行的从多个远程主机复制到中心主机上
+		parallel-nuke	并行的在多个远程主机上杀死进程
+	与dsh不同，pssh总是通过清单文件指定主机，其中的每行采用host[:port] [user]形式
+		eg. $parallel-ssh -h servers.txt uptime
+	默认情况下，pssh输出在stdout中，可以用--outdir /PATH/SPECIFIC_DIR指定输出文件
+	parallel-ssh可以生成最多32个进程，并行的连接到各个节点，如果远程命令在60s内没有完成，连接会终止
+	可以用-t设置更长的时间(parallel-scp和parallel-rsync没有默认的到期时间，但有-t参数)
+	parallel-slurp把文件的每个拷贝存储在按远程主机命名的子目录中，不会覆盖本地的相应文件
+	parallel-nuke相当于运行ssh host killall
 #putty中文显示
 	打开putty主程序，选择window-〉Appearance-〉Font settings-〉Change...,选择Fixedsys字体,字符集选择CHINESE_GB2312。
 在window-〉Appearance-〉Translation中，Received data assumed to be in which character set 中,把Use font encoding改为UTF-8.
