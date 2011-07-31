@@ -35,6 +35,7 @@
 ------tcpdump
 ------tmpwatch
 ------top
+------ulimit
 ------uptime
 ------vmstat
 ------w
@@ -334,10 +335,18 @@
         1.查看对某个文件的使用情况
           查看哪些进程对某个文件进行了调用
           eg.   $lsof /var/log/mysqld.log
-        2.查看对文件系统的使用
+          #显示打开指定文件的所有进程
           /tmp目录被垃圾文件塞满了，但是，用ls又看不到太大文件，谁干的
           eg.   $lsof /tmp
-        3.查找打开，但是不能连接的文件
+          #无法卸载
+          查看谁令mount的分区无法卸载
+          $lsof <file_system_name>
+	2.显示目录下被进程打开的文件
+      	  $lsof +d /DIR/		
+	  $lsof	+D /DIR/	#会搜索目录下的所有目录，时间相对较长
+	3.显示指定文件描述符的进程
+	  $lsof -d FD
+        4.查找打开，但是不能连接的文件
           一个进程打开一个文件，然后将其设为unlinked状态，则此文件资源仍能被进程使用，但是其访问路径已经被删除了\
                 因此，使用ls不能将其列出，只有当进程结束时，才能释放文件占用的资源
           查找unlinked文件，选项+L，作用：列出打开文件的连接数
@@ -346,14 +355,12 @@
           $lsof +L1
 	  同时指定多个参数，需要加上-a参数，否则缺省的情况是显示匹配任何一个参数(OR)
           $lsof -a -p 605 -d ^txt	#-a参数表示所有参数都必须满足(AND)
-        4.无法卸载
-          查看谁令mount的分区无法卸载
-          $lsof <file_system_name>
-        5.查看监听socket
-          查看监听端口的进程
+        5.用以显示符合条件的进程情况
+	  $lsof -i[46] [protocol][@hostname|hostaddr][:service|port]
+          #查看监听端口的进程
           $lsof -i
 	  $lsof -i:80		#查看80端口被谁占用
-        6.搜索活动的连接
+          #搜索活动的连接
           $lsof -i @192.168.1.10
           $lsof -i tcp@aaa.bbb.ccc:ftp-data     #指定协议
           $lsof -i 4    #指定IP版本
@@ -368,11 +375,12 @@
           $lsof -c mysqld
           查看打开某个文件的应用程序
           $lsof /tmp/mysql.sock
-        9.查看某个用户的操作
+        9.显示所属user进程打开的文件
           $id -u cinder
           502
           $lsof -u 502 or $lsof -u cinder
           $lsof -u ^cinder #是取反的意思
+	  $lsof -g gid	#显示归属gid的进程情况
 	10.恢复删除的文件
 	  当进程打开了某个文件，只要该进程保持打开该文件，即使将其删除，它依然存在于磁盘中
 	  eg.删除了apache的error_log
@@ -620,6 +628,29 @@ man
 	#top中PR和NI(priority和nice)的区别
 		PR表示目前系统分配给该process的优先权，而若是特别要调整该process的优先权的话，通过提高或降低NI的数值可让PR变化。
 		PR由系统内定自行调整，要把所有process的NI值都考虑进来，调度程序才能决定一个process的PR。
+#ulimit
+	ulimit用于shell启动进程所占用的资源
+	ulimit [-acdfHlmnpsStvw][size]
+	-H	设置硬件资源限制
+	-S	设置软件资源限制
+	-a	显示当前所有的资源限制
+	-c size	设置core文件的最大值，单位blocks
+	-d size	设置数据段的最大值，单位kbytes
+	-f size	设置创建文件的最大值，单位blocks
+	-l size	设置在内存中锁定进程的最大值，单位kbytes
+	-m size	设置可以使用的常驻内存的最大值，单位kbytes
+	-n size	设置内核可以同时打开的文件描述符的最大值，单位n
+	-p size	设置管道缓冲区的最大值，单位kbytes
+	-s size	设置堆栈的最大值，单位kbytes
+	-t size	设置CPU使用时间的最大上限，单位seconds
+	-v size	设置虚拟内存的最大值，单位kbytes
+	#example
+	  1.段错误(segmentation fault)，主要是由于linux系统初始的堆栈大小(stack size)太小的缘故，一般为10M
+	  $ulimit -s 262140	#设置成256M，
+	#如果需要系统记住ulimit的设置，需要编辑/etc/profile，在"ulimit -S -c 0 > /dev/null 2>&1"行下，添加\
+		#"ulimit -s 262140"，保存重启即可
+	  2.对由shell创建的文件大小做限制
+	  $ulimit -f 100	#设置创建文件的最大块(一块=512字节)
 #uptime
 	#tell how long the system has been running
 	[root@www2 init.d]# uptime
