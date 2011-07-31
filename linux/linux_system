@@ -5,7 +5,10 @@
 #------/etc/sysconfig/iptables解释
 ------RHEL & CentOS YUM 免费源
 ------linux安全关机
+------linux单网卡绑多IP
+------linux的内核模块管理命令
 ------linux 光盘刻录软件包
+------linux关机命令详解
 ------linux开机启动过程
 ------linux守护进程
 ------linux系统调用汇总
@@ -146,11 +149,82 @@
 		Unmount		将所有分区挂载为只读模式
 		reBoot		重启
 	这6个字母的顺序可以这样记，单词busier(busy的比较级)反过来。
+#linux单网卡绑多IP
+	1.单网卡绑定多IP在redhat系列中的实现方法
+		假设网卡是eth0，在/etc/sysconfig/network-scripts/目录里创建一个名为ifcfg-eth0:0的文件\
+			内容按照一般情况填写即可(DEVICE="eth0:0"...)
+		如果需要再绑定一个IP地址，只需要把文件名和文件内的DEVICE中的eth0:x加一即可
+		#linux最多支持255个IP别名
+	2.普遍适用的单网卡绑定多IP实现方法
+		ifconfig eth0:1 192.168.1.3 broadcast 192.168.1.255 netmask 255.255.255.0
+		可以把上述命令加在启动自运行文件里，在gentoo下是/etc/conf.d/local.start，某些版本是/etc/rc.d/rc.local
+	3.多网卡共用单IP的实现方法
+		使多块网卡虚拟成一块网卡，具有相同的IP地址，这项技术被称作Trunking(sun),etherchannel(cisco)\
+			bonding(linux)
+		bonding已经包含在2.4.x内核中，只需在编译内核时选中Bonding driver support即可
+		重新编译内核，重启计算机，执行如下命令：
+		  ismod bonding
+		  ifconfig eth0 down
+		  ifconfig eth1 down
+		  ifconfig bond0 ipaddress
+		  ifenslave bond0 eth0
+		  ifenslave bond0 eth1
+		现在两块网卡已经像一块一样工作了，这样可以提高集群节点间的数据传输
+		可以把以上的命令写成脚本，开机启动
+		#bonding可以大大提高服务器到交换机之间的带宽，但是需要在交换机上设置连接bonding网卡的两个子口\
+			#映射为同一个虚拟接口
+#linux的内核模块管理命令
+	1.lsmod	列出已经加载的内核模块
+		lsmod是列出目前系统中已经加载的模块的名称及大小等，另外我们还可以查看/proc/modules
+	2.modinfo
+		查看模块信息，通过查看模块信息来判定这个模块的用途
+	3.modprobe	
+		挂载新模块以及新模块相依赖的模块
+		modprobe -l 	#列出内核中的所有模块，包括已挂载的和未挂载的
+				#该命令读取的模块列表就位于/lib/modules/`uname -r`目录中
+	4.rmmod
+		移除已挂载的模块
+	5.depmod
+		创建模块依赖关系的列表
+		#注：linux 2.6.x的内核自动解决依赖关系，所以这个命令知道就行了
+	6.insmod
+		挂载模块，和modprobe类似，但功能上没有modprobe强
+	7.与内核模块加载相关的配置文件
+		模块的配置文件modules.conf或modprbe.conf
 #linux 光盘刻录软件包
 	cdrecord-2.01-10
 	dvd+rw-tools-7.0-0.el5.3
 	mkisofs-2.01-10
-#linux开启启动过程
+#linux关机命令详解
+	1.shutdown
+		#shutdown命令安全的将系统关闭
+		在系统关机前使用shutdown命令，系统管理员会通知所有登录的用户系统将要关闭
+		并且login执行会被冻结，即新的用户不能再登录
+		直接关机或者延迟一定的时间才关机都是有可能的，还可能重启
+		  这是由所有进程(process)都会收到系统所送达的信号(signal)决定的，这会让像vim之类的程序有时间\
+			  存储目前正在编辑的文档等
+		shutdown执行它的工作是发送信号给init程序，要求它改变runlevel
+		#参数
+		-t	在改变到其他runlevel之前，告诉init多久以后关机
+		-r	重启计算机
+		-k	并不真正关机，只是送警告信号给每位登录者
+		-h	关机后关闭电源(halt)
+		-n	不用init，而是自己来关机。不鼓励使用这个选项
+		-c	cancel current process，取消目前正在执行的关机程序
+			该选项没有时间参数，-c后可以接一个用于解释的Message，该信息将发送给每位使用者
+		-f	在重启计算机时忽略fsck
+		-F	在重启计算机时强迫fsck
+		-time	设定关机前的时间
+	2.halt
+		halt其实就是shutdown -h
+		halt执行时，杀死应用进程，执行sync系统调用，文件系统写操作完成后就会停止内核
+		具体选项查看$man halt
+	3.reboot	
+		和halt类似，reboot stop system
+	4.init
+		init 0	关机
+		init 1 	重启
+#linux开机启动过程
 	加载内核
 		此时计算机内存中还不存在任何操作系统，内核必须完整的加载到可用RAM的第一个兆字节内。为了\
 			实现这个目的，内核是被压缩了。
