@@ -549,4 +549,49 @@
 		  This value stored in /sys/block/<disk_subsystem>/queue/read_ahead_kb defines how large the read \
 		  	operations can be in KB
 	  File system selection and tuning 
-
+	  	Using ionice to assign I/O priority
+		  using the ionice can restrict the disk subsystem utilization of a specific process
+		  There are three priorities that can be assigned using ionice:
+		  	Idle:A process with the assigned I/O priority idle will only be granted access to the disk \
+				subsystem if no other processes with a priority of best-effort or higher request access to data
+			Best-effort:As a default all processes that do not request a specific I/O priority are\
+				assigned to this class. Processes will inherit 8 levels of the priority of their\
+				respective CPU nice level to the I/O priority class
+			Real time;The highest available I/O priority is real time meaning that the respective \
+				process will always be given priority access to the disk subsystem
+		  The ionice tool accepts the following options:
+		  	-c<#>	I/O priority1 for real time, 2 for best effort, 3 for idle
+			-n<#>	I/O priority class data 0 to 7
+			-p<#>	process id of a running task, use without -p to start a task with the respective I/O priority
+		Access time updates
+		  The Linux file system keeps records of when files are created, updated, and accessed.
+		  Eliminating unnecessary I/O can lead to overall improved performance. 
+		  However, under most conditions disabling file access time updates will only yield a very small \
+		  	performence improvement
+		  Mounting file system with the noatime option prevents inode access times from being updated
+		  The performance benefit of disabling access time updates to be written to the file system\
+		  	ranges from 0 to 10% with an average of 3% for file server workloads
+		  #Note:It is generally a good idea to have a seperate /var partition and mount it with the noatime option
+		Select the journaling mode of the file system
+		  Three journaling options of most file system can be set with the data option in the mount comand
+		 	data=journal
+		 	data=ordered(default)
+		 	data=writeback
+		  There are three ways to change the journaling mode on a file system
+		  	When executing the mount command
+		  	  mount -o data=writeback /dev/sdb1 /mnt/mountpoint	#/dev/sdb1 is the file system being mounted
+			Including it in the options section of the /etc/fstab file
+			  /dev/sdb1 /testfs ext3 defaults,data=writeback 0 0 
+		  	If you want to modify the default data=ordered option on the root partition, make the \
+				change to the /etc/fstab file listed above, then execute the mkinitrd command\
+				to scan the changes in the /etc/fstab file and create a new image. Upload grub\
+				or lilo to point to the new image
+		Block size
+		  The block size, the smallest amount of data that can be read or written to a drive, can have \
+		  	a direct impact on a server''s performance	
+		  As a guideline, if your server is handling a lot of small files, then a smaller block size will\
+		  	be more efficient. If your server is dedicated to handling large files, a larger block\
+			size might improve performance
+		  Only a reformat will modify the current block size
+		  When a hardware RAID solutino is being used, careful consideration must be given to the stripe \
+		  	size
