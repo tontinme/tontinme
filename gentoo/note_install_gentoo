@@ -39,7 +39,7 @@
   #emerge tint2		#taskbar
   #gtk-icons
   	First, download and extract the desired icon theme to /usr/share/icons(system-wide access) or ~/.icons(local user access)
-	then, add the following to ~/gtkrc.mine
+	then, add the following to ~/.gtkrc.mine
 	  gtk-icon-theme-name = "[name-of-icon-theme]"	#where [name-of-icon-theme] is the name of the icon theme directory
 	ensure ~/.gtkrc-2.0 is configured to parse ~/.gtkrc.mine
 	  # -- THEME AUTO-WRITTEN DO NOT EDIT
