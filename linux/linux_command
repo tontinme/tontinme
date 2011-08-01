@@ -498,10 +498,30 @@ man
 		$rpm -qRp XXX.rpm
 #rsync
 	#参数
-		-z	开启压缩功能
-		-v	打印详细信息
-		-r	递归同步
-		-a	同步时间戳
+		-z(--compress)	开启压缩功能，--compress-level指定压缩级别，但是通常可以接受标准的压缩级别
+		-v(--verbose)	打印详细信息，类似的还有--process(显示一个进度条),--stats(显示如何执行压缩和传输)
+		-r(recursive)	递归同步，即会复制目录中的所有文件，--dirs(-d)会产生相反的效果：跳过子目录及其内容
+		-l(--links)	会在目标目录中重新创建这些符号链接
+				--copy-links(-L)复制符号链接指向的文件或目录，而不是复制符号链接本身
+				--copy-unsafe-links会复制符号链接指向复制的树之外的文件或目录
+				--safe-links选项忽略unsafe的链接，这更安全
+		--times,--perms,--owner,--group|-tpog分别让rsync保持原来的更新时间戳，权限，所有者和组信息
+		-a(archive)	包括--times,--perms,--owner,--group|tpog,--links,--recursive
+		-e(--rsh)	强制使用ssh，尽管当前的rsync版本默认使用ssh，--rsh "ssh -p 12345"可以指定特殊的ssh端口
+		--exclude(以及相对应的--include)选择要同步的文件夹
+		--delete	建立目标源的精确拷贝，即删除DEST_PATH中和SOURCE_PATH所有不一致的部分
+		-n		预览rsync将执行的操作，发现可能存在的问题
+	#rsync有四种模式
+		1.shell模式，即本地模式，与cp类似
+		2.远程shell模式，它使用ssh执行底层连接和传输，类似于scp
+		3.列表模式，与ls相似
+		4.服务器模式。该模式下，rsync守护进程在一台机器上永久运行，接收文件传输请求。
+		  可以把文件发送给守护进程，也可以向它请求文件。
+		  服务器模式非常适合创建中心备份服务器或项目存储库
+	#rsync增量备份
+		--link-dest=$PATH	#它指定如果文件没有被修改过，就不把它复制到新的备份。相反，在新备份\
+						#中创建一个指向现有备份中同一文件的硬链接
+					#换句话说，新备份只包含已经修改过的文件，其他文件都是链接
 #sar
 	搜集、报告和存储系统活动信息
 #ss
