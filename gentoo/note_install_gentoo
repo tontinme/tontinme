@@ -16,6 +16,8 @@
   #if in vmware
   emerge -av xf86-video-vmware
   emerge -av xf86-input-vmmouse
+  emerge dbus
+  	$rc-update add dbus default
 #Windows_Manager--enlightenment
   #add layman
   	emerge layman
@@ -47,3 +49,5 @@
 	  include "/home/cinder/.gtkrc.mine"
 	  # -- THEME AUTO-WRITTEN DO NOT EDIT
 	OR you can use lxappearance to choose GTK icon themes	
+#soft
+  #emerge firefox
