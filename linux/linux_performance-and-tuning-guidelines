@@ -594,4 +594,87 @@
 			size might improve performance
 		  Only a reformat will modify the current block size
 		  When a hardware RAID solutino is being used, careful consideration must be given to the stripe \
-		  	size
+		  	size of the array. Selecting the corretct stripe size is a matter of understanding the \
+			predominant request size performed by a particular application
+	Tunning the network subsystem
+	  #Note:A problem here can affect other subsystems
+	  Considerations of traffic characteristics
+	  	You should be familiar with the folowing network traffic characteristics and requirements:
+		  >Transaction throughput requirements(peak, average)
+		  >Data transfer throughput requirements(peak, average)
+		  >Latency requirements
+		  >Transfer data size
+		  >Proportion of send and receive
+		  >Frequency of connection establishment and  close or number of concurrent connections
+		  >Protocol(TCP,UDP, and application protocol such as HTTP,SMTP,LDAP)
+		#netstat, tcpdump and ethereal are useful tools to get more accurate characteristics
+	  Speed and duplexing
+	  	One of the easiest ways to improve network performance is by checking the actual speed of the network\
+			interface. The mismatch can have a large performance impact 
+	  MTU size
+	  	Especially in gigabit network, large maximum transmission units(MTU) sizes(also known as JumboFrames)\
+			can provide better network performance
+		The challenge with large MTU sizes is the fact that most networks do not suppport them and that \
+			a number of network cards also do not support large MTU sizes
+		#Note: Use ifconfig change MTU size  $ifconfig eth0 mtu 9000 up
+	  Increasing network buffers
+	  	In modern high-speed networks that connect server sustems, these values should be increased to \
+			enable the system to handle more network packets
+		  >Initiual overall TPC memory is calculated automatically based on system memory; you can find \
+		  	the actual values in /proc/sys/net/ipv4/tcp_mem
+		  >Set the default and maximum amount for the receive socket memroy to a higher value 
+		  	/proc/sys/net/core/rmem_default /proc/sys/net/core/rmem_max
+		  >Set the default and maximum amount for the send socket to a higher value:
+		  	/proc/sys/net/core/wmem_default /proc/sys/net/core/wmem_max
+		  Adjust the maximum amount of option memory buffers to a higher value:
+		  	/proc/sys/net/core/optmem_max
+		Tuning window sizes
+		  Theoretical optimal window sizes can be obtained by using BDP(bandwidth delay product)
+		  	BDP=Bandwidth(bytes/sec)*Delay(or round trip time)(sec)
+		  To keep the network pipe full and to fully utilize the line, network nodes should have \
+		  	buffers available to store the same size of data as BDP
+		Impact of socket buffer size
+		  Small socket buffers could cause performance degradation when a server deals with a lot of\
+		  	concurrent large file transfers
+		Additional TCP/IP tuning 
+		  Tuning IP and ICMP behavior
+		  	sysctl command are used to tune the IP and ICMP behavior
+			eg. Ignore all kinds of icmp packets or pings
+				$sysctl -w net.ipv4.icmp_echo_ignore_all=1
+			#Note: you can see more examples on book
+		  Tuning TCP behavior
+		  	>For servers that receive many connections at the same time, the TIME-WAIT sockets\
+				new connections can be reused. This is useful in Web servers,
+					$sysctl -w net.ipv4.tcp_tw_reuse=1
+			>If you enable this command, you should also enable fast recycling of TIME-WAIT sockets\
+				status
+					$sysctl -w net.ipv4.tcp_tw_recycle=1
+			#Note: you can see more examples on book
+		  Tuning TCP options
+		Performance impact of Netfilter
+		  As Netfilter provides TCP/IP connection tracking and packet filtering capability, in certain\
+		  	circumstances it may have a large performance impact
+		  Netfilter provides packet filtering capability and enhances network security, It can be a \
+		  	trade-off between security and performance. The Netfilter performance impact depends\
+			on the following factors:
+		  	>Number of rules
+			>Order of rules
+			>Complexity of rules
+			>Connection tracking level( depends on protocols)
+			>Netfilter kernel parameter configuration
+		Offload configuration
+		  Some network operations can be offloaded to a network interface device if it supports the \
+		  	capability. You can use the ethtool command to check the current offload configurations
+			eg. Checking offload configurations
+		  Impact of offloading
+		Increasing the packet queues
+		  After increasing the size of the various network buffers, it is recommended that the amount \
+		  	of allowed unprocessed packets be increased, so that the kernel will wait longer dropping\
+			packets. (to do this, edit /proc/sys/net/core/netdev_max_backlog
+		Increasing the transmit queue length
+		  Increase the txqueuelength parameter to a value between 1000 and 20000 per interface. This\
+		  	is especially useful for high-speed connections that perform large, homogeneous data \
+			transfers(use ifconfig command to set txqueuelen,$ifconfig eth1 txqueuelen 2000)
+		Decreasing interrupts
+		  Handling network packets requires the Linux kernel to handle a significant amount of interrupts\
+		  	and context switches unless NAPI is being used
