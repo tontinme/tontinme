@@ -248,6 +248,26 @@
 			#find . -size +20M
 		#查找小于1M的文件
 			#find . -size -1M
+	#mtime 文件内容最后一次被修改的时间
+	 ctime 文件的i节点最后一次被修改的时间
+	 atmie 文件内容的最后访问时间
+	 find {-mtime|-ctime|atime} {+N|N|-N}
+	 N	每个N代表一天24小时
+	 N=0:less than 24 hours ago
+	 N=1:between 24 and 48 hours ago
+	 N=2:between 49 and 72 hours ago
+	 +N 表示当前时间起（N*24+24）小时这个时间点之前
+	 -N 表示当前时间向前（N*24）小时至当前时间
+	 N  表示当前时间向前（N*24+24）小时到当前时间向前（N*24）小时
+	    换句话说，N永远是一个24小时的时间段
+	 假设当前时间为2011/08/09/10:33
+	 -Xtime +1	48小时之前的结果，即2011/08/07/10:33之前
+	 -Xtime 1	距离当前48到24小时的结果，即2011/08/07/10:33--2011/08/08/10:33
+	 -Xtime -1	24小时之内的结果，即2011/08/08/10:33--2011/08/09/10:33
+	 -Xtime +0	24小时之前的结果，即2011/08/08/10:33之前
+	 -Xtime 0	24小时之内的结果，即2011/08/08/10:33--2011/08/09/10:33
+	 ---------2011/08/07/10:33---2011/08/08/10:33---2011/08/09/10:33------
+	 ---Xtime +1--->|<-----Xtime 1----->|<-----Xtime -1----->|
 #free
 	#display the total amount of free and used physical and swap memory in the system,\
 		as well as the buffers used by the kernel
