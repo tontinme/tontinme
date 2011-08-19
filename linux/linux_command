@@ -28,6 +28,7 @@
 ------rpm
 ------rsync
 ------sar
+------screen
 ------ss
 ------strace
 ------su & sudo
@@ -543,6 +544,68 @@ man
 					#换句话说，新备份只包含已经修改过的文件，其他文件都是链接
 #sar
 	搜集、报告和存储系统活动信息
+#screen
+	screen可以在一个控制台（即与主机物理连接的哑终端），xterm窗口或者ssh登录shell中创建和管理多个shell窗口\
+		可以从一个shell窗口迅速切换到另一个窗口，可以离开正在运行的shell并在任何时候重新连接。实际上，\
+		screen提供许多虚拟化的控制台。简单来说，screen是一个可以在多个进程之间多路复用一个物理终端的窗口\
+		管理器，在每一个screen窗口中就像操作一个真实的telnet/ssh连接窗口那样
+	$screen 可以在screen中启动一个新窗口，在该窗口中键入exit退出该窗口，如果这是该screen会话的唯一窗口，该\
+		screen会话退出
+		如果已经在一个screen会话中，可以用C-a c来生成一个新的窗口并切换到该窗口
+	一般命令
+		screen -list|-ls列出当前开启的screen会话
+		C-a d		不中断screen窗口中的程序的运行而暂时断开(detach)screen会话
+		screen -r 	重新连接(attach)之前被detach的会话
+		eg.$screen -list
+		   There is a screen on:
+		   	16583.pts-1.tivf06	(Detached)
+		   1 Socet in /tmp/screens/S-root
+		   #重新连接
+		   $screen -r 16583	
+		screen -c file	使用配置文件file，而不使用默认的$HOME/.screenrc
+		screen -d|-D [pid.tty.host]	不开启新的screen会话，而是断开其他正在运行的screen会话
+		screen -x 	多用户模式（用于share同一窗口时）
+		screen -t windowname	创建窗口windowname（可以和-S同时使用，创建指定screen的指定窗口）
+		screen -p windowname	打开窗口windowname（可以和-S同时使用，打开指定screen的指定窗口）
+		-d -m		启动一个一开始就处于断开模式的会话（更常用的搭配是$screen -dmS sessionname）
+		-wipe [match]	通-list，但删掉那些无法连接(dead)的会话
+	其他命令
+		C-a ?	显示所有键绑定信息
+
+		C-a w	显示所有窗口列表
+		C-a C-a	切换到之前显示的窗口
+		C-a c	创建一个新的运行shell的窗口并切换到该窗口
+		C-a n	切换到下一个窗口
+		C-a p 	切换到前一个窗口（与C-a n相对）
+		C-a 0..9切换到窗口0..9
+		C-a "	显示当前screen会话的窗口列表(比C-a w好用) 	"
+
+		C-a a	发送C-a到当前窗口（又可以使用回到行首了）
+		C-a d	暂时断开screen会话（detached）
+		C-a k	杀掉当前窗口（注意窗口和screen会话的区别）
+		C-a A	set window title
+		C-a [	进入拷贝/回滚模式
+		C-a ]	paste buffer
+		C-a >	write paster buffer to file(useful for copying between screens)
+		C-a <	read paster buffer from file
+
+		C-a S	在当前窗口水平分割一个新的窗口
+		C-a |	在当前窗口垂直分割一个新的窗口（需要screen补丁支持）
+		C-a :	goto screen command prompt(up shows last command entered)
+		C-a :resize	resize当前窗口大小
+		C-a :fit|F	fit screen size to new terminal size, do after resizing xterm
+		C-a :remove|X	用于分屏窗口时关闭一个小窗口（当前小窗口）
+		C-a tab	切换到下一个小窗口（用于分屏时）
+
+		C-a S sessionname	创建screen会话时为会话指定一个名字
+		C-a r sessionowner/[pid.tty.host]	重新连接一个断开(detached)的会话，
+							多用户模式下连接到其他用户screen会话需要指定sessionowner，
+							需要setuid-root权限
+
+		screen使用C-a作为screen命令的开始，所以如果想要screen窗口接收到C-a字符，就要输入C-a a。screen\
+			也允许使用-e选项设置自己的命令字符和转义字符，其格式为：
+			-exy x为命令字符，y为转义命令字符的字符
+			eg. $screen -e^tt	#指定命令字符为C-t，转义为C-t的字符为t，通过C-t ?命令可以看到该变化
 #ss
 	#ss command is used to dump socket statistics. It allows showing information similar to\
 		netstat.

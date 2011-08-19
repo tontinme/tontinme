@@ -1,3 +1,23 @@
+#boot
+  启动时报错VFS: Unable to mount root fs
+  	1.报错信息大概是未找到root(x,y)
+	原因：一般是没有把磁盘控制器的驱动编译进内核
+	解决：使用lspci查找自己磁盘的型号，编译相应驱动到内核
+	2.报错信息类似："VFS:cannot open root"
+	原因：没有正确识别磁盘
+	解决：SATA的硬盘在BIOS里设置为AHCI模式的话，系统是把它识别为SCSI Disk的，所以这个也要编译进内核
+	3.报错类似unknown filetype
+	原因：不能识别的文件系统
+	解决：把相关的文件系统支持编译进内核，比如ext4
+  启动时提示"EXT3-fs:sda3: couldn't mount because of unsupported optional features"
+  	原因：root分区用的ext4文件系统
+  	解决：修改grub，kernel行加入rootfstype=ext4
+  启动时卡在"init-early.sh used greatet stack depth"
+  	原因：stage3的tarball里的文件有问题
+	      /dev/下应该有console,null,zero等设备文件，但是最新的stage tarball只有/dev/null，而且文件类型还不正确
+	      具体请移步：http://www.linuxsir.org/bbs/thread377917.html
+	解决：手动创建/dev/下的设备文件，并且使udev能够在启动时创建/dev下的其他文件。
+	      或者更简单的方法是：在编译内核时设置"CONFIG_DEVTMPFS=y和CONFIG_DEVTMPFS_MOUNT=y"，系统能正常启动运行，此时/dev目录可以为空
 #add user
   useradd cinder
   mkdir /home/cinder
