@@ -38,6 +38,12 @@
   emerge -av xf86-input-vmmouse
   emerge dbus
   	$rc-update add dbus default
+  #错误：运行Xorg -configure后出现：Number of created screens does not match number of detected devices.
+  解决：
+	nvidia-xconfig 生成xorg.conf文件
+	eselect opengl set nvidia 设置GLX
+	然后把dri/dri2的调用禁用了。
+	emerge xterm后，startx终于正常了。
 #Windows_Manager--enlightenment
   #add layman
   	emerge layman
@@ -58,6 +64,7 @@
   	emerge obconf	#theme manager
   	emerge gtk-chtheme	#appreance control
 	install openbox-themes
+	emerge gnome-themes
   #emerge tint2		#taskbar
   #gtk-icons
   	First, download and extract the desired icon theme to /usr/share/icons(system-wide access) or ~/.icons(local user access)
