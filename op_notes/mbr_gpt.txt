@@ -1,0 +1,16 @@
+MBR	
+  主引导记录（Master Boot Record）
+  MBR分区的标准决定了MBR只支持2TB以下（超过2TB的职能管理2TB）的硬盘中创建\
+  	爱你4个分区表项，要获得更多分区，需要次级结果-扩展分区，扩展分区可以再次被分成一个或多个逻辑磁盘
+EFI
+  可扩展固件接口（Extensible Firmware Interface）
+  由Intel公司提出的一种替代BIOS的升级方案。EFI的位置很特殊，它不像是BIOS那样自己既是固件又是接口，EFI只是\
+  	一个接口。
+GPT
+  全局唯一标识磁盘分区表（GUID Partition Table），GUID，全局唯一标识符（Globally Unique Identifier）。
+  GUID分区表（GPT）是作为EFI计划的一部分引入的。当然，你也可以在BIOS的PC中使用GPT分区，虽然GPT来自以EFI计划，\
+  	但并不依赖于EFI。
+  GPT相对于MBR分区方案更加灵活，比如可以超过MBR分区表项4个的限制，在GPT规范里对分区的数量几乎是没有限制的。\
+  	大家在网上可以查到的128个实际上是支持GPT的windows系统作出的限制。GPT对可管理磁盘大小也超过了MBR的2TB\
+	而达到了18EB。MBR把重要的信息（比如分区信息，目录等）放在某个扇区，而GPT把这个信息放在分区。GPT分区在磁盘的最开始位置（第一个扇区）建立了一个保护分区，这种分区的类型标识为0xEE。\
+	这个分区可以让不识别GPT的磁盘管理软件把GPT磁盘堪称一个未知格式的分区，而不是错误的当成一个未分区的磁盘
