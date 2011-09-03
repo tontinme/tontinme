@@ -1,0 +1,163 @@
+CentOS|RHEL|Fedora:
+#INSTALLATION:
+	#使用cobbler import 快速添加Fedora|RHEL|CentOS
+	$yum install cobbler
+	$cobbler check
+	$cobbler import --path=/media/dvd --name=CentOS
+	$cobbler sync
+	
+	#Usage:
+	$ cobbler distro|profile|system|repo|image|mgmtclass|package|file list|report|remove|edit|copy|rename --name=string
+
+	$ cobbler import
+		cobbler import --path=rsync://yourfavoritemirror.com/foo --name=rhel5 --arch=x86
+		cobbler import --path=--path=/mnt/dvd --name=rhel5 --arch=x86
+		cobbler import --path=--path=/media/mounted --name=rhel5 --arch=x86
+		cobbler import --path=root@192.168.1.10:/stuff --name=bar
+		cobbler import --path=/path/where/filer/is/mounted --name=anyname --available-as=nfs://nfs.example.org:/where/mounted/
+
+	$ cobbler sync
+		cobbler sync is used to repair or rebuild the contents of /tftpboot or /var/www/cobbler when\
+			somethings has changed
+	$ cobbler report
+		cobbler distro report --name=CentOS_x86-64
+		cobbler profile report --name=CentOS_x86-64
+	$ cobbler status
+		using the status command will show cobbler thinks a machine started kickstarting and when it finished,\
+			provided the proper snippets are found in the kickstart template
+	$ cobbler distro add
+		cobbler distro add --name=rhel4u3 --kernel=/dir1/vmlinuz --initrd=/dir1/initrd.img
+
+	$ cobbler prifile add|edit|remove
+		cobbler profile add --name=fc5webservers --distro=fc5-i386 --kickstart=/dir4/kick.ks --kopts="\
+			something_to_make_my_gfx_card_work=42 some_other_parameter=foo"
+
+	$ cobbler system add
+		指定特定机器重启时安装指定系统
+		$cobbler system add -name=example --mac=$mac-address --profile=$profile-name
+
+	$ cobbler replicate
+		cobbler can replicate configurations from a master cobbler server
+#REINSTALLATION:
+	#Do this in your pc which you want to reinstall
+	$yum install Koan
+	$koan --server=cobblerServer.example.com --list=profiles
+	$koan --replace-self --server=cobblerServer.example --profiles=Centos-x86_64
+	$/sbin/reboot
+	
+	If you need to see what profiles are remotely avaible, you can do:
+	$koan --list=profiles --server=cobblerServer.example.com
+	
+	如果cobblerServer上已经通过MAC和IP绑定指定了你应该安装的系统，那么你可以不使用--profile参数
+	$koan --replace-self --server=cobblerServer.example.com
+
+	为了确保cobblerClient上含有koan，可以添加在ks.cfg的%packages中
+		%packages
+		koan
+	如果你的光盘镜像中不含有koan，可以放在%post中
+		%post
+		# wget koan and install it (all dependencies have been downloaded and installed first)
+		wget -O /tmp/koan.rpm http://$server/path/to/koan-version.rpm
+		rpm -Uvh /tmp/koan.rpm
+	Reinstall entries 将重新安装系统放到系统的grub菜单上
+		%post
+		#if $getVar("system_name","") != ""
+			koan --server=$server --replace-self --add-reinstall-entry
+		#else
+			koan --server=$server --replace-self --profile=$profile_name --add-reinstall-entry
+		#end if
+		(In cobbler 2.0 and later)
+		%post
+		$SNIPPET('post_koan_add_reinstall_entry')
+	
+#PXE MENU:
+	cobbler will automatically generate PXE menu for all profiles it has defined, running "cobbler rync" \
+		can generate and update these menus
+	to access the menus, type "menu" at the "boot:" prompt while a system is PXE booting
+	the network boot will default to a local boot
+	If you wish to change the color scheme or equivalent, see the files in /etc/cobbler
+
+#ABOUT KICKSTART:
+	kickstart template
+		if and only if --kickstart options reference filesystem URLS, --ksmeta allows for templating \
+			of the kickstart files to archive advanced functions
+	kickstart snippets
+		Anywhare a kickstart template mentions SNIPPET::snippet_name, the file named in /var/lib/cobbler \ 
+			/snippets/snippet_name(if present) will be included automatically in the kickstart template
+	default pxe boot behavior
+		by default, cobbler will configure pxe to boot to the contents of /etc/cobbler/default.pxe, \
+			you can modify this file if you like
+		create a system named "default" will ignore /etc/cobbler/default.pxe
+		it is also possible to control the default behavior for a specific network
+
+#DHCP:
+	dhcpd or dnsmasq, DNSmasq is a bit confusing because it does DHCP and DNS at the same time
+
+Ubuntu:
+	Commands like "repo add" or "import" will not work for debian or suse based distros, but "distro add" \
+		does work if you want to PXE them. Koan does not work
+
+
+BuildISO:
+	$ cobbler buildiso
+	What this command does is to copy all distro kernel/initrds onto a boot CD image and generate a menu\
+		for the ISO that is essentially equivalent to the PXE menu provided to net-installing \
+		machines via cobbler
+	#https://fedorahosted.org/cobbler/wiki/BuildIso
+FireWall:
+	Make sure iptables is configured to allow access to the right services
+	================================================================
+	# Firewall configuration written by system-config-securitylevel
+	# Manual customization of this file is not recommended.
+	*filter
+	:INPUT ACCEPT [0:0]
+	:FORWARD ACCEPT [0:0]
+	:OUTPUT ACCEPT [0:0]
+	
+	-A INPUT -p icmp --icmp-type any -j ACCEPT
+	-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+	
+	# LOCALHOST
+	-A INPUT -i lo -j ACCEPT
+	
+	# SSH
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+	# DNS - TCP/UDP
+	-A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT
+	# DHCP
+	-A INPUT -m state --state NEW -m udp -p udp --dport 68 -j ACCEPT
+	# TFTP - TCP/UDP
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 69 -j ACCEPT
+	-A INPUT -m state --state NEW -m udp -p udp --dport 69 -j ACCEPT
+	# NTP
+	-A INPUT -m state --state NEW -m udp -p udp --dport 123 -j ACCEPT
+	# HTTP/HTTPS
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+	# Syslog for cobbler
+	-A INPUT -m state --state NEW -m udp -p udp --dport 25150 -j ACCEPT
+	# Koan XMLRPC ports
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 25151 -j ACCEPT
+	-A INPUT -m state --state NEW -m tcp -p tcp --dport 25152 -j ACCEPT
+	
+	#-A INPUT -j LOG
+	-A INPUT -j REJECT --reject-with icmp-host-prohibited
+
+	COMMIT
+	================================================================
+services:
+	you will want to enable various services depending on whether you are running DHCP and DNS on the same box
+	================================================================
+	/sbin/service httpd start
+	/sbin/service dhcpd start
+	/sbin/service xinetd start
+	/sbin/service cobblerd start
+	
+	/sbin/chkconfig httpd on
+	/sbin/chkconfig dhcpd on
+	/sbin/chkconfig xinetd on
+	/sbin/chkconfig tftp on
+	/sbin/chkconfig cobblerd on
+	================================================================
+
