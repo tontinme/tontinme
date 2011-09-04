@@ -7,6 +7,7 @@ CentOS|RHEL|Fedora:
 	$cobbler sync
 	
 	#Usage:
+	$ cobbler command [subcommand] [--arg1=value1] [--arg2=vale2]
 	$ cobbler distro|profile|system|repo|image|mgmtclass|package|file list|report|remove|edit|copy|rename --name=string
 
 	$ cobbler import
@@ -26,18 +27,27 @@ CentOS|RHEL|Fedora:
 		using the status command will show cobbler thinks a machine started kickstarting and when it finished,\
 			provided the proper snippets are found in the kickstart template
 	$ cobbler distro add
-		cobbler distro add --name=rhel4u3 --kernel=/dir1/vmlinuz --initrd=/dir1/initrd.img
+		#this first step towards configurating what you want to install is to add a distribution record to cobbler's configuration
+		cobbler distro add --name=rhel4u3 --kernel=/dir1/vmlinuz --initrd=/dir1/initrd.img [--arch=x86|x86_64|ia64] [--breed=redhat|dedian|suse]
 
 	$ cobbler prifile add|edit|remove
+		#a profile associates a distribution to additional specifized options, suc as kickstart automation file.
 		cobbler profile add --name=fc5webservers --distro=fc5-i386 --kickstart=/dir4/kick.ks --kopts="\
 			something_to_make_my_gfx_card_work=42 some_other_parameter=foo"
 
 	$ cobbler system add
-		指定特定机器重启时安装指定系统
-		$cobbler system add -name=example --mac=$mac-address --profile=$profile-name
+		#指定特定机器重启时安装指定系统
+		$cobbler system add -name=example --profile=$profile-name [--mac=macaddress] [--ip=ipaddress]
 
+	$ cobbler repo add
+		#repository mirroring allows cobbler to mirror not only install trees(cobbler import does this for you)\
+			#but also optional packages, 3rd party content, and even updates
+		$cobbler repo add --mirror=url --name=string [--rpmlist=list] [--breed=yum|rsync|rhn]	
+		#url: this can be an rsync:// URL, an ssh location, or a http:// or ftp:// mirror location, filesystem path also works
 	$ cobbler replicate
 		cobbler can replicate configurations from a master cobbler server
+	$ cobbler mgmtclass add --name=string --comment=string [--packages=list] [--files=list]
+
 #REINSTALLATION:
 	#Do this in your pc which you want to reinstall
 	$yum install Koan
