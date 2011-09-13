@@ -29,6 +29,7 @@
 ------rsync
 ------sar
 ------screen
+------sort
 ------ss
 ------strace
 ------su & sudo
@@ -606,6 +607,28 @@ man
 			也允许使用-e选项设置自己的命令字符和转义字符，其格式为：
 			-exy x为命令字符，y为转义命令字符的字符
 			eg. $screen -e^tt	#指定命令字符为C-t，转义为C-t的字符为t，通过C-t ?命令可以看到该变化
+#sort
+	排序失败问题
+	============
+	有时可能遇到sort filename时，排序不正常的现象。查看sort的manual，有如下解释：
+	         ***  WARNING  ***  The locale specified by the environment affects sort
+		order.  Set LC_ALL=C to get the traditional sort order that uses native
+		byte values.
+	查看系统的语言设置:
+	       $locale
+	另外有人指出只指定LC_COLLATE=C就可以了，理由是：
+	       This variable determines the locale category for character collation.
+	       It determines collation information for regular expressions and sorting,
+	       including equivalence classes and multi-character collating elements,
+	       in various utilities and the strcoll() and strxfrm() functions.
+	       Additional semantics of this variable, if any, are implementation-dependent.
+	但是只设置LC_COLLATE有两个问题：
+	       1.如果同时设置了LC_ALL的话，由于LC_ALL的优先级比较高，会覆盖LC_COLLATE的设置，
+	       比如，如果LC_ALL=utf-8，那么sort同样可能失败
+	       2.如果LC_CTYPE或者LANG(当LC_CTYPE没被设置时)被设置为和LC_COLLATE不兼容的值，
+	       比如：LC_CTYPE='ja_JP.PCK'，但LC_COLLATE='en_Us.UTF-8'，sort同样可能失败
+	为了保证系统的其他部分不会因为修改系统环境而受影响，建议使用sort的时候临时修改,比如：
+	       $tmp=$LC_ALL; epxort LC_ALL=C && sort FileName; LC_ALL=$tmp
 #ss
 	#ss command is used to dump socket statistics. It allows showing information similar to\
 		netstat.
