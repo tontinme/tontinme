@@ -1,20 +1,146 @@
-#!/bin/bash
+#使用bash的语法高亮会极大的改善该文本的阅读体验
+#
+#=============================================================================
+#     FileName: MySQL主从复制.txt
+#         Desc: mysql replication
+#       Author: tianshuang
+#        Email: tianshuang@miaozhen.com
+#     HomePage: http://www.supertool.net.cn
+#      Version: 1.0
+#   LastChange: 2011-09-14 17:07:32
+#      History:
+#=============================================================================
 
-------��¡һ����������������
-#��¡һ����������������
-	#������ݿ�ʹ�õ���MyISAM�����ͣ������·�ʽ����
+
+
+master
+======
+1.添加同步帐号
+	进入mysql
+	#如下示例表明同步帐号为backup，密码password，slave所在主机是192.168.1.23，且对所有数据库进行同步
+	mysql>grant replication slave on *.* to 'backup'@'192.168.1.23' identified by 'password';
+	--------------------------------
+	附一些关于mysql帐号的基本操作
+	#查看帐号权限是否设置正确
+	mysql>show grants for backup@192.168.1.23;
+	#回收用户权限
+	mysql>revoke replication slave on databaseName.tableName from 'backup'@'192.168.1.23';
+	#删除用户
+	mysql>use mysql;
+	mysql>drop user 'backup'@'192.168.1.23';
+	--------------------------------
+2.克隆master数据库到slave机器，以确保开始同步前master和slave的数据库保持一致
+	#具体的备份操作可以见附录I部分
+	1) 可以使用mysqldump来备份master的数据
+	mysqldump不支持热备份，备份前务必保证mysql没有进行读写操作，可以lock table后操作
+	2) 也可以使用mysqlhotcopy(需要安装DBI，DBD-mysql，并且只支持myisam的备份)
+	3) 如果是myisam格式的数据库，也可以直接拷贝数据库文件夹到slave机器，但是务必
+	注意各个文件的权限问题，确保拷贝到slave机器上的数据文件可以在mysql中正常读写
+3.配置master的配置文件(一般在/etc/my.cnf)
+	vim /etc/my.cnf
+	-----------------------------
+	#添加如下字段或取消如下字段的注释
+	server-id=1
+	log-bin=mysql-bin.log
+
+	#以下两行如果省略，则同步所有数据库
+	binlog-do-db=blog #要同步的数据库的名字
+	binlog-do-db=index #要同步的数据库的名字
+	-----------------------------
+	重启mysql使设置生效
+4.进入mysql，执行如下操作
+	mysql>show master status;
+	记录下File和Position的值
+	#以下命令可以查看当前mysql的运行状况
+	mysql>show processlist;
+
+slave
+=====
+说明，如果有多台slave机器的话，注意下面的特别说明，分别在每台机器上执行如下操作，即可
+1.配置slave的配置文件(一般在/etc/my.cnf)
+	vim /etc/my.cnf
+	-----------------------------
+	#添加如下字段或取消如下字段的注释
+	#如果有多台slave，需要分别设置不同的server-id
+	server-id=2
+	master-host=192.168.1.10
+	#如果有多台slave，也可以设置不同的用户名
+	master-user=replication
+	master-password=password
+	master-port=3306
+	master-connect-retry=60
+	replicate-do-db=blog
+	replicate-do-db=index
+
+	#以下为可选项
+	#记录错误日志，便于查错
+	log-error
+	-----------------------------
+	重启mysql，使设置生效
+2.导入之前备份的master的数据库
+	进入slave的mysql，先停掉slave
+	mysql>slave stop;
+	1)如果是用mysqldump备份的sql文件，可以使用source导入到mysql中
+	2)如果是用mysqlhotcopy或直接备份的文件，直接备份到mysql的数据库文件夹即可。
+	但是需要注意数据库的权限，属主是否正确。确保mysql可以正常读写。
+3.进入mysql，执行如下操作
+	mysql>slave stop;
+	#master_log_file和master_log_pos是之前记录的master中的File和Position的值
+	mysql>change master to master_host='192.168.1.23',master_port=3306,master_user='backup',master_password='password',master_log_file='mysql-bin.000002',master_log_pos=98;
+	#启动slave
+	mysql>slave start;
+	#查看slave是否运行正常
+	mysql>show slave status\G;
+	--------------------------
+	#确保如下两项的值都是Yes
+	Slave_IO_Running:  Yes  
+	Slave_SQL_Running: Yes  
+	--------------------------
+	#以下命令可以查看当前mysql的运行状况
+	mysql>show processlist;
+
+可能遇到的问题
+===============
+1.SQL语句过长可能导致master和slave上的查询等操作失败
+	mysql默认的SQL语句长度是1M
+	my-huge.cnf中设置的默认值是32M，
+	决定该值的参数是max_allowed_packet，根据具体情况在mysql的配置文件/etc/my.cnf中更改该值即可
+	建议slave上的该值>=master上的该值
+2.如果master上有执行错误的SQL语句，可能会导致slave出现错误。这时可以手动采取如下解决方案
+	1)进入mysql，手动执行如下操作，其中master_log_pos的值为出现错误语句后的第一条正确语句的位置
+	mysql>slave stop;
+	mysql>change master to master_host='192.168.1.23',master_port=3306,master_user='backup',master_password='password',master_log_file='mysql-bin.000002',master_log_pos=98;
+	mysql>slave start;
+	2)进入mysql，执行如下操作，SQL_SLAVE_SKIP_COUNTER的值为跳过的错误语句的条数
+	mysql>slave stop;
+	mysql>SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1
+	mysql>slave start;
+3.向slave导入master的备份时，如果使用source xxx.sql操作，可能出现类似如下的问题:error2005(HY000)
+	1)可能是由于master和slave的mysql版本不一致导致的
+	2)可能是由于字符集的问题，如果master和slave的环境和配置都一致的话，试试在mysqldump时不指定字符集
+
+待补充的内容
+============
+1.mysql replication中常见的错误及其解决办法
+2.使用mysql的binlog恢复数据库
+3.切换slave为master的操作步骤
+
+附
+=====
+1.克隆一份主服务器的数据
+	#如果数据库使用的是MyISAM表类型，按如下方式操作
 		$mysqldump --all-databases --master-data=1 > data.sql
-		#ע��master-dataѡ��ȱʡ��lock-all-tables����д��CHANGE MASTER TO���
-		#������ݿ�ʹ��InnoDB�����͵Ļ���Ӧ��ʹ��single-transcation
+		#注：master-data选项缺省打开lock-all-tables，并写入CHANGE MASTER TO语句
+		#如果数据库使用InnoDB表类型的话，应该使用single-transcation
 		$mysqldump --all-databases --single-transaction --master-data=1 > data.sql
-	#�����ݴ��䵽�ӷ������ϲ�����
+	#将数据传输到从服务器上并导入
 		$mysql < data.sql
-	#��������Ҳ�����ùܵ���һ���Բ���
+	#整个过程也可以用管道符一次性操作
 		$mysqldump --host=<MASTER_HOST> ... | mysql --host=<SLAVE_HOST> ...
-	#ֱ�ӿ��������ļ�
-		#���������ݣ��ٻ����ص���־��Ϣ��File & Position��
+	#直接拷贝数据文件
+		#先锁定数据，再获得相关的日志信息（File & Position）
 		mysql> flush tables with read lock;
 		mysql> show master status;
-		#�����MyISAM�����͵Ļ���ֱ�ӿ������ɣ������InnoDB�����͵Ļ���һ��Ҫ��ֹͣ\
-			MySQL�����ٿ��������򿽱��ļ������޷�ʹ�á��ѿ����������ļ�ֱ�Ӹ��Ƶ�\
-			�ӷ�����������Ŀ¼��
+		#如果是MyISAM表类型的话，直接拷贝即可；如果是InnoDB表类型的话，一定要先停止\
+			MySQL服务再拷贝，否则拷贝文件可能无法使用。把拷贝的数据文件直接复制到\
+			从服务器的数据目录。
