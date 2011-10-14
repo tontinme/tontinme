@@ -2,6 +2,7 @@
 ------mysql备份表
 ------mysql重置密码
 ------mysql的各种存储引擎介绍
+------mysql字符集
 ------导出MySQL所有用户权限
 
 #mysql bin-log 清除(purge)
@@ -63,7 +64,30 @@
 	  MySQL的簇式数据库引擎，尤其适合于具有高性能查找要求的应用程序
 	Other
 	  其他存储引擎包括CSV(引用由逗号隔开的用作数据库表的文件),Blackhole(用于临时禁止对数据库的应用程序输入)\
-		  以及Example引擎(可为快速创建定制的插件式存储引擎提供帮助)
+#mysql字符集	 
+    MySQL的字符集支持有两个方面：字符集(Character set)和排序方式(Collation)
+    对于字符集的支持细化到四个层次:服务器(server)，数据库(database)，数据表(table)和连接(connection)
+    
+    1.MySQL默认字符集
+        MySQL对于字符集的指定可以细化到一个数据库，一张表，一列
+        但是，传统的程序在创建数据库和数据表时并没有使用那么复杂的配置，它们用的是默认配置
+    	1)编译MySQL时，指定了一个默认的字符集，这个字符集是latin1；
+    	2)安装MySQL时，可以在配置文件中指定一个默认的字符集，如果没指定，这个值继承自编译时指定的;
+    	3)启动mysqld时，可以在命令行参数中指定一个默认的字符集，否则继承自编译时指定的值，此时
+    	    Character_set_server被设定为这个默认的字符集;
+    	4)当创建一个新的数据库时，除非明确指定，这个数据库的字符集被缺省设定为character_set_server；
+    	5)当选定了一个数据库时，character_set_database被设定为这个数据库默认的字符集；
+    	6)当在该数据库里创建一张表时，表默认的字符集被设定为character_set_database，也就是这个数据库
+    	    默认的字符集
+    	7)当在表内设置一栏时，除非明确指定，否则此栏缺省的字符集就是表默认的字符集
+        简单的总结一下，如果什么地方都不修改，那么所有的数据库的所有表的所有栏都用latin1存储。不过一般
+        我们都选择多语言支持，也就是说，安装程序可能会自动在配置文件中把default_character_set设置为utf-8，
+        这保证了缺省情况下，所有数据库的所有表的所有栏都用utf-8存储
+    2.查看默认字符集(默认情况下，mysql的字符集是latin1，即ISO_8859_1)
+        命令如下：
+        mysql>show variables like 'character%';
+        mysql>show variables like 'collation_%';
+    3.修改默认字符集	  以及Example引擎(可为快速创建定制的插件式存储引擎提供帮助)
 #导出MySQL所有用户权限
 	默认情况下，如果使用
 	  select * from mysql.user;
