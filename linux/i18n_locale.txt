@@ -1,0 +1,33 @@
+locale由ANSIC提供支持，locale的命名规则是<语言>_<地区>.<字符集编码>，如zh_CN.GBK，zh代表中文，CN代表大陆
+GBK代表字符集
+
+在locale中，有一组变量，代表国际化环境中的不同设置
+    LC_COLLATE		Collation order.
+		    	定义该环境的排序和比较规则
+    LC_CTYPE	    	Character classification and case conversion.
+			用于字符分类和字符串处理，控制所有字符的处理方式，包括字符编码，字符是单字节还是多字节，
+			如何打印等，是最重要的一个环境变量
+    LC_TIME	    	Date and time formats.
+			日期和时间格式
+    LC_NUMERIC	    	Non-monetary numeric formats.
+			非货币的数字显示格式
+    LC_MONETARY	    	Monetary formats.
+			货币格式
+    LC_MESSAGES	    	Formats of informative and diagnostic messages and interactive responses.
+			提示信息的语言。另外还有一个LANGUAGE参数，它与LC_MESSAGES相似，但如果设置该参数，则LC_MESSAGES
+			会失效，LANGUAGE可同时设置多种语言信息
+    LC_			LC_*的默认值，是最低级别的设置，如果LC_*没有设置，则使用该值
+    LC_ALL		它是一个宏，如果该值设置了，会覆盖所有LC_*的值。
+			注意：LANG的值不受该宏影响
+    LC_PAPER	    	Paper size.
+    LC_NAME	    	Name formats.
+    LC_ADDRESS	    	Address formats and location information.
+    LC_TELEPHONE    	Telephone number formats.
+    LC_MEASUREMENT  	Measurement units (Metric or Other).
+    LC_IDENTIFICATION	Metadata about the locale information.
+locale命令查看系统当前的语言设置
+
+locale的设定举例
+1.如果需要一个纯中文的环境,设定LC_ALL或LANG=zh_CN.xxx都可以
+2.如果只想要一个可以输入中文的环境，而保持英文界面，那么只需要设定LC_CTYPE=zh_CN.xxx，LANG=en_US.xxx就可以了
+3.假如什么都不做的话，也就是LC_ALL，LANG和LC_*均不指定特定值的话，系统将采用POSIX作为local，也就是C locale
