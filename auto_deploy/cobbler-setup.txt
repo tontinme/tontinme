@@ -1,0 +1,472 @@
+
+配置Kickstart Server时，
+需要安装的软件包一共如下：
+
+    * dhcp
+    * tftp-server
+    * xinetd
+    * syslinux
+    * httpd(目前服务器中都有httpd服务，无需另外安装)
+        * cobbler
+          (wget http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+           rpm -ivh epel-release-5-4.noarch.rpm)
+      #yum install cobbler httpd rsync tftp-server xinetd dhcp
+
+系统设置
+========
+        1. 启动cobbler，检查设置
+	$ cobbler check
+	1)根据提示 更改/etc/cobbler/settings，
+        (如果出现提示"httpd does not appear to be running and proxying cobbler"，请关闭SELinux)
+                设置"server"和"next_server"为本机的IP地址，设置manage_dhcp为1(即由cobbler接管dhcp)
+                (如果这里的IP设置和本机IP不一致，同样会出现错误：httpd does not appear ...)
+	$ vim /etc/cobbler/settings
+		server: 192.168.2.92   #设置cobbler server的IP地址
+		next-server: 192.168.2.92  #设置PXE server的IP地址
+		manage_dhcp: 1   #开启管理DHCP服务
+		#如果manager_dhcp设置为0（默认为0）的话，则使用外部的dhcp server
+		In fact, it is the default behavior. If you want PXE to work in this case, 
+		just make sure that the next-server entry in your dhcp.conf, as well as the 
+		filename information is correct to serve up pxelinux.0 to the machines that 
+		want it (if you care about bare metal installations over PXE). 
+		#目前还是在cobbler server上开启dhcp服务
+	2)根据提示 关闭防火墙和SELinux
+	(也可以根据提示开启cobbler运行所需的所有端口，及设置selinux的相应规则，具体需要开放的端口可在文档最后部分查找)
+	3)获取启动镜像
+	cobbler get-loaders
+	4)启动tftp和rsync
+	$ vim /etc/xinetd.d/tftp
+	将disable = yes改为：disable = no
+	$ vim /etc/xinetd.d/rsync
+	将disable = yes改为：disable = no
+	重启xinetd服务：
+	/etc/init.d/xinetd restart
+	5)、修改DHCP模板，确保DHCP分配的地址和Cobbler在同一网段
+	$ vim /etc/cobbler/dhcp.template
+	同步cobbler配置，使修改生效：
+	$ cobbler sync
+	2. 配置DHCP
+	#架设本机为DHCP服务器
+	cp /usr/share/doc/dhcp-3.0.5/dhcpd.conf.sample /etc/dhcpd.conf
+
+添加CentOS Server
+=================
+        1. $ cobbler import --mirror=/media/CentOS_5.3_Final --name=CentOS-5-3_x86-64
+        2. $ cobbler sync
+        3. $ cobbler [distro|profile|system|repo] list  #查看导入结果
+           $ cobbler [distro|profile|system|repo] report
+	   解释一下distro|profile|system|repo的意思
+	   distro	可以理解为添加一种发行版的OS，即添加一个iso
+	   profile	即按角色对系统进行分类，一个iso可以对应多个profile，由Kickstart_file区别。比如适用于webserver的os，适用于sqlserver的os
+	   system	是对待安装机器做具体设置，如设置主机名、IP地址、hostname等，这些设置根据MAC应用到具体机器上
+	   repo
+
+添加ubuntu
+===========
+	1. 挂载ubuntu磁盘，拷贝所有内容到cobbler设置的http目录（默认在/var/www/cobbler/ks_mirror）
+	   #这里使用ubuntu的标准安装光盘，而不是使用liveCD - Desktop版光盘
+	   $ mount -o loop ~/ubuntu-10.04.3-alternate-amd64.iso /mnt/ubuntu
+	   $ mkdir /var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64
+	   $ cp -r /mnt/ubuntu/* /var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/
+	   #可能需要创建一个.treeinfo文件，放在/var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/下
+	   EXAMPLE:
+	   #NAME: .treeinfo
+	   	==========================================
+	   	[general]
+		family = Ubuntu
+		timestamp = 1272326522.13
+		totaldiscs = 1
+		version = 10.04
+		discnum = 1
+		packagedir = dists
+		arch = x86_64
+		 
+		[images-x86_64]
+		kernel = install/netboot/ubuntu-installer/amd64/linux
+		initrd = install/netboot/ubuntu-installer/amd64/initrd.gz
+	   	==========================================
+	2. 向cobbler添加ubuntu发行版
+	   $ cobbler distro add --name=Ubuntu-10_04-x86_64 --kernel=/var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/install/netboot/ubuntu-installer/amd64/linux --initrd=/var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/install/netboot/ubuntu-installer/amd64/initrd.gz --arch=x86_64 
+	   $ cobbler distro report
+	   $ cobbler distro edit --name=Ubuntu-10_04-x86_64 --ksmeta="tree=http://@@http_server@@/cblr/links/Ubuntu-10_04-x86_64" --breed=generic
+	   $ cobbler distro report
+	   	最终效果如下:
+	   	'''==========================================
+	   	[root@localhost ~]# cobbler distro report
+		Name                           : Ubuntu-10_04-x86_64
+		Architecture                   : x86_64
+		Breed                          : generic
+		Comment                        : 
+		Initrd                         : /var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/install/netboot/ubuntu-installer/amd64/initrd.gz
+		Kernel                         : /var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/install/netboot/ubuntu-installer/amd64/linux
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart Metadata             : {'tree': 'http://@@http_server@@/cblr/links/Ubuntu-10_04-x86_64'}
+		Management Classes             : []
+		OS Version                     : generic26
+		Owners                         : ['admin']
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Template Files                 : {}
+
+		Name                           : CentOS-5_3-x86_64
+		Architecture                   : x86_64
+		Breed                          : redhat
+		Comment                        : rhel5.3
+		Initrd                         : /var/www/cobbler/ks_mirror/CentOS-5_3-x86_64/images/pxeboot/initrd.img
+		Kernel                         : /var/www/cobbler/ks_mirror/CentOS-5_3-x86_64/images/pxeboot/vmlinuz
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart Metadata             : {'tree': 'http://@@http_server@@/cblr/links/CentOS-5_3-x86_64'}
+		Management Classes             : []
+		OS Version                     : rhel5
+		Owners                         : ['admin']
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Template Files                 : {}
+	   	=========================================='''
+	4. 准备ubuntu的kickstart文件
+	   EXAMPLE:
+	   #NAME: kickstart_ubuntu.ks
+	   	'''==========================================
+		#kickstart Configurator
+		#platform=AMD64 or Intel EM64T
+
+		#System language
+		lang zh_CN
+		#Language modules to install
+		langsupport zh_TW en_US --default=zh_CN
+		#System keyboard
+		keyboard us
+		#System mouse
+		mouse
+		#System timezone
+		timezone Asia/Shanghai
+		#Root password
+		rootpw --iscrypted $1$vunLN4sZ$CxZ1Ob0CdeJRs695Iz3ny1
+		#Initial user
+		user supertool --fullname "supertool" --password 123456
+		#Reboot after installation
+		reboot
+		#Use text mode install
+		text
+		#Install OS instead of upgrade
+		#install
+		#Use Web installation
+		url --url=http://192.168.1.86/cblr/ks_mirror/ubuntu_10-04_alter/
+		#System bootloader configuration
+		bootloader --location=mbr
+		#Clear the Master Boot Record
+		zerombr yes
+		#Partition clearing information
+		#clearpart --all --initlabel
+		clearpart --drives=sda --initlabel
+		#Disk partitioning information
+		#part /boot --fstype ext2 --size 100 --asprimary --ondisk sda
+		part swap --size 2048 --ondisk sda
+		part / --fstype ext4 --size 202048 --asprimary --ondisk sda
+		#part /home --fstype ext4 --size 100 --grow --asprimary --ondisk sda
+		#System authorization infomation
+		auth  --useshadow  --enablemd5
+		#Network information
+		network --bootproto=dhcp --device=eth0
+		#Firewall configuration
+		firewall --enabled --trust=eth0 --http --ftp --ssh
+		#X Window System configuration information
+		xconfig --depth=24 --resolution=800x600 --defaultdesktop=GNOME --startxonboot
+
+		%packages
+		@ubuntu-desktop
+
+		%post
+		mkdir /home/supertool/jinghao
+		#cd /home/supertool/jinghao
+		#wget -c http://192.168.1.86/ubuntu/post-pkgs/jinghao.tar.gz
+		#wget -c http://192.168.1.86/ubunut/post-pkgs/dell_dset.tar.gz
+		chown supertool:supertool /home/supertool/jinghao -R
+	   	=========================================='''
+	   修改并保存以上文件到/var/lib/cobbler/kickstarts/，注意指定ks mirror的一行（url --url...）的IP需要更改为cobbler server的IP
+	   向cobbler添加之前distro的一个profile
+	   $ cobbler profile add --name=Ubuntu-10_04-x86_64 --distro=Ubuntu-10_04-x86_64 --kickstart=/var/lib/cobbler/kickstarts/ks_Ubuntu.cfg 
+	   $ cobbler profile report
+	   EXAMPLE:
+	   	'''==========================================
+		[root@localhost kickstarts]# cobbler profile report
+		Name                           : Ubuntu-10_04-x86_64
+		Comment                        : 
+		DHCP Tag                       : default
+		Distribution                   : Ubuntu-10_04-x86_64
+		Enable PXE Menu?               : 1
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart                      : /var/lib/cobbler/kickstarts/ks_Ubuntu.cfg
+		Kickstart Metadata             : {}
+		Management Classes             : []
+		Name Servers                   : []
+		Name Servers Search Path       : []
+		Owners                         : ['admin']
+		Parent Profile                 : 
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Repos                          : []
+		Server Override                : <<inherit>>
+		Template Files                 : {}
+		Virt Auto Boot                 : 1
+		Virt Bridge                    : xenbr0
+		Virt CPUs                      : 1
+		Virt File Size(GB)             : 5
+		Virt Path                      : 
+		Virt RAM (MB)                  : 512
+		Virt Type                      : xenpv
+
+		Name                           : CentOS-5_3-x86_64
+		Comment                        : 
+		DHCP Tag                       : default
+		Distribution                   : CentOS-5_3-x86_64
+		Enable PXE Menu?               : 1
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart                      : /var/lib/cobbler/kickstarts/sample.ks
+		Kickstart Metadata             : {}
+		Management Classes             : []
+		Name Servers                   : []
+		Name Servers Search Path       : []
+		Owners                         : ['admin']
+		Parent Profile                 : 
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Repos                          : []
+		Server Override                : <<inherit>>
+		Template Files                 : {}
+		Virt Auto Boot                 : 1
+		Virt Bridge                    : xenbr0
+		Virt CPUs                      : 1
+		Virt File Size(GB)             : 5
+		Virt Path                      : 
+		Virt RAM (MB)                  : 512
+		Virt Type                      : qemu
+	   	=========================================='''
+	5. 执行同步操作
+	   $ cobbler sync
+	6. 检查/tftpboot/pxelinux.cfg/default是否正常
+	   #cobbler sync可能造成该文件的ubuntu项丢失ks路径，导致安装系统时无法找到ks.cfg的路径。
+	   目前暂时只能手动填补该路径
+	   vim /tftpboot/pxelinux.cfg/default
+		#在ubuntu标签下，append一行的最后追加如下内容，其中的IP更改为cobbler server的IP
+		#如果该路径下不存在ks_Ubuntu.cfg的话，需要将其他位置的该文件拷贝过来
+		#cp /var/lib/cobbler/kickstarts/ks_Ubuntu.cfg /var/www/cobbler/ks_mirror/Ubuntu-10_04-x86_64/
+		ks=http://192.168.2.92/cblr/links/Ubuntu-10_04-x86_64/ks_Ubuntu.cfg
+		#不要直接使用/var/lib/cobbler/路径下的ks文件，除非该路径可通过apache进行访问
+
+OTHER
+=====
+防火墙设置
+	或者关闭防火墙，或者确保含有如下设置（即对内网开启如下端口）
+        ================================================================
+        # Firewall configuration written by system-config-securitylevel
+        # Manual customization of this file is not recommended.
+        *filter
+        :INPUT ACCEPT [0:0]
+        :FORWARD ACCEPT [0:0]
+        :OUTPUT ACCEPT [0:0]
+
+        -A INPUT -p icmp --icmp-type any -j ACCEPT
+        -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+        # LOCALHOST
+        -A INPUT -i lo -j ACCEPT
+
+        # SSH
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+        # DNS - TCP/UDP
+        -A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT
+        # DHCP
+        -A INPUT -m state --state NEW -m udp -p udp --dport 68 -j ACCEPT
+        # TFTP - TCP/UDP
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 69 -j ACCEPT
+        -A INPUT -m state --state NEW -m udp -p udp --dport 69 -j ACCEPT
+        # NTP
+        -A INPUT -m state --state NEW -m udp -p udp --dport 123 -j ACCEPT
+        # HTTP/HTTPS
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+        # Syslog for cobbler
+        -A INPUT -m state --state NEW -m udp -p udp --dport 25150 -j ACCEPT
+        # Koan XMLRPC ports
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 25151 -j ACCEPT
+        -A INPUT -m state --state NEW -m tcp -p tcp --dport 25152 -j ACCEPT
+
+        #-A INPUT -j LOG
+        -A INPUT -j REJECT --reject-with icmp-host-prohibited
+
+        COMMIT
+        ================================================================
+
+使用cobbler前，需要开启或重启的服务如下
+	/etc/init.d/network restart
+        /etc/init.d/httpd restart
+        /etc/init.d/dhcpd restart
+        /etc/init.d/xinetd restart
+        /etc/init.d/cobblerd restart
+	#/usr/bin/cobbler sync
+	
+	#必要时可以将如下服务设为开机启动
+        /sbin/chkconfig httpd on
+        /sbin/chkconfig dhcpd on
+        /sbin/chkconfig xinetd on
+        /sbin/chkconfig tftp on
+        /sbin/chkconfig cobblerd on
+        ================================================================
+其他尚未开发的命令
+	#Define some roles for your systems to fill:
+	cobbler profile edit --name=RHEL5-i386 --kickstart=/path/to/template.ks --ksmeta="somevar=1 othervar=2"
+	cobbler profile copy --name=RHEL5-i386 --newname=webservers
+	cobbler profile edit --name=webservers --virt-ram=2048
+	
+	#Map hardware to those roles:
+	cobbler system add --name=foosball --mac=AA:BB:CC:DD:EE:FF --profile=RHEL5-i386
+	cobbler system edit --name=foosball --ip=192.168.10.50 # DHCP reservations!
+	cobbler system edit --name=foosball --dns-name=foosball # DNS setup
+	
+	#Reinstall systems you have defined:
+	cobbler system edit --name=foosball --netboot-enabled=1
+	cobbler system reboot --name=foosball
+	
+	#Also help manage updates as they relate to installation and post-installation:
+	cobbler repo add --name=f10-updates --mirror=http://foo
+	cobbler reposync
+	cobbler profile edit --name=desktops --repos="f10-updates"
+	
+重装系统
+========
+	koan
+
+kickstart_file_EXAMPLE
+======================
+from https://fedorahosted.org/pipermail/cobbler/2009-March/003359.html
+	# cobbler system getks --name=box
+	#platform=x86, AMD64, or Intel EM64T
+	# System authorization information
+	auth  --useshadow  --enablemd5
+	# System bootloader configuration
+	bootloader --location=mbr
+	# Partition clearing information
+	clearpart --all --initlabel
+	# Use text mode install
+	text
+	# Firewall configuration
+	firewall --enabled
+	# Run the Setup Agent on first boot
+	firstboot --disable
+	# System keyboard
+	keyboard us
+	# System language
+	lang en_US
+	# Use network installation
+	url --url=http://10.0.0.250/rhel5-64/
+	# If any cobbler repo definitions were referenced in the kickstart profile,
+	include them here.
+	
+	# Network information
+	# Using "new" style networking config, by matching networking information to
+	#the physical interface's
+	# MAC-address
+	%include /tmp/pre_install_network_config
+	
+	# Reboot after installation
+	reboot
+	
+	#Root password
+	rootpw --iscrypted $1$mF86/UHC$WvcIcX2t6crBz2onWxyac.
+	# SELinux configuration
+	selinux --disabled
+	# Do not configure the X Window System
+	skipx
+	# System timezone
+	timezone  America/New_York
+	# Install OS instead of upgrade
+	install
+	# Clear the Master Boot Record
+	zerombr
+	# Allow anaconda to partition the system as needed
+	autopart
+	
+	%pre
+	
+	wget "http://10.0.0.250/cblr/svc/op/trig/mode/pre/system/box" -O /dev/null
+	# Start pre_install_network_config generated code
+	
+	# Start of code to match cobbler system interfaces to physical interfaces by
+	their mac addresses
+	#  Start eth1
+	# Configuring eth1 (00:16:3e:78:a3:c4)
+	if ifconfig -a | grep -i 00:16:3e:78:a3:c4
+	then
+	  IFNAME=$(ifconfig -a | grep -i '00:16:3e:78:a3:c4' | cut -d " " -f 1)
+	  echo "network --device=$IFNAME --bootproto=static --ip=192.168.1.247
+	--netmask=255.255.255.0 --gateway=10.0.0.1 --hostname=box" >>
+	/tmp/pre_install_network_config
+	fi
+	#  Start eth0
+	# Configuring eth0 (00:16:3e:27:7a:39)
+	if ifconfig -a | grep -i 00:16:3e:27:7a:39
+	then
+	  IFNAME=$(ifconfig -a | grep -i '00:16:3e:27:7a:39' | cut -d " " -f 1)
+	  echo "network --device=$IFNAME --bootproto=static --ip=10.0.0.247
+	--netmask=255.255.255.0 --gateway=10.0.0.1 --hostname=box" >>
+	/tmp/pre_install_network_config
+	fi
+	# End pre_install_network_config generated code
+	
+	# Enable installation monitoring
+	
+	%packages
+	
+	%post
+	
+	# Start yum configuration
+	wget "http://10.0.0.250/cblr/svc/op/yum/system/box"
+	--output-document=/etc/yum.repos.d/cobbler-config.repo
+	
+	# End yum configuration
+	# Start post install kernel options update
+	/sbin/grubby --update-kernel=`/sbin/grubby --default-kernel`
+	--args="console=xvc xencons=xvc "
+	# End post install kernel options update
+	
+	
+	
+	$SNIPPET('post_install_network_config')
+	
+	
+	
+	# Start download cobbler managed config files (if applicable)
+	# End download cobbler managed config files (if applicable)
+	
+	# Start koan environment setup
+	echo "export COBBLER_SERVER=10.0.0.250" > /etc/profile.d/cobbler.sh
+	echo "setenv COBBLER_SERVER 10.0.0.250" > /etc/profile.d/cobbler.csh
+	# End koan environment setup
+	
+	# begin Red Hat management server registration
+	# not configured to register to any Red Hat management server (ok)
+	# end Red Hat management server registration
+	
+	# Begin cobbler registration
+	# skipping for system-based installation
+	# End cobbler registration
+	
+	# Enable post-install boot notification
+	
+	# Start final steps
+	
+	wget "http://10.0.0.250/cblr/svc/op/ks/system/box" -O /root/cobbler.ks
+	wget "http://10.0.0.250/cblr/svc/op/trig/mode/post/system/box" -O /dev/null
+
+
+部分参考文档：
+https://fedorahosted.org/cobbler/wiki/UserDocs
+http://backdrift.org/ubuntu-lucid-10-04-cobbler-kickstart-setup-how-to
+http://blog.doulexiang.com/notes/cobbler-centos-54%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8
+https://fedorahosted.org/pipermail/cobbler/
