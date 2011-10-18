@@ -80,6 +80,24 @@ CentOS|RHEL|Fedora:
 		%post
 		$SNIPPET('post_koan_add_reinstall_entry')
 	
+#INSTALL MONITORING
+	Using the anaconda installation monitoring feature for tracking and logging install progress remotely	
+	#在cobbler server上监控cobbler client系统的安装过程
+	Anamon is a python daemon (which runs inside the installer while it is installing) that connects to 
+		the cobbler server via XMLRPC and uploads a pre-determined set of files. Anamon will continue 
+		monitoring files for updates and send any new data to the cobbler server. 
+	To enable this,
+		$vim /etc/cobbler/settings
+		anamon_enabled: 1
+	#如果使用了snippets的话，需要更新snippets脚本
+		%pre
+		$SNIPPET('pre_anamon')
+		#enable post-install boot notification
+		%post
+		$SNIPPET('post_anamon')
+	#所有的anamon日志存储在cobbler server的位置是:
+		ls /var/log/cobbler/anamon/
+
 #PXE MENU:
 	cobbler will automatically generate PXE menu for all profiles it has defined, running "cobbler rync" \
 		can generate and update these menus
@@ -106,7 +124,11 @@ CentOS|RHEL|Fedora:
 Ubuntu:
 	Commands like "repo add" or "import" will not work for debian or suse based distros, but "distro add" \
 		does work if you want to PXE them. Koan does not work
-
+	使用cobbler distro add|edit和cobbler profile add|edit来添加ubuntu的系统	
+	需要注意的是：执行完cobbler sync后，检查下/tftpboot/pxelinux.cfg/default内的ubuntu项是否加载ks项，可能需要
+		手动加载
+	具体过程查看cobbler-setup.txt文档
+Windows:
 
 BuildISO:
 	$ cobbler buildiso
