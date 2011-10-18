@@ -47,6 +47,9 @@
 		$fusermount -u /path/to/mount/point
 #查看ASCII表
 	$man 7 ascii
+#查看某进程的具体路径
+	$ps aux | grep 'httpd' | grep -v grep | awk '{print $2}' | xargs -I {} -t ls -l /proc/{} | grep cwd
+	先查找该进程的pid，然后到/proc/$pid下有一个cwd的文件夹，是该进程所在文件夹的链接，ls -l就能看到了
 #重置终端
 	$reset
 	如果你不小心cat了某个二进制文件，很可能整个终端就傻掉了。这时敲入reset，就能恢复正常了。
