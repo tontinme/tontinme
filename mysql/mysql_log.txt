@@ -1,0 +1,94 @@
+Error Log
+=========
+	即记录错误信息的日志，mysql服务进程启动/关闭的信息也会被记录下来
+	该日志不会记录所有错误日志，只有服务进程运行过程中发生的关键(critical)错误会被
+		记录，另外mysqld进程发现某些表需要自动检查或者修复的话，也会抛出相关信息
+		到该日志文件
+	启动mysqld时附加--log-error参数（或配置log-error系统环境变量），指定错误日志的路径
+		及文件名，如不指定的话，默认文件名为[host_name].err，保存在mysql的data文件
+		夹下。执行flush logs命令后，Mysql会将当前错误日志附加-olg保存，而且创建一个
+		新的空错误日志（仅限指定--log-error的情况下会自动创建新文件）
+	--log-warnings参数（或log-warnings系统环境变量）用来控制警告信息是否记录，默认值为1
+		即启用，0表示禁用，如果指定该参数值大于1，则连接失败的消息也会写入错误日志
+	使用mysqld_safe命令启动mysqld，mysqld_safe会将错误消息写到日志文件或者系统信息
+	在5.1.20版本之前，mysqld_safe的操作记录到文件，从5.1.20版本开始，mysqld_safe提供了
+		两个新增错误日志选项：--syslog和--skip-syslog，从5.1.21开始，默认的不记录
+		日志选项为--skip-syslog，该选项兼容5.1.20版本之前的错误日志行为。
+	要明确指定输出的错误日志文件，就通过mysqld_safe启动服务时附加--log-error=[file_name]
+		参数，如果要使用syslog，则指定--syslog参数
+	对于记录到syslog的消息，来自mysqld_safe和mysqld的消息会分别被打上mysqld_safe或mysqld
+		的标签，从5.1.21开始，还可以通过--syslog-tag=[tag]的方式指定标签的名称，修改
+		后的标签形式为mysqld_safe-[tag]或mysqld-[tag]
+	如果是使用mysqld_safe命令启动Mysqld进程，并且Mysqld意外崩溃，则mysqld_safe将尝试重新
+		启动mysqld进程，并且向错误日志中记录restarted mysqld信息
+
+The General Query Log
+=====================
+	普通查询日志记录mysqld所做的操作，比如当客户端连接或断开时，服务器都会向该文件中写入
+		相关信息，客户端发出的SQL语句也会被记录到普通查询日志中。通过该日志文件可以
+		查询客户端都提交了什么
+	msyqld将接收到的语句按照接收的顺序（注意不是执行顺序）写到查询日志文件中
+	在5.1.6版本之前，普通查询日志只能记入操作系统文件，要启用日志记录功能，可以在启动mysqld
+		进程时附加--log[=file_name]参数
+	自5.1.6版本开始，查询日志也可以写到数据库系统中的专用表
+		启用mysqld进程时附加--log[=file_name]或-l[=file_name]参数启用查询日志
+		记录功能，通过--log-output指定日志输出类型，有table和file两个选项
+	自5.1.12版本起，新增--general_log[=0|1]参数指定普通查询日志的输出状态
+	自5.1.29版本起，新增--general_log_file=file_name指定日志文件名，原--log和-l参数被废弃
+	如果指定参数时没有给查询日志指定文件名，则默认文件名为host_name.log，保存在mysql的data目录下
+	log-out控制输出类型，如果设置为NONE，那么general_log和general_log_file即使被设置，也
+		不会有日志输出，若要输出日志到文件，那么log-output参数值中必须包含FILE参数值
+	mysql服务重新启动，或者刷新日志都不会生成新的普通查询日志文件，要生成新的日志文件，UNIX
+		系统下可以通过mv命令，例如：
+		shell>mv host_name.log host_name-old.Log
+		shell>mysqladmin flush-logs
+		shell>cp host_name-old.log backup-directory
+		shell>rm host_name-old.log
+	从5.1.12版本开始，可以实时启用或禁用普通查询日志，不需要重启服务
+		SET GLOBAL general_log="OFF"
+		SET GLOBAL general_log="ON"
+	如果要启用或禁用某个会话产生的普通查询日志，可以通过在会话级设置SQL_LOG_OFF参数的值为OFF/ON来控制
+
+The Slow Query Log
+==================
+	慢查询日志指，所有SQL执行时间超过long_query_time变量指定值的语句，以及达到min_examined_row_limit条
+		记录的语句，SQL语句执行时间不包含初始化表锁的开销
+	SQL语句执行完毕并且释放其锁定的资源后，mysqld会将符合条件的SQL语句写入慢查询日志，因此慢查询日志
+		中语句记录和顺序有可能跟执行顺序不同（执行时间也不同）
+	long_query_time参数默认值是10，单位为秒，但5.1.21版本中，最小值为0，号称记录到文件时也能够支持到
+		微秒，不过微秒部分会被忽略，只有整数部分会记录到表，在5.1.21版本之前，该参数必须为整数，
+		最小值为1
+	控制慢查询日志有下列方式：
+	*在5.1.6版本之前，慢查询日志是个文件，要启用慢查询日志，只需在启动mysql时附加--log-slow-queries[
+		=file_name]即可
+	*从5.1.6版本开始，慢查询日志可以是文件也可以是表，--log-slow-queries同样有效，另外--log-output参数
+		用来指定日志的输出目标(是文件还是表，或者两者都有)
+	*从5.1.12版本开始，另提供了--slow_query_log{=0|1}指定是否输出慢查询日志
+	*从5.1.29版本开始，另提供了--slow_query_log_file=file__name指定日志文件的位置，原来的--log-slow-queries
+		被废弃
+	如果没有为慢查询日志指定文件名，则默认文件名为host_name-slow.log，保存在data目录下
+	慢查询日志可以用来查看执行时间超过指定时间的SQL语句，并针对这部分语句进行优化。使用mysqldumpslow命令
+		对慢查询日志进行分析
+	在5.1版本中，当指定--log-queries-not-using-indexes参数后，可以把没有使用索引的查询记录到慢日志，而不管
+		其执行速度。启用--log-slow-admin-statements选项可以记录一些管理操作到慢查询日志，比如 
+		optimize table,analyze table,alter table
+	需要注意的是，慢查询日志中有可能记录到与用户权限或密码相关的语句，因此慢查询日志文件的保存也要注意安全
+
+配置查询日志输出路径
+====================
+	从5.1.6版本开始，mysql提供了更灵活的方式控制日志文件的输出以及输出路径，mysql的标准日志可以输出到文件
+		或表
+	注意：从5.1.6开始，日志表会在安装过程中随其他系统表一同创建，如果从5.1.6之前的版本升级而来，那么要手动
+		升级系统表，以确保相关日志表存在
+	日志记录到系统的专用日志表中，要比记录到文件耗费更多的系统资源
+	日志记录到表，这类表可以通过简单的授权，即可让所有连接到Mysql的用户查看到日志中记录的内容，而且日志表
+		可以通过sql语句访问，这样也能够通过sql语句的强大功能进行数据过滤
+	mysql在启动时可以加载参数--log-output，用来指定日志文件的输出方式，参数有三个：
+		TABLE,FILE,NONE，可以同时指定多个参数，相互之间以逗号分隔
+	--general_log: 控制是否生成普通日志，可选值{0|1} mysql_version>5.1.12
+	--general_log_file: 指定普通查询日志文件的文件名及输出路径，默认文件名为[host_name].log mysql_version>5.1.29
+	--slow_query_log: 控制是否生成慢查询日志，可选值{0|1} mysql_version>5.1.12
+	--slow_query_log_file: 用来指定慢查询日志文件的文件名及输出路径 mysql_version>5.1.29
+	--log: 指定普通查询日志文件的输出路径，并启用日志输出功能 mysql_version<5.1.29
+	--log-slow_queries: 指定慢查询日志的输出路径，并启用日志的输出路径 mysql_version<5.1.29
+	注意：以上参数依赖于具体的mysql版本
