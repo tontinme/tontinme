@@ -1,0 +1,53 @@
+dhcpd.conf configuration
+
+DESCRIPTION
+===========
+	dhcpd.conf 包换dhcpd的配置信息
+	dhcpd.conf is a free-form ASCII text file
+	client启动时，依次读取dhcpd.conf中的host,class,pool,subnet,shared-network。
+		如果parameters被声明超过一次，声明最具体的将被使用，即从左到右优先级依次降低
+EXAMPLES
+========
+	global parameters...
+	
+	subnet 204.254.239.0 netmask 255.255.255.224 {
+	  subnet-specific parameters...
+	  range 204.254.239.10 204.254.239.30;
+	}
+	
+	subnet 204.254.239.32 netmask 255.255.255.224 {
+	  subnet-specific parameters...
+	  range 204.254.239.42 204.254.239.62;
+	}
+	
+	subnet 204.254.239.64 netmask 255.255.255.224 {
+	  subnet-specific parameters...
+	  range 204.254.239.74 204.254.239.94;
+	}
+	
+	group {
+	  group-specific parameters...
+	  host zappo.test.isc.org {
+	    host-specific parameters...
+	  }
+	  host beppo.test.isc.org {
+	    host-specific parameters...
+	  }
+	  host harpo.test.isc.org {
+	    host-specific parameters...
+	  }
+	}
+ADDRESS POOL
+============
+	the pool declaration can be used to specify a pool of addresses that will be treated different than another pool of addresses, even on
+		the same network segment or subnet
+	address pools exist at the level of shared networks, so address rangse within pool declarations can
+		be on different subnets
+	pools can have permit lists that control which clients are allowed access to the pool and which aren't. Each entry in a pool's permit 
+		list is introduced with the allow or deny keyword
+DYNAMIC ADDRESS ALLOCATION
+==========================
+	address allocation is autually only done when a client is in the INIT state and has sent a DHCPDISCOVER message. 
+	the server has only three choices - it can ignore the DHCPREQUEST,send a DHCPNAK to tell the client it should stop using the address, 
+		or send a DHCPACK, telling the client to go ahead and use the address for a while	
+	
