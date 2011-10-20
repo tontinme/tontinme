@@ -258,6 +258,65 @@
 		ks=http://192.168.2.92/cblr/links/Ubuntu-10_04-x86_64/ks_Ubuntu.cfg
 		#不要直接使用/var/lib/cobbler/路径下的ks文件，除非该路径可通过apache进行访问
 
+添加windows
+===========
+	1. 添加windows distro
+	$cobbler distro add --name=winxp_sp3_i386 --kernel=/var/www/cobbler/ks_mirror/winxp-i386/I386/STARTROM.N1_  --initrd=/var/www/cobbler/ks_mirror/winxp-i386/I386/SETUPLDR.EX_ --arch=i386
+	$cobbler distro edit --name=winxp_sp3_i386 --breed=generic --ksmeta="tree=http://@@http_server@@/cblr/links/winxp-i386"
+	$cobbler distro report
+	EXAMPLE:
+		'''=======================================
+		Name                           : winxp_sp3_i386
+		Architecture                   : i386
+		Breed                          : generic
+		Comment                        : 
+		Initrd                         : /var/www/cobbler/ks_mirror/winxp-i386/I386/SETUPLDR.EX_
+		Kernel                         : /var/www/cobbler/ks_mirror/winxp-i386/I386/STARTROM.N1_
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart Metadata             : {'tree': 'http://@@http_server@@/cblr/links/winxp-i386'}
+		Management Classes             : []
+		OS Version                     : generic26
+		Owners                         : ['admin']
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Template Files                 : {}
+		======================================='''
+	2. 添加windows profile
+	$cobbler profile add --name=winxp_sp3_i386 --distro=winxp_sp3_i386 --kickstart=/var/lib/cobbler/kickstarts/WINNT.SIF
+	$cobbler profile report
+	EXAMPLE:
+		'''=======================================
+		Name                           : winxp_sp3_i386
+		Comment                        : 
+		DHCP Tag                       : default
+		Distribution                   : winxp_sp3_i386
+		Enable PXE Menu?               : 1
+		Kernel Options                 : {}
+		Kernel Options (Post Install)  : {}
+		Kickstart                      : /var/lib/cobbler/kickstarts/WINNT.SIF
+		Kickstart Metadata             : {}
+		Management Classes             : []
+		Name Servers                   : []
+		Name Servers Search Path       : []
+		Owners                         : ['admin']
+		Parent Profile                 : 
+		Red Hat Management Key         : <<inherit>>
+		Red Hat Management Server      : <<inherit>>
+		Repos                          : []
+		Server Override                : <<inherit>>
+		Template Files                 : {}
+		Virt Auto Boot                 : 1
+		Virt Bridge                    : xenbr0
+		Virt CPUs                      : 1
+		Virt File Size(GB)             : 5
+		Virt Path                      : 
+		Virt RAM (MB)                  : 512
+		Virt Type                      : xenpv
+		======================================='''
+	3. 执行cobbler sync操作
+	$cobbler sync	
+
 OTHER
 =====
 防火墙设置
