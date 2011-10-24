@@ -1,4 +1,6 @@
 ------configure/make/make install的作用
+------core文件调试
+
 #configure/make/make install的作用
 	这些都是典型的使用GNU的autoconf和automake产生的程序的安装步骤
 	./configure是用来检测你的安装平台的目标特征的，比如它会检测你是不是有CC或GCC，并不是需要CC或GCC，\
@@ -7,3 +9,40 @@
 	make是用来编译的，它从Makefile中读取指令，然后编译
 	make intall是用来安装的，它也从Makefile中读取指令，安装到指定的位置
 	  #这一步可能需要root权限，因为可能要向系统写入文件
+#core文件调试 
+	core，即core memory，指由一系列小当纳圈形的磁性材料组成的存储器，这里只是沿用了这一称呼
+		而dump就是堆放的意思。core dump又叫核心转储，当程序运行过程中发生异常，程序异常
+		退出时，由操作系统把程序当前的内存状况存储在一个core文件中，叫core dump
+	core文件生成的位置默认是程序运行的目录，文件名为core.$pid（不同系统设置可能不同）
+	要想使用core dump，首先应该在用gcc进行编译时选择-g选项，以便启动debug支持，生成可执行的exe,./exe运行
+		可执行文件，如果程序当掉，则会生成一个core文件
+	运行ulimit -a
+		如果core file size一项值为0，程序出错时不会产生core文件
+		更改该值，$ulimit -c 1024, 或者更大，或者$ulimit -c unlimited
+		(1024是随便取的，要是core文件大于1024个块，就产生不出来了)
+	生成core的设置
+		/proc/sys/kernel/core_uses_pid可以控制core文件的文件名中是否添加pid作为扩展，文件内容为1，表示
+			添加pid作为扩展
+		/proc/sys/kernel/core_pattern可以控制core文件保存位置和文件名格式
+		以下是参数列表
+		%p - insert pid into filename 
+		%u - insert current uid into filename	
+		%g - insert current git into filename
+		%s - insert signal that caused the coredump into the filename
+		%t - insert UNIX time that the coredump occurred into filename
+		%h - insert hostname where the coredump happened and filename
+		%e - insert coredumping executable name into filename
+		例如：echo "/corefile/core-%e-%p-%t" #可以将core文件统一生成到/corefile目录下，产生的文件名为
+			#core-命令名-pid-时间戳
+	core文件的查看
+		gdb ./a.out	#a.out为编译后的可执行文件
+
+		>core-file core.xxx
+		使用bt命令即可看到程序出错的地方
+		以下两种命令方式具有相同的效果，但是在有些环境下不生效
+		1)gdb -core=core.xxx
+		>file ./a.out
+		>bt
+		2)gdb -c core.xxx
+		>file ./a.out
+		>bt
