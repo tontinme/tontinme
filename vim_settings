@@ -3,6 +3,7 @@
 #set textwidth=111
 
 ------vim、gvim在windows下中文乱码的终极解决方案
+------vim操作
 ------vim的标签功能
 ------vim多行操作(缩进、注释)
 ------退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
@@ -21,6 +22,37 @@
 	source $VIMRUNTIME/menu.vim
 	"解决consle输出乱码
 	language messages zh_CN.utf-8
+#vim操作
+	:e filename		打开文件进行编辑
+	:w			保存文件
+	/word			从上至下搜索关键词
+	?wordd			从下至上搜索关键词
+	/jo[ha]n		搜索john或者joan
+	/fred\|joe		搜索fred或者joe
+	/^\n/{2}		搜索2行空行
+	:%s/old/new/g		替换所有的old为new
+	:%s/old/new/gw		替换所有的Old为new前先确认
+	:%s/old/new/gi		替换所有的olg为new，忽略大小写
+	:%s/^/hello/g		在所有行的开始插入hello
+	:%s/\r//g		删除dos格式的换行符(^M)
+
+	:sp[lit]		水平切分窗口
+	:vs			垂直切分窗口
+	ctrl+w njhl		多窗口间切换
+	ctrl+w ctrl+w		切换到下一个窗口
+	ctrl+w [NUM]-+		调整水平窗口的大小
+	ctrl+w [NUM]<>		调整垂直窗口的大小
+
+	:cd ..			切换到上一层目录
+	:e ..			进入上一层目录
+	:!pwd			执行外部的pwd命令，回车返回当前vim
+	:sh			临时切换到terminal，exit返回当前vim
+
+	:tabnew			创建新标签页
+	:tabn			切换到下一个标签页
+	:tabp			切换到上一个标签页
+	:tabfirst | tablast	切换到第一个|最后一个标签页
+	
 #vim的标签功能
 	:tabnew			在当前标签页之后打开带空窗口的新标签页
 	:tabc[lose]		关闭当前标签页
