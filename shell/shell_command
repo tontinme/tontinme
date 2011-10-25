@@ -2,10 +2,12 @@
 
 ------编写高质量的bash脚本
 ------echo相关参数
+------eval
 ------export
 ------for循环
 -----getopts ------ coming soon!
 ------if then else
+------重定向符号>的解释
 ------脚本中实现pause效果
 ------控制通配符（Globbing）
 ------内置命令启用关闭
@@ -21,6 +23,7 @@
 ------字符串操作（长度，读取，替换）
 ------$@等特定shell变量的含义
 ------()和{}区别
+------''和""的区别
 
 #=============================================
 #编写高质量的bash脚本
@@ -66,6 +69,18 @@
 	\n	换行
 	\r	回车
 	\t	制表符
+#eval	
+	eval会首先扫描命令行进行所有的置换，然后再执行该命令。这里要考虑的问题还很多
+	example:
+		$echo "hello world!" > testFile
+		$cat testFile
+		hello world!
+		$myFile="cat testFile"
+		$echo $myFile
+		cat testFile
+		$eval $myFile
+		hello world!
+		#eval第一遍扫描先将$val转换成"cat test"，第二编再次扫描执行
 #export
 	#export用于导出一个变量或者function到环境变量
 #for循环
@@ -91,7 +106,15 @@
 	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
 	#注意：awk中的for循环写法和C语言是一样的
 #getopts
-        coming soon!!!
+	getopts命令格式：
+		getopts option-string variable
+	getopts解析命令行传递的参数的处理过程为：
+		1.getopts检查所有的命令行参数，查找以字符"-"开始的参数
+		2.当找到以字符"-"开始的参数，将"-"之后的字符串和option-string比较
+		3.如果找到符合的匹配，则指定的变量被设置，否则，此变量被设成?字符
+		4.重复1到3，直到所有的选项被处理
+		5.当分析结束后，getopts返回一个非0返回值，这常用做循环的判断条件。另外，当getopts结束时，它还将变量
+		OPTIND设为最后一个参数的下标
 #if then else
 	#then部分不执行任何指令
 		if [ -d $tmp ]
@@ -117,6 +140,16 @@
 		-u filename	Check if file set-ser-id bit is set
 		-w filename	Check if file is writable
 		-x filename	Check if file is executable
+#重定向符号>的解释
+	$command>filename	将命令的执行结果送至指定的文件中
+	$command>!filename	将命令的执行结果送至指定的文件中，若文件已存在，则覆盖
+	$command>&filename	将命令执行时屏幕上所产生任何信息写入指定的文件中
+	$command>>filename	将命令执行的结果附加到指定的文件中
+	$command>>&filename	将命令执行时屏幕上所产生的任何信息附加到指定的文件中
+	n<&-			表示将n号输入关闭
+	<&-			表示关闭标注输入（键盘）
+	n>&-			表示将n号输出关闭
+	>&-			表示将标准输出关闭
 #脚本中实现pause效果
 	read -n1 -p "Press any key to continue"
 #控制通配符（Globbing）
@@ -229,9 +262,13 @@
 	$*	以一个单字符串显示所有向脚本传递的参数。与位置变量不同，此选项参数可超过9个
 	$$	脚本运行的当前进程ID号
 	$!	后台运行的最后一个进程的进程ID号
-	$@	与$#相同，但是使用时加引号，并在引号中返回每个参数
+	$@	与$*相同，但是使用时加引号，并在引号中返回每个参数，而$*将整个参数列表作为一个参数来获取
 	$-	显示shell使用的当前选项，与set命令功能相同
 	$?	显示最后命令的退出状态，0表示没有错误，其他任何值表明有错误
 #()和{}区别
 	(cmds)在子shell中执行
 	{cmds}在当前shell中执行
+#''和""的区别
+	单引号	由单引号括起来的字符都当作普通字符出现，特殊字符用单引号括起来以后，也会失去原有意义，而只作为普通字符解释
+	双引号	由双引号括起来的字符，除$, ,\'和\"这几个字符仍是特殊字符并保留其特殊功能外，其余字符仍作为普通字符对待
+	反引号	作用同$，如$pwd和`pwd`两者效果是一样的
