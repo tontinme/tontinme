@@ -1,0 +1,22 @@
+------ulimit问题
+
+#ulimit问题
+	1.类似web服务器，数据库服务器等需要大量的文件句柄，一旦开太小，比如默认(1024)，在句柄使用完毕的时候，系统就
+       频繁出现emfile错误，这时候系统很容易陷入不可用。但是如果设定太大了，又会有这样的副作用。很多服务器程序是事件
+       派遣的，比如说用epoll，程序启动的时候通常会根据最大的文件句柄来预留内部的slot，比如erlang的一个slot貌似占用
+	几k的资源，如果你设定文件句柄数目太大，就可能无端的浪费了几百M内存	
+	2.通常在shell下使用ulimit -n NNNN来设定新开的进程的文件句柄的限制。但是在一个生产环境下可能遇到如下问题
+	$ulimit -n 22222222
+	"-bash: ulimit: open files: cannot modify limit: Operation not permitted"
+	$sudo ulimit -n 22222222
+	"sudo: ulimit: command not found"
+	解释：shell里不能直接更改，是因为登录的时候pam已经从limits.conf中设置了上限，ulimit命令只能在低于上限的范围内
+	发挥
+	这时，我们更改/etc/security/limits/conf，确认包含下面的内容
+	"soft nofile NNNN
+	 hard nofile NNNN"
+	 修改后，重新登录shell，用ulimit -Hn和ulimit -Sn确认修改已经生效。
+	 在linux kernel 2.6.25之前通过ulimit -n(setrlimit(RLIMIT_NOFILE))设置每个进程的最大打开文件句柄数不能超过
+	 NR_OPEN(1024*1024)，也就是100多w（除非重新编译内核），而在2.6.25之后，内核导出了一个sys接口可以修改这个最大值
+	 (/proc/sys/fs /nr_open).具体的changlog:http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=9cfe015aa424b3c003baba3841a60dd9b5ad319b
+	 直接在你自己的程序里绕开文件句柄的限制
