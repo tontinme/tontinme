@@ -1,0 +1,19 @@
+#sohu系统工程师
+	1.GPLv2协议的主要内涵是什么
+	2.UNIX，linux,BSD,Solaris,System V之间的关系是
+	3.Linux开机引导步骤
+	4.inode和VFS的涵义，文件权限4755的涵义
+	5.64位和32位的主要差异
+	6.Linux内存管理的工作模式
+	7.DNS反向解析的工作过程
+	8.traceroute的工作原理
+	9.TCP3次握手过程
+	10.TCP滑动窗口原理
+	11.time_wait，fin_wait2的含义
+	12.http1.1中keepalive1.1的含义
+	13.apache的apxs和dso的关系
+	14.SQUID的cache置换基本工作原理
+	15.大型web提供性能的方式
+	16.SCSI标准为什么被sas取代
+	17.RAID0,1,5,0+1含义
+
