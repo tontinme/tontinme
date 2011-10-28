@@ -92,3 +92,22 @@ The Slow Query Log
 	--log: 指定普通查询日志文件的输出路径，并启用日志输出功能 mysql_version<5.1.29
 	--log-slow_queries: 指定慢查询日志的输出路径，并启用日志的输出路径 mysql_version<5.1.29
 	注意：以上参数依赖于具体的mysql版本
+
+系统日志表的特点
+================
+	通常，日志表主要是用来提供一个供用户查看mysql服务运行时执行的接口
+	日志表能够支持create|alter|drop|truncate table操作
+	默认情况下，日志表使用csv存储引擎(可以通过show create table slow_log/general_log查看)，因此，直接复制这个
+		文件到其他位置，或者轻松导入其他数据库。从5.1.12版本开始，日志表也可以修改成myisam引擎
+	要禁用日志功能，以便执行alter/drop操作，可以通过下列示例中的机制
+		set @old_log_state = @@global.general_log;
+		set global general_log = "OFF";
+		alter table mysql.general_log ending = MyISAM;
+		set global general_log = @old_log_state;
+	日志表也能支持rename table语句
+	日志表不支持lock tables，并且也不允许用户在其上进行insert/update/delete操作
+	flush tables with head lock以及设置全局系统变量read_only，均对日志表无效，在此期间mysql仍能向其中写入数据
+	日志表的写操作不会记入二进制日志，同样，如果有复制环境的话，日志表的内容也不会被复制到其它slaves节点
+	刷新日志表或日志文件，可以使用flush tables 或 flush logs，注意在5.1.12到5.1.20版本时，flush tables语句忽略
+		日志表，而flush logs则会刷新日志表及其文件
+	不建议对日志表做分区，并且从5.1.20版本开始，也不再提供这种操作的支持
