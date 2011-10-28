@@ -278,6 +278,29 @@
 	#find+xargs+grep	并行grep
 	xargs使用-P参数，可以启动多个grep来并发控制
 	  eg. find ./ -name "*.log" -print0 | xargs -0 -n1 -P14 grep -H "baidu" > /dev/null
+	匹配模式
+		[:alnum:]	字母与数字字符
+		[:alpha:]	字母
+		[:ascii:]	ASCII字符
+		[:blank:]	空格或制表符
+		[:cntrl:]	ASCII控制字符
+		[:digit:]	数字
+		[:graph:]	非控制，非空格字符
+		[:lower:]	小写字母
+		[:print:]	可打印字符
+		[:punct:]	标点符号字符
+		[:space:]	空白字符，包括垂直制表符
+		[:upper:]	大写字母
+		[:xdigit:]	十六进制数字
+	匹配n次
+		{n}	必须匹配n次
+		{n,}	必须匹配n次或n次以上
+		{n,m}	必须匹配n到m次，包含n和m
+	EXAMPLE:
+		$grep a[[:blank:]] test.txt	#匹配test.txt中的内容"a "
+		$grep -E [a-z]\{10\} test.txt	#匹配test.txt中含10个字母的单词
+		$grep Th.[[:space:]] test.txt	#匹配test.txt中的内容，以Th开头，且只含3个字母
+
 #iostat
 	report cpu statistics and I/O statistics for devices,partitions and NFS
 	使用strace查看iostat从哪里得到的IO相关信息
