@@ -45,6 +45,8 @@
 ------wget
 ------whoami,id,groups,newgrp
 ------zip,tar.gz,tar.bz2
+------管道 |
+
 #adduser&useradd
 	#Debian/Ubuntu
 		useradd is a command itself, and you can create users and define options to them using this \
@@ -907,3 +909,12 @@ man
 	rpm	
 		解包
 		$rpm2cpio FileName.rpm | cpio -div
+#管道 |
+	管道，即把一个程序的输出作为另一个程序的输入。
+	ls这种程序根本不理睬标准输入(stdin)，所以 执行 `echo a b | ls`的话，ls根本不会理睬echo给它的文件列表。
+		xargs命令从标准输入读取，并将其作为参数构建命令行。如果执行 ·echo a b | xargs ls·，xargs会从
+		标准输入读到a和b两行字符，把它们作为两个参数交给程序ls，于是xargs执行ls a b
+	有些程序既可以从标准输入读到数据，也可以从文件读取，如sed
+		$echo a b | sed 's/a/c/'	#echo输出一个列表，利用sed把其中每行的第一个a替换成c，再输出
+		c b
+		$echo a b | xargs sed 's/a/c/'	#echo输出一个列表，sed把这些文件的内容中出现的a替换成b再输出
