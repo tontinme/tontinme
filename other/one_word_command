@@ -1,0 +1,41 @@
+
+1.删除0字节文件
+	$find -type f -size 0 -exec rm -rf '{}' \;
+2.查看进程(按内存从大到小排列)
+	$ps -e -o "%C : %p : %z : %a" | sort -nr
+3.查看进程(按CPU利用率从大到小排列)
+	$ps -e -o "%C : %p : %z : %a" | sort -k5 -nr
+4.打印出cache里的URL
+	$grep -r -a jpg /data/cache/* | strings | grep "http:" | awk -F 'http:' '{ print "http:"$2; }'
+5.查看http的并发请求数及其TCP连接状态
+	$netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a,S[a]}'
+6.通过PID杀掉进程
+	$ps aux | grep mysql | grep -v grep | awk '{print $2}' | xargs kill -9
+7.内存的大小
+	$free -m | grep "Mem" | awk '{print $2}'
+8.实时查看网卡流量
+	$watch ifconfig
+	$watch more /proc/net/dev
+	$sar -n DEV 1 5
+9.CPU负载
+	$uptime
+	$cat /proc/loadavg	#检查前三个输出值是否超过了系统逻辑CPU的4倍
+	$mpstat 1 1		#检查%idle是否过低（比如低于5%）
+10.内存空间
+
+	$free			#检查swap used值是否过高，如果过高，进一步检查swap动作是否频繁
+	$vstat 1 5		#观察si和so是否较大
+11.磁盘空间
+	$df -lh			
+	$df -T			查看文件系统类型
+	$du -cks * | sort -rn | head -n 10	#检查莫歌分区下占用空间最多的文件或目录
+	$du -lh --max-depth=1 .	#查看当前目录下所有文件的大小
+12.磁盘I/O负载
+	$iostat -x 1 2		#检查I/O使用率（%util）是否超过100%
+13.检查网络错误
+	$netstat -i		#drop fifo colls carrier
+	$cat /proc/net/dev	#一样的
+14.网络连接数
+	$netstat -an | grep -E "^(tcp)" | cut -c 68- | sort | uniq -c | sort -n
+15.进程总数
+	$ps aux | wc -l
