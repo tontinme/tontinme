@@ -1,0 +1,33 @@
+------iops
+
+#iops
+	input/output operation per second
+	IOPS is a common performance measurement used to benchmark computer storage devices like hard disk drives(HDD)
+		solid state drivers(SSD),and storage area networks(SAN). As with any benchmark, IOPS numbers published
+		by storage device manufactures do not guarantee real-world application performance
+	即每秒进行读写操作(I/O)的次数，多用于数据库等场合，衡量随机访问的性能
+	存储端的iops性能和主机端的IO是不同的，IOPS是指存储每秒可接受多少次主机发出的访问，主机的一次IO需要多次访问
+		存储才可以完成
+	The most common performance characteristic are as follows:
+		measurement		Description
+		Total IOPS		Total number of I/O operation per second (when performing a mix of read and write tests)
+		Random Read IOPS	Average number of random read I/O operations per second
+		Random Write IOPS	Average number of random write I/O operations per second
+		Random Read IOPS	Average number of sequential read I/O operations per second
+		Random Write IOPS	Average number of sequential write I/O operations per second
+	For HDDs and similar electromechanical storage devices, the random IOPS numbers are primarily dependent upon the 
+		storage device's random seek time(寻道时间) 	'
+	For SSDs and similar state storage devices, the random IOPS numbers are primarily dependent upon the storage device's   '
+		internal controller and memory interface speeds.
+	On both types of storage devices the sequential IOPS numbers(especial when using a large block size) typically indicate 
+		the maximum sustained bandwidth that the storage device can handle
+	Often sequential IOPS are reported as a simple MB/s number as follows:
+		IOPS*TransferSizeInBytes = BytesPerSec(with the answer typically converted to MegabytesPerSec)
+	EXAMPLE:
+		Device			Type	IOPS		Interface
+		7,200 rpm SATA drives	HDD	~75-100 IOPS	SATA 3 Gb/s
+		10,000 rpm SATA drives	HDD	~125-150 IOPS	SATA 3 Gb/s
+		15,000 rpm SAS drives	HDD	~175-210 IOPS	SAS
+
+		#Solid State Devices
+		http://en.wikipedia.org/wiki/IOPS
