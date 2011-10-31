@@ -1,7 +1,25 @@
 #sohu系统工程师
 	1.GPLv2协议的主要内涵是什么
+		只要某文本在整体上或其某个部分来源于遵循GPL的程序，该文本的整体就必须按照GPL流通。不仅该文本的源码必须向社会公开，
+			而且对于该文本不准许附加作者或修改者的限制。
+		而在GPLv3中，不仅要求用户公布源代码，还要求公布相关硬件，此举主要是为了解决数字版权管理(DRM)问题
 	2.UNIX，linux,BSD,Solaris,System V之间的关系是
+		BSD是UNIX的衍生系统，由berkeley加州大学开创
+		System V是AT&T的UNIX商业版本，在linux等类UNIX出现之前，和BSD并列为UNIX的两大分支，它和BSD的启动方式(init过程)不太一致
+			SysV有多种运行模式(8中，0-6和S模式,0为关机，6为重启)，BSD的init比较简单，它运行存放于/etc/rc中的初始化脚本
+			比较一下的话，就是SysV功能强大，BSD简单易用
+		Solaris是Sun OS，由BSD发展而来
+		Linux的产生受到了minix(另一个类UNIX系统)的影响，是一个类UNIX的系统
 	3.Linux开机引导步骤
+		硬件引导启动
+			开机，接通电源，bios寻找启动介质，mbr/efi引导启动
+		grub引导启动
+			加载stage2，读取grub.conf
+		内核引导启动
+			在内存中释放供kernel使用的root filesystem，执行/sbin/init
+		system V init初始化阶段
+			执行各/sbin/init程序(/etc/rc.d/下)，执行/etc/login，执行/etc/X11
+		启动完成
 	4.inode和VFS的涵义，文件权限4755的涵义
 	5.64位和32位的主要差异
 	6.Linux内存管理的工作模式
@@ -17,3 +35,5 @@
 	16.SCSI标准为什么被sas取代
 	17.RAID0,1,5,0+1含义
 
+对文件夹下的所有文件重命名
+写一个工具，可以浏览目录，完成条件搜索，做一些有返回结果的操作。
