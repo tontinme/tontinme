@@ -4,6 +4,7 @@
 ------/etc/security/limits.conf参数解释
 #------/etc/sysconfig/iptables解释
 ------RHEL & CentOS YUM 免费源
+------linux stage解释(grub启动过程)
 ------linux安全关机
 ------linux单网卡绑多IP
 ------linux的内核模块管理命令
@@ -137,6 +138,15 @@
 		gpgcheck=1
 	        gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
 		保存退出即可
+#linux stage解释(grub启动过程)
+	总体上可以被grub看成一个mini os，它有shell，支持script，有文件系统...
+	可以把stage1,stage1.5看成一个bootloader，而stage2则是一个os，不过这个os是专门load其他os的os。为此，stage支持像kernel,initrd,chainloader
+		等等为此目的而设置的内部"命令"
+	stage1只是在系统启动时装载stage2
+	stage1.5是桥梁，由于stage2较大，存放在文件系统中，需要stage1.5引导位于文件系统中的stage2
+	stage2是grub核心映像
+	stage1是通过stage1.5来找到stage2的，因为加载stage1.5后，才能识别文件系统
+	另外，通过直接指向stage2的物理地址，stage1也可以直接找到stage2
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
