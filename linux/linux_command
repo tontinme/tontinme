@@ -670,6 +670,10 @@ man
 #strace
 	#trace system calls and signals.This is useful for debugging webserver and other server problems.
 	#trace 能够显示所有由用户空间程序发出的系统调用
+	strace常用来跟踪进程执行时的系统调用和所接收的信号。
+	在linux世界中，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，
+		必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace可以跟踪到一个进程产生的系统
+		调用，包括参数，返回值，执行消耗的时间
 	-f	告诉strace同时跟踪fork和vfork出来的进程
 	-o xxx.txt	输出到某个文件
 	-e execve	只记录execve这类系统调用
