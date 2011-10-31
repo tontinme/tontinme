@@ -1,4 +1,5 @@
 ------iops
+------raid介绍
 
 #iops
 	input/output operation per second
@@ -31,3 +32,71 @@
 
 		#Solid State Devices
 		http://en.wikipedia.org/wiki/IOPS
+#raid介绍
+	RAID(Redundant Array of Independent Disks), one of the most common techniques to improve either data reliability
+		or data performance (or both).
+	The core RAID configurations are listed as:RAID-0,RAID-1,RAID-2,RAID-3,RAID-4,RAID-5, and RAID-6
+	
+	RAID-0
+	1.This RAID configuration is really focused on performance since the blocks are basically striped across multiple disks.
+	2.How the data is written to two disks
+		the first block of data A0, is written to the first disk,the second block of data A1, is written to the second disk,
+			the third block of data A3, is written to the firsh disk, and so on.
+		If the I/O is happening fash enough data blocks can be written almost simultaneously(A0 and A1 are written at just 
+			about the same time)
+	3.Reading from a RAID-0 group is almostso very fast. A read request comes in and the RAID controller, which controls the placement
+		of data, knows that it can read A0 and A1 at the same time since they are on separate disks, basically doubling the 
+		potential read performance relative to a single disk.
+	4.You can have as many disks as you want in a RAID-0 array (a group of disks in a RAID-0 configuration). However, if you lose 
+		a disk in a RAID-0 array, you will lose access to all of the data in the array. If you can bring the lost disk back
+		into the array without losing any data on it. then you can recover the RAID-0 array, but this is a fairly rare occurrence.
+	5.RAID-0 is focused solely on performance with no additional data redundancy beyond the redundancy in a single disk.This affects 
+		how RAID-0 is used. For example, it can be used in situations where performance is paramount and you have a copy of 
+		your data elsewhere or the data is not import.
+	6.The capacity is computed as:
+		Capacity = n * min(disk sizes)
+		#n is the number of disks in the Array
+		#min(disk sizes) is the minimum common capacity across the drivers (this indicates that you can use drives of different 
+			size)
+	7.The failure rate is a little more involved but can also be estimated
+		MTTFgroup = MTTFdisk / n
+		#n is number of disks in the array
+		#MTTF is the Mean Time To Failure(平均故障时间) and "group" refers to the RAID-0 array and "Disk" refers to a single disk.
+	8.RAID-0 is the fastest RAID configuration and the best capacity utilization of any RAID configuration discussed in this article
+	 Table about RAID-0
+	 Raid Level	Pros					Cons		Storage Efficiency			Minimum Number of disks
+	 RAID-0		*Performance(great read and write 	*No data 	100% assuming the drives are 		2
+	 		performance)				redundancy	the same size	
+			*great capacity(the best of any		*Poor MTTF
+			standard RAID cofigurations)
+	RAID-1
+	1.How the data is written to RAID-1
+		when block A1 is written to disk 0, the same block is also written to disk 1. Since the disks are independent of one another
+			the write to disk 0 and the write to disk 1 can happen at the same time.
+	2.when the data is read, the RAID controller can read block A1 from disk 0 and block A2 from disk 1 at the same time since the disk
+		are independent. So overall, the write performance of a RAID-1 array s the same as a single disk and the read performance 
+		acturally faster from a RAID-1 array relative to a single disk
+	3.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
