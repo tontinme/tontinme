@@ -140,13 +140,48 @@
 		保存退出即可
 #linux stage解释(grub启动过程)
 	总体上可以被grub看成一个mini os，它有shell，支持script，有文件系统...
-	可以把stage1,stage1.5看成一个bootloader，而stage2则是一个os，不过这个os是专门load其他os的os。为此，stage支持像kernel,initrd,chainloader
+	可以把stage1,stage1_5看成一个bootloader，而stage2则是一个os，不过这个os是专门load其他os的os。为此，stage支持像kernel,initrd,chainloader
 		等等为此目的而设置的内部"命令"
+	grub启动简要流程	
+		1.bios执行int 0x19，加载MBR至0x7c00并跳转执行
+		如果你安装grub到mbr，grub的安装程序会把stage(512B)拷贝到mbr
+		视stage2的大小，安装程序会在stage1中载入stage1_5或者stage2的磁盘位置信息
+		2.stage1开始执行，它直接加载stage1_5或者stage2并跳转执行（还有些额外的工作，这里先忽略）	#有争议，见下面的修正
+		stage1_5除了加载stage2以外没有其他任何作用
+		所以无论哪种情况，这一步的结果都是stage2开始运行了
+		3.stage2会把系统切入保护模式，设置好c运行环境（主要是bss）
+		它会先找config文件（即grub.conf/menu.list）,如果没有的话，就会执行一个shell，等待我们输入命令.
+		然后grub的工作就是输入命令-解析命令-执行命令的循环，当然stage2也是为加载其他os而存在的，
+			所以如果情况允许，在他执行boot命令以后就会把控制权交出去
+	启动流程修正：
+		stage1的代码文件，是源码目录下的stage1/stage1.S，汇编后编程了一个512字节的img，被写在硬盘的0面0道第1扇区，
+			作为硬盘的主引导扇区。
+		#注意：硬盘主引导扇区 = 硬盘主引导记录(MBR) + 硬盘分区表(DPT)	
+		stage1的工作并不是加载stage1_5或者stage2，而是加载0面0道第2扇区的512字节代码至0x8000，然后跳至0x8000执行。
+			这里我们提及的另一个512字节代码，是来自源码目录下的stage2/start.S文件的，而start.S的作用是作为
+			stage1_5或者stage2(视乎编译grub时的指定)的总入口，它才是stage1_5或者stage2的真正加载器
+		总结起来，那么就是stage1加载start，然后将执行权交给start，由start来加载stage1_5或者stage2.
+		PC上电后，就会执行BIOS的代码，BIOS将加载硬盘主引导扇区，总共512字节的二进制代码，这些代码就是stage1，然后
+			BIOS将执行stage1。然而stage2的体积比较大，所以一般stage2不会被放在固定的磁盘扇区中以供stage1只
+			使用BIOS例程便可对其进行raw read，那么，stage2就会作为一个文件被放在文件系统里。
+		这里问题就来了，stage2能识别文件系统而stage1不能，现在stage2已经被放在了文件系统里，stage1如果加载stage2呢，
+			所以这个时候stage1_5就开始发挥作用了。stage1_5在哪呢？在/boot/grub/下会发现好多xxfs_stage1_5文件，但是stage1_5
+			是要stage1来调用的，还是刚才的问题，stage1不识别文件系统(/boot/grub)，所以"用来识别boot分区文件系统的stage1_5"
+			不能作为文件来被stage1读取，它只能被存放在固定的扇区中。这里用""来强调，那是因为并不是所有的stage1_5文件都被
+			放在固定扇区的，只有boot分区的文件系统对应的stage1_5才会被放在固定的扇区中。比如说，你的boot分区系统是ext2，
+			那么在安装grub的stage1时，e2fs_stage1_5就会被放至一个固定的扇区集，而其他的比如reiserfs_stage1_5就依然作为文件
+			被存放，以供grub使用root()命令来识别其他的boot分区(那时候，stage2已经被加载，所以这个不是问题)
+		stage1_5被放在了0面0道从第3个扇区开始的扇区集里(具体占用多少个扇区取决于stage1_5的大小)
+		#注意：0面0道的所有扇区都是保留的，所以不用担心stage1_5由于过大导致被其他数据覆盖
+		#附：其他的stage1_5文件和stage2文件被放在了/boot分区
 	stage1只是在系统启动时装载stage2
-	stage1.5是桥梁，由于stage2较大，存放在文件系统中，需要stage1.5引导位于文件系统中的stage2
+	stage1_5是桥梁，由于stage2较大，存放在文件系统中，需要stage1_5引导位于文件系统中的stage2
 	stage2是grub核心映像
-	stage1是通过stage1.5来找到stage2的，因为加载stage1.5后，才能识别文件系统
+	stage1是通过stage1_5来找到stage2的，因为加载stage1_5后，才能识别文件系统
 	另外，通过直接指向stage2的物理地址，stage1也可以直接找到stage2
+
+	grub不支持磁盘文件系统的读写，但是对磁盘raw read/write是支持的（主要用于mbr,stage1_5所在的sector,
+		partition的开头2个sector的访问）。因此grub支持save default操作
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
