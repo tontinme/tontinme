@@ -116,7 +116,7 @@
 ===========
 	以下目录推荐在根目录创建，如果放在其他子目录的话只需在grub.cfg中指定绝对路径即可
 	1.创建iso目录，拷贝镜像到该目录,比如：
-		[supertool@supertool iso]$ ls
+		[tontinme@tontinme iso]$ ls
 		ubuntu-10.04-desktop-amd64.iso  winxp.iso
 		Ubuntu_8.04_i386.iso            WinXP_PRO_SP3_X86_VL_repack_2.iso
 	2.分别创建属于各个目录的文件夹，用于存放内核及initrd文件

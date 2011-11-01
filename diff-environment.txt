@@ -37,7 +37,7 @@ done
 
 server_name="b1 b2 b3 b4 c0 c1 c2 c3 c4 c5 c6 c7"
 for server_id in `seq 10 107` $server_name; do
-        rsync -e ssh -avz /home/supertool/diff-standard/standard-file $server_id.mzhen.cn:/root/
+        rsync -e ssh -avz /home/tontinme/diff-standard/standard-file $server_id.mzhen.cn:/root/
 done
 
 创建脚本execute-standard.sh，用于在远程机器上执行modify-standard.sh或echo-standard.sh或check-standard.sh
@@ -69,7 +69,7 @@ sed -i "/IPADDR=/c\IPADDR=$remote_addr" /root/standard-file/ifcfg-eth1
 server_num=`ifconfig eth1 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "|cut -f 4 -d "."`
 sed -i "s/107/$server_num/" /root/standard-file/network
 sed -i "s/107/$server_num/" /root/standard-file/bashrc_root
-sed -i "s/107/$server_num/" /root/standard-file/bashrc_supertool
+sed -i "s/107/$server_num/" /root/standard-file/bashrc_tontinme
 
 创建脚本check-standard.sh，比较修改后的标准文件和系统当前文件，检查是否符合修改的预期。	#为了方便比较，可以将所有文件取回到本地，并且不同机器的相同文件同时比较。
 #!/bin/sh
@@ -78,7 +78,7 @@ sed -i "s/107/$server_num/" /root/standard-file/bashrc_supertool
 
 server_num=`ifconfig eth1 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " "|cut -f 4 -d "."`
 diff -bB --side-by-side /root/standard-file/bashrc_root /root/.bashrc | tee /root/standard-file/bashrc_root-$server_num.check
-diff -bB --side-by-side /root/standard-file/bashrc_supertool /home/supertool/.bashrc | tee /root/standard-file/bashrc_supertool-$server_num.check
+diff -bB --side-by-side /root/standard-file/bashrc_tontinme /home/tontinme/.bashrc | tee /root/standard-file/bashrc_tontinme-$server_num.check
 diff -bB --side-by-side /root/standard-file/ifcfg-eth0 /etc/sysconfig/network-scripts/ifcfg-eth0 | tee /root/standard-file/ifcfg-eth0-$server_num.check
 diff -bB --side-by-side /root/standard-file/ifcfg-eth1 /etc/sysconfig/network-scripts/ifcfg-eth1 | tee /root/standard-file/ifcfg-eth1-$server_num.check
 diff -bB --side-by-side /root/standard-file/network /etc/sysconfig/network | tee /root/standard-file/network-$server_num.check
@@ -98,7 +98,7 @@ cp /etc/sysconfig/network /etc/sysconfig/network.bak-diff
 cp /etc/resolv.conf /etc/resolv.conf.bak-diff
 cp /etc/sysconfig/i18n /etc/sysconfig/i18n.bak-diff
 cp /root/.bashrc /root/.bashrc.bak-diff
-cp /home/supertool/.bashrc /home/supertool/.bashrc.bak-diff
+cp /home/tontinme/.bashrc /home/tontinme/.bashrc.bak-diff
 cp /etc/sysconfig/ntpd /etc/sysconfig/ntpd.bak-diff
 cp /etc/ntp.conf /etc/ntp.conf.bak-diff
 cp /etc/sysconfig/iptables /etc/sysconfig/iptables.bak-diff
@@ -112,7 +112,7 @@ cat /root/standard-file/network > /etc/sysconfig/network
 cat /root/standard-file/resolv.conf > /etc/resolv.conf
 cat /root/standard-file/i18n > /etc/sysconfig/i18n
 cat /root/standard-file/bashrc_root > /root/.bashrc
-cat /root/standard-file/bashrc_supertool > /home/supertool/.bashrc
+cat /root/standard-file/bashrc_tontinme > /home/tontinme/.bashrc
 cat /root/standard-file/ntpd > /etc/sysconfig/ntpd
 cat /root/standard-file/ntp.conf > /etc/ntp.conf
 #cat /root/standard-file/iptables > /etc/sysconfig/iptables	#iptables情况特殊，这里没有直接覆盖修改
