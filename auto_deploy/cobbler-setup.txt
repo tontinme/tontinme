@@ -145,7 +145,7 @@
 		#Root password
 		rootpw --iscrypted $1$vunLN4sZ$CxZ1Ob0CdeJRs695Iz3ny1
 		#Initial user
-		user supertool --fullname "supertool" --password 123456
+		user tontinme --fullname "tontinme" --password 123456
 		#Reboot after installation
 		reboot
 		#Use text mode install
@@ -179,11 +179,11 @@
 		@ubuntu-desktop
 
 		%post
-		mkdir /home/supertool/jinghao
-		#cd /home/supertool/jinghao
+		mkdir /home/tontinme/jinghao
+		#cd /home/tontinme/jinghao
 		#wget -c http://192.168.1.86/ubuntu/post-pkgs/jinghao.tar.gz
 		#wget -c http://192.168.1.86/ubunut/post-pkgs/dell_dset.tar.gz
-		chown supertool:supertool /home/supertool/jinghao -R
+		chown tontinme:tontinme /home/tontinme/jinghao -R
 	   	=========================================='''
 	   修改并保存以上文件到/var/lib/cobbler/kickstarts/，注意指定ks mirror的一行（url --url...）的IP需要更改为cobbler server的IP
 	   向cobbler添加之前distro的一个profile
