@@ -76,7 +76,87 @@
 	2.when the data is read, the RAID controller can read block A1 from disk 0 and block A2 from disk 1 at the same time since the disk
 		are independent. So overall, the write performance of a RAID-1 array s the same as a single disk and the read performance 
 		acturally faster from a RAID-1 array relative to a single disk
-	3.
+	3.The capacity of RAID-1 is the following:
+		capacity = min(disk sizes)
+		#meaning that the capacity of RAID-1 is limited by the smallest disk(you can use different size drives in RAID-1). 
+		RAID-1 has the lowest capacity utilization of any RAID configuration
+	4.The reliability or probability of failure of RAID-1 is the following:
+		P(dual failure) = P(single drive) * P(single drive)	#square of the failure of a single drive
+		#Since the probability of failure of a single drive is Levelss than 1, that means that the failure of a RAID-1 array is even
+			#smaller than the probability of failure of a single drive
+
+	RAID-2
+	1.This RAID level was one of the original five defined, but it is no longer really used.
+	2.The basic concept is that RAID-2 stripes data at the bit level instead of the block level and uses a Hamming coding for parity computations
+	3.In RAID-2, the first bit is written on the first drive, the second bit is written on the second drive, and so on. Then a Hamming-code
+		parity is computed and either stored on the disks or on a separate disk.	
+	4.Since hard drives added error correction that used Hamming-code, so using them at the RAID level became redundant so people stopped
+		using RAID-2
+
+	RAID-3
+	1.RAID-3 uses data striping at the byte level and also adds parity computations and sotres them on a delicated parity disk
+	2.The RAID-3 layout uses 4 disks and stripes data across three of them and uses the fourth disk for storing parity information
+		so a chunk of data "A" has byte A1 written to disk 0, byte A2 is written to disk 1, and bytes A3 written to disk 2.
+		then the parity of bytes A1 A2 and A3 is computed and written to disk 3. The process then repeats until the entire chunk 
+		of data "A" is written.
+	3.The minimum number of disks you can have in RAID-3 is three (you need 2 data disks and a third disk to store the parity)
+	4.In particular, RAID-3 cannot accommodate multiple requests at the same time. This result from the fact that a block of data will be
+		spread across all members of the RAID-3 group (minux the parity disk) and the data has to reside in the same location on each drive
+	5.RAID-3 is not very popular in the real-world but from time to time you do see it used. RAID-3 is used in situations where 
+		RAID-0 is totally unacceptale because there is not enough data redundancy and the data throughout reduction due to the data 
+		parity computations is acceptable
+
+	RAID-4
+	1.RAID-4 builds on RAID-0 by adding a parity disk to block-level striping. Since the striping is now down to a block level each disk
+		can be accessed independently to read or write data allowing multiple data access to happen at the same time.
+	2.In this layout,data is written in block stripes to the first three disks (disk0, disk1, disk2), while disk 3 it the parity drive.
+		the parity of the blocks accross the drives is computed by the RAID controller and stored on the delicated parity drive
+	3.The delicated parity drive becomes a performance bottleneck in RAID-4,particular for write I/O. you can write to blocks A1 and B1 
+		at the same time since they are on different disks. However the parity for both blocks has to be written to the same drive 
+	       	which can only accommodate a single write I/O request at a tim.
+	4.The capacity of RAID-4 is the following:
+		Capacity = min(disk sizes) * (n-1)
+	5.RAID-4 is rarely used because RAID-5 has replaced it 
+
+	RAID-5
+	1.RAID-5 is similar to RAID-4 but now the parity is distributed across all of the drives instead of using a dedicated parity drive
+		this greatly improves write performance relative to RAID-4 
+	2.In this layout, the parity blocks are labeled with a subscript "p" to indicate parity. the blocks that line up(one block per drive)
+		are typically a "stripe". The data stripe size is simply the following:
+		Data stripe size = block size * (n-1) #n is the number of dirves in the RAID-5 array
+	3.Anytime a block inside the stripe is changed or written to, the parity block is recomputed and rewritten (this is sometimes called 
+		the read-modify-write process). 
+	4.RAID-5 has some write performance for small writes that are smaller than a single stripe since the parity needs to be computed several
+		times which eats up computational capability of the RAID controller.
+	5.The capacity of RAID-5 is very similar to RAID-4 and is the following:
+		Capacity = min(disk sizes) * (n-1)
+	6.RAID-5 you can lose a single drive and not lose data
+	7.There is a new phenomenon that impacts RAID-5 that has been explained in various article around the web. Basically the capacity 
+		of drives is growing quicker than the Unrecoverable Read Error(URE) rate of drives to the point where losing a drive in a 
+		RAID-5 array and recovering it to a hot-spare drive is almost guaranteed to lead to a URE which means that the RAID-5 array
+		will be lost
+	8.There is no shortage of article about RAID-5 on the web. You will see some strong opinions both for and against RAID-5 based on
+		usage cases.
+
+	RAID-6
+	1.As mentioned previously, there is a potential problem with RAID-5 for larger capacity drives and a larger number of them. 
+		RAID-6 attempts to help that situation by using two parity blocks per stripe instead of RAID-5's single parity block.		'
+		This allows you to lose two drives with losing any data
+
+	2.The first parity block is noted with as sbuscript "p" such as Ap, the second parity block in a stripe is noted with a subscript 
+		"q" such as Aq. The use of two parity blocks reduces the useable capacity of a RAID-6 as in the following:
+		Capacity = min(disk sizes) * (n-2)
+	3.Computing the first parity block,p, is done in the same fashion as RAID-5. However, computing the q parity block is more complicated
+		as explained here(http://en.wikipedia.org/wiki/Standard_RAID_levels#Computing_Parity). This means that the write performance
+		of a RAID-6 array can be slower than a RAID-5 array for a given level of RAID controller performance
+	4.However, read performance from a RAID-6 is just as fast as a RAID-5 array since reading the parity blocks is skipped.
+
+	Hybrid RAID Levels(Nested RAID Levels)
+	1.For example, a common configuration is called RAID 1+0 or RAID-10. The first number ( the furthest to the left) refers to the 
+		"bottom" or initial part of the RAID array. Then the second number from the left refers to the "top" level or the RAID array.
+		the top level RAID uses the bottom level RAID configurations as building blocks.
+	2.In the case of RAID-10, the approach is to use multiple pairs of drives at the lowest level (RAID-1) and then to combin them 
+		using RAID-0. 
 
 
 
@@ -92,6 +172,51 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+	 Raid Level	Pros					Cons				Storage Efficiency		Minimum Number of disks
+	 RAID-0		*Performance(great read and write 	*No data 			100% assuming the drives are 	2
+	 		performance)				redundancy			the same size	
+			*great capacity(the best of any		*Poor MTTF
+			standard RAID cofigurations)
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-1		*Great data				*Worst capacity ulilization	50%assuming two drives of the 	2
+	 		redundancy/availability			of single RAID levels		same size
+			*Great MTTF				*Good read performance,
+								limited write performance
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-4		*Good data redundancy/avalilability	*Single parity dsik(causes 	(n-1)/n where n is the number 	3(have to be 
+	 		*Good read performance since all of 	bottleneck)			of drives			identical)
+			the drive are read at the same time	*Write performance is not 
+			*Can lose one drive without losing	that good because of the 
+			data					bottleneck of the parity drive
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-5		*Good data redundancy/avalilability	*Write performance is adequate	(n-1)/n where n is the number	3(have to be
+	 		*Very good read performance since all	*Write performance for small	of drives			identical)
+			of the drives can be read at the same	I/O is not good at all
+			time
+			*Write performance is adequate(better
+			than RAID-4)
+			*Can lose one drive without losing 
+			data
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-6		*Excellent data redundancy/avalila-	*Write performance is not that	(n-2)/n where n is the number	4(have to be
+	 		-bility					good - worse than RAID-5	of drives			identical)
+	 		*Very good read performance since 	*Write performance for small
+			all of drives can be read at the 	I/O is not good at all
+			same time				*more computational horsepower
+			*Can lose twoo drives without losing	is required for parity computations
+			data
+	 --------------------------------------------------------------------------------------------------------------------------------------
 
 
 
