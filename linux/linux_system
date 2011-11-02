@@ -372,14 +372,17 @@
 		以硬盘为例，硬盘进行分区之后，一部分是inode区，一部分是block区。后者存放数据，前者存放block区中\
 			每个文件的inode	。每个文件都有自己的inode
 		$ls -li	查看文件的inode编号（第一项是inode编号，第二项是该文件拥有的硬链接数）
+		$dumpe2fs -h /dev/sda10 | grep Inode 可以查看filesystem的inode设定值(dumpe2fs适用于ext2,ext3,ext4)
 	#硬链接
 		ln source hardlink_of_source 
 		创建硬链接后，source和hardlink_of_source具有相同的inode编号及文件属性，并且硬链接数相同.
-		修改source_of_source的内容，source的内容会跟着改变
+		修改hard_of_source的内容，source的内容会跟着改变
 		因此我们可以这样认为，为文件a增加一个硬链接，只是让a的inode结构中的硬链接数目增加1，并没有为硬\
-			链接文件产生一个inode。无论删除source还是source_of_hardlink，只会使硬链接数减1，减到0时,\
-			文件才会被删除
-		硬链接不能跨设备建立
+			链接文件产生一个inode，也没有占用任何磁盘空间。无论删除source还是source_of_hardlink，只
+			会使硬链接数减1，减到0时,文件才会被删除
+		由于hard link是在同一个partition上面进行数据关联的建立，所以hard link是有限制的：
+		a.不能跨filesystem
+		b.不能Link目录
 	#软链接(符号链接)
 		ln -s source softlink_of_source
 		创建软链接后inode编号不同，文件属性不同，硬链接数均为1，而且softlink_of_source右边显示->，指向source
