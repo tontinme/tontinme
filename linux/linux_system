@@ -271,6 +271,16 @@
 		init 0	关机
 		init 1 	重启
 #linux开机启动过程
+	硬件引导启动
+		开机，接通电源，bios寻找启动介质，mbr/efi引导启动
+	grub引导启动
+		加载stage2，读取grub.conf
+	内核引导启动
+		在内存中释放供kernel使用的root filesystem，执行/sbin/init
+	system V init初始化阶段
+		执行各/sbin/init程序(/etc/rc.d/下)，执行/etc/login，执行/etc/X11
+	启动完成
+	==========================
 	加载内核
 		此时计算机内存中还不存在任何操作系统，内核必须完整的加载到可用RAM的第一个兆字节内。为了\
 			实现这个目的，内核是被压缩了。
