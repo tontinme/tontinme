@@ -1,6 +1,32 @@
+------inode
 ------iops
 ------raid介绍
 
+#inode
+	inode是UNIX操作系统中的一种数据结构，它包含了与文件系统中各个文件相关的一些重要信息。通常，文件磁盘空间中大约百分之一
+		空间分配给了inode表
+	当用户搜索或者访问一个文件时，UNIX系统通过inode表查找到正确的inode编号，在找到inode编号之后，相关的命令才可以访问该inode，
+		并对其进行适当的更改。如果同时有另一个用户试图对同一个文件进行编辑，由于inode已经被被分配给了第一个用户，则
+		该用户只能等待
+	inode的结构
+		*inode编号
+		*用来识别文件类型，以及用于stat C函数的模式信息
+		*文件的链接数目
+		*属主的UID
+		*属主的GID
+		*文件的大小
+		*文件所使用的磁盘块的实际数目
+		*mtime(modify time)
+		*atime(access time)
+		*ctime(change time)
+		从根本上讲，inode中包含有关文件的所有信息（除了文件的实际名称以及实际数据内容之外）
+	由于某种原因，某个文件系统的inode使用率达到100%后，您将无法在该文件系统中创建更多的文件、设备或目录。
+		对于这种情况，一种解决办法是通过smitty chfs命令(AIX)为该文件系统添加更多的空间;另一种是创建较小的inode区段
+	AIX中可以使用istat检查文件的inode信息，linux中有对应的命令stat
+	ls -i可以查看文件的索引编号
+	注：inode和索引编号(inumber)这两个术语非常相似，并且相互关联，但它们所指的并不是同样的概念，inode指的是数据结构，而
+		索引编号实际上是inode的标识编号
+	fsck可以用来修复文件系统或者修正受损的inode
 #iops
 	input/output operation per second
 	IOPS is a common performance measurement used to benchmark computer storage devices like hard disk drives(HDD)
