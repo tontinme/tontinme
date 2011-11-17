@@ -1,4 +1,26 @@
-#!/bin/sh
+------diff对比远程文件跟本地文件
+------man介绍
+------netstat查看系统中占用端口的进程
+------ssh创建端口转发通道
+------ssh挂载远程主机上的文件夹
+------查看ASCII表
+------查看某进程的具体路径
+------重置终端
+------更友好的显示当前挂载的文件系统
+------快速备份一个文件
+------利用中间管道嵌套使用ssh
+------免密码ssh登录主机
+------切换会上一个目录
+------实时查看某个目录下的最新改动过的文件
+------替换上一条命令中的一个短语
+------以HTTP方式共享当前文件夹的文件
+------以sudo运行上条命令
+------用你最喜欢的编辑器来敲命令
+------运行前一个shell命令，同时用"bar"替换掉命令行中的每一个"foo"
+------在多台机器上并行执行命令/脚本
+------在午夜执行某个命令
+------在以普通用户打开的vim中保存一个root用户文件
+------抓取linux桌面的视频
 
 #diff对比远程文件跟本地文件
 	$ssh user@host cat /path/to/remotefile | diff /path/to/localfile -
@@ -99,7 +121,31 @@
 	这特别适合那些参数异常复杂的程序。保存退出后自动执行这个程序。
 	如果你特别喜欢别的编辑器，可以在~/.bashrc里面放上比如export EDITOR=nana的命令
 #运行前一个shell命令，同时用"bar"替换掉命令行中的每一个"foo"
-	$!!:gs/foo/bar
+	$!!:gs/foo/bar 
+#在多台机器上并行执行命令/脚本
+	1.仍然利用for循环，只是把任务放在后台即可
+		>for i in {100..135}; do 
+		>{
+		>	ssh 192.168.1.$i 'sh /home/cinder/test-ttm.sh >/home/cinder/test-ttm.log 2>&1;
+		>	sleep 1;'
+		>; }& done
+	需要注意的是，这里不能把命令写在一行(如下)，否则可能仍然会串行
+		>for i in {100..135}; do { ssh 192.168.1.$i 'hostname'; }&; done
+	2.dsh (distributed shell)
+		dsh [-m machinename | -a | -g groupname] [-r remoteshellname] [-c | -w | -i | -F forklimit ] -- commandline
+		EXAMPLE:
+		>dsh -m 192.168.1.100 -m 192.168.1.101 -c -r ssh -M -- 'sh test-ttm.sh'
+		#-c 并行执行; -M 在标准输出上显示远程主机名
+	具体命令查看man dsh
+	3.pssh(parallel ssh program)
+		pssh [-I] [-vAiIP]  [-h hosts_file] [-H [user@]host[:port]] [-l user] [-p par] [-o outdir] [-e errdir] [-t timeout]
+			[-O options] [-x args] [-X arg] command ...
+		>pssh -i -H host1 -H host2 -x "-O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -O
+		>	GlobalKnownHostsFile=/dev/null" echo hi
+		#-i display standard output and standard error as each host completes
+		#-H hosts list
+		#-x passes a extra ssh command-line arguments(不检查和保存host key)
+	具体命令查看man pssh
 #在午夜执行某个命令
 	$echo cmd | at midnight
 	说的是at这个组件，通常跟cron相提并论。at主要用于定时执行一次性任务，而cron执行周期性任务。
