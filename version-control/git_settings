@@ -1,7 +1,27 @@
-1.Problem:	
+------git权限控制
+------Problem&Solution occured
+
+1.git权限控制
+	架设git服务器最复杂的地方在于账户管理。
+	git自身不提供权限控制，需要使用第三方的工具来进行
+	常用的第三方工具有:
+		操作系统(*nix)的本地文件访问许可机制
+		hook方式：简陋而繁琐，也可以作为其他控制方式的补充
+		git-daemon:小团体可以使用
+		gitosis:应用广泛，gitosis本质上是针对每个client的，而不是针对每个user
+			所以使用它并不能校验user.name是否合法，它只会校验client是否有权限，对于大家都在一个公共机器上
+			做开发，一定要每个用户都必须有git config user.name xxx
+		gitolite:gitolite是gitosis用perl重写的，比gitosis优秀一些，不仅控制读，还能控制到文件一层
+		gitorious:github的克隆版
+	有几个办法可以让团队的每个人都有访问权：
+		1.给每个人建立一个系统账户
+		2.在主机上建立一个git账户，给每个需要权限的人发送一个ssh公钥，然后将其加入git账户的~/.ssh/authorized_keys
+		文件。注意：访问主机用的身份不会影响提交对象的提交者信息
+		3.让ssh服务器通过某个LDAP服务，或者其他已经设定好的集中授权机制，来进行授权。
+
+2.Problem:	
 	error: insufficient permission for adding an object to repository database .git/objects
 	error: Error building trees
   Solution:
 	Usually this problem is caused by wrong user and group permission on your git servers filesystem
         $sudo chown -R cinder:cinder .git/objects/	
-
