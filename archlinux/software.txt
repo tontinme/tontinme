@@ -1,0 +1,27 @@
+浏览器：
+	firefox,chromium,opera
+下载
+	wget（专供AUR用），Deluge（下载ipv6的BT），Uget（下载管理器）
+即时通讯
+	openfetion（不解释），pidgin（极少用），xchat，skype（视频专用），Mumble（游戏语音通讯工具）
+文件传输
+	filezilla(好用，不解释)，iptux（飞鸽传书）
+RSS
+	liferea（略略卡，尤其是更新的时候），Akregator（KDE下的feed聚合器）
+文档阅读编辑
+	libreoffice（不是特别好用，坐等wps），zathura（pdf极好用，但是要适应才行），Calibre（电子图书馆，电子图书格式转换）
+编辑器
+	Guake GNOME（命令终端），medit（很好用的说，有kate的风范），geany（本菜鸟手中的“神器”），vim（公认的神器吧），eclipse（做android程序用）
+图形类
+	ristretto（xface默认图片工具），gimp（不解释），dia（流程图专用）,Blender(三维绘图及渲染软件)，shutter（截图工具），RawTherapee
+RAW（照片处理软件），Darktable（数字摄影暗房软件），Inskscape（矢量图形编辑器），OpenShot（视频编辑器）
+科学小软件
+	stellarium（夜空软件，天文爱好者你伤不起啊），musescroe，galculator（小计算器），octave（强大的数学工具，不解释）
+播放器
+	exaile（推荐），parole（好用！！），flashplayer（不解释）
+系统网络工具
+	bleachbit（清理系统垃圾），gparted（分区神器不解释），wireshark（网络分析，“坏人”们都懂的）
+游戏
+	gens，fceux，（两大知名模拟器，爱玩不解释），qsanguosha,flightgear
+其他
+	GnuCash（资金管理软件）
