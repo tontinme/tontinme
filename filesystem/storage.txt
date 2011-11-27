@@ -1,6 +1,7 @@
 ------inode
 ------iops
 ------raid介绍
+------日志文件系统
 
 #inode
 	inode是UNIX操作系统中的一种数据结构，它包含了与文件系统中各个文件相关的一些重要信息。通常，文件磁盘空间中大约百分之一
@@ -185,30 +186,6 @@
 		using RAID-0. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	 Raid Level	Pros					Cons				Storage Efficiency		Minimum Number of disks
 	 RAID-0		*Performance(great read and write 	*No data 			100% assuming the drives are 	2
 	 		performance)				redundancy			the same size	
@@ -243,6 +220,63 @@
 			*Can lose twoo drives without losing	is required for parity computations
 			data
 	 --------------------------------------------------------------------------------------------------------------------------------------
+#日志文件系统
+	目前Linux的日志文件系统主要有：在ext2基础上开发的ext3，根据面向对象思想设计的reiserfs，由SGI IRIX系统移植过来的XFS，由IBM
+		AIX移植过来的JFS，其中ext3磁盘结构和ext2完全一样，而后三种文件系统广泛使用了B树以提高文件系统的效率
+	1. ext3
+		1.1 ext3既可以只对元数据做日志，也可以同时对文件数据块做日志。具体来说，ext3提供以下三种日志模式
+		* 日志(Journal)
+		文件系统所有数据和元数据的改变都可以记入日志。这是最安全和最慢的ext3日志模式
+		* 预定(Ordered)
+		只有对文件系统元数据的改变才记入日志。然而，ext3文件系统把元数据和相关的数据块进行分组，以便把元数据写入磁盘之前写入数据块。
+			这是缺省的ext3日志模式
+		* 写回模式(writeback)
+		只有对文件系统元数据的改变才记入日志，这是在其他日志文件系统发现的方法，也是最快的模式
+		1.2 日志块设备(JBD)
+		ext3文件系统本身不处理日志，而是利用日志块设备(Journaling Block Device, JBD)的通用内核层
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
