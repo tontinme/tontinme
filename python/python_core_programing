@@ -1,0 +1,11 @@
+
+#chapter 8 条件和循环
+	8.4 条件表达式(三元操作符)
+		在python2.5及其以后的版本中
+		  >>> x,y = 4, 3
+		  >>> smaller = x if x < y else y
+		  >>> smaller
+		  3
+	8.6 range()内建函数
+		range(start,end,step=1)
+		start<=k<end
