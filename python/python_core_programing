@@ -9,3 +9,9 @@
 	8.6 range()内建函数
 		range(start,end,step=1)
 		start<=k<end
+	8.7 break
+	8.8 continue
+	8.9 pass
+	8.10 while-else for-else
+	8.11 迭代器就是有一个next()方法的对象，而不是通过索引来计数。当你有一个循环机制需要下一项时，调用迭代器的next()方法就可以
+		获得它。条目全部取出后，会引发一个StopIteration异常，这并不表示错误发生，只是告诉外部调用者，迭代完成
