@@ -184,6 +184,14 @@
 		the top level RAID uses the bottom level RAID configurations as building blocks.
 	2.In the case of RAID-10, the approach is to use multiple pairs of drives at the lowest level (RAID-1) and then to combin them 
 		using RAID-0. 
+	RAID-01
+	1.the capacity of RAID-01 array is computed as:
+		Capacity = (n/2) * min (disk sizes)
+		#n is the number of disks in the array
+	RAID-10
+	1.the capacity of RAID-10 array is computed as:
+		Capacity = (n/2) * min (disk sizes)
+		#n is the number of disks in the array
 
 
 	 Raid Level	Pros					Cons				Storage Efficiency		Minimum Number of disks
@@ -219,6 +227,22 @@
 			same time				*more computational horsepower
 			*Can lose twoo drives without losing	is required for parity computations
 			data
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-01	*very good performance(both read and 	*very poor storage efficiency	50% assuming the drives are	4(Note: you must
+	 		write)					(50%)				the same size			use even number
+			*reasonable data redundancy(can tole-	*with nested raid levels,more					of disks)
+			-rate the loss of any one disk)		data redundancy is desired 
+			*number of disks lost with no loss 	beyond the loss of one disk
+			of data access varies from 1 to n/2.	*all disks have to be used in
+			however, the n/2 is unlikely to happen	rebuild
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-10	*very good performance(both read and	*very poor storage efficiency	*50% assuming the drivers are	4(Note: you must
+	 		write)					*with nested raid levels, more	the same size			use an even number
+			*reasonable data redundancy		data redundancy is desired					of disks)
+			*only one disk is involved in rebuild	beyond the loss of one disk
+			
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 --------------------------------------------------------------------------------------------------------------------------------------
 	 --------------------------------------------------------------------------------------------------------------------------------------
 #日志文件系统
 	目前Linux的日志文件系统主要有：在ext2基础上开发的ext3，根据面向对象思想设计的reiserfs，由SGI IRIX系统移植过来的XFS，由IBM
