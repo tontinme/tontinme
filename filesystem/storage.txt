@@ -192,8 +192,27 @@
 	1.the capacity of RAID-10 array is computed as:
 		Capacity = (n/2) * min (disk sizes)
 		#n is the number of disks in the array
+	RAID-05
+	1.the capacity of RAID-05 array is computed as:
+		Capacity = min(disk size) * (Number of drivers in each RAID-0 group) * (Number of RAID-0 groups - 1)
+	2.the fault tolerance of RAID-05 is limited to really one drive. If you lose one or more drives in a RAID-0 group, then you
+		lose that RAID-0 group. You could lose another drive in the same RAID-0 group that has already lost a drive, but
+		that requires that you control which drives fail in what order.
+	3.If you lose a drive in RAID-05 configuration, then every drive in the configuration is involved in the rebuilding process
+	RAID-50
+	1.the capacity of RAID-50 array is computed as:
+		Capacity = min(disk size) * (Number of drivers in each RAID-5 group - 1) * (Number of RAID-5 groups)
+	2.the big different between RAID-05 and RAID-50 is the number of dirves involved in a rebuild.
+	In RAID-50 only the surviving drives in the specific RAID-5 group that has a failed drive have to be read and only the single
+		replacement drive in the RAID-5 group is written to.
+	RAID-15
+		...
+	RAID-15
+		...
 
 
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 --------------------------------------------------------------------------------------------------------------------------------------
 	 Raid Level	Pros					Cons				Storage Efficiency		Minimum Number of disks
 	 RAID-0		*Performance(great read and write 	*No data 			100% assuming the drives are 	2
 	 		performance)				redundancy			the same size	
@@ -240,9 +259,23 @@
 	 		write)					*with nested raid levels, more	the same size			use an even number
 			*reasonable data redundancy		data redundancy is desired					of disks)
 			*only one disk is involved in rebuild	beyond the loss of one disk
-			
 	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-05	*excellent read performance 		*you have to use at least 6	*storage efficiency = (number	6(Note: you must
+	 		*very good write performance		drives 				of RAID-0 groups - 1) / (number	use a non-prime
+			*reasonable data redundancy 		*all disks have to be used in	of RAID-0 groups)		number of disks
+			*reasonable storage efficiency and	rebuild								素数)
+			capacity
 	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-50	*excellent read performance		*you have to use at least 6	*storage Efficiency = (number	6(Note: you must
+	 		*very good write performance		drives				of RAID-5 groups - 1) / (number	use a non-prime
+			*reasonable data redundancy						of RAID-5 groups)		number of disks)
+			*only have to use the drives in the 
+			RAID-5 group of the failed drive
+			during rebuild(shorter rebuild times)
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-15	...
+	 --------------------------------------------------------------------------------------------------------------------------------------
+	 RAID-51	...
 	 --------------------------------------------------------------------------------------------------------------------------------------
 #日志文件系统
 	目前Linux的日志文件系统主要有：在ext2基础上开发的ext3，根据面向对象思想设计的reiserfs，由SGI IRIX系统移植过来的XFS，由IBM
