@@ -10,12 +10,15 @@
 ------dd
 ------df
 ------du
+------expect
 ------find
 ------free
 ------grep
 ------iostat
 ------iptraf
 ------ls
+------lsblk
+------lscpu
 ------lsof
 ------man
 ------mpstat
@@ -203,6 +206,22 @@
 	df命令可以获取硬盘被占用了多少空间，目前还剩下多少信息等
 #du
 	du的功能是逐级进入指定目录的每一个子目录并显示该目录占用文件系统数据块
+#expect
+	可以用于实现自动交互
+	功能比较简单，不能用于替代shell脚本
+	基本语法
+		expect	用于读取希望看到的输出，和shell中的read类似
+		-exact	为验证一切输入参数，包括\n，\r，\t等字符
+		send	发送命令，代替手动输入
+		spawn	初始化expect脚本的第一个命令，用于产生一个开始记录的点
+		if while for	循环全部使用花括号进行分隔，其余和shell一样
+		puts	等同于echo
+		设置位置变量	set number [ index $argv 0 ]
+	EXAMPLE	(shit,running failed!)
+		for {set number=1} {$number <= 100} {incr number +1}
+		{
+			puts "The number is $number"
+		}
 #find
 	#忽略大小写的查找
 		$find -iname 'xxx'
@@ -362,6 +381,11 @@
 	#显示文件的uid和gid：
 		$ls -n
 	#在颜色不明显分辨时，使不同的文件显示不同的效果（/-目录，@-链接文件，*-可执行文件，=-socket文件）
+#lsblk
+	用于查看linux下块设备
+	该工具属于util-linux包，最大的特别是可以把所有的块设备列出，而且还能显示他们之间的依赖关系
+#lscpu
+	类似于/proc/cpuinfo
 #lsof
 	$lsof
 	COMMAND	PID	USER	FD	TYPE	DEVICE	SIZE/OFF	NODE	NAME
