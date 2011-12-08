@@ -6,9 +6,17 @@
 #inode
 	inode是UNIX操作系统中的一种数据结构，它包含了与文件系统中各个文件相关的一些重要信息。通常，文件磁盘空间中大约百分之一
 		空间分配给了inode表
-	当用户搜索或者访问一个文件时，UNIX系统通过inode表查找到正确的inode编号，在找到inode编号之后，相关的命令才可以访问该inode，
-		并对其进行适当的更改。如果同时有另一个用户试图对同一个文件进行编辑，由于inode已经被被分配给了第一个用户，则
-		该用户只能等待
+	每个inode节点的大小，一般是128字节或256字节，inode节点的总数，在格式化时就给定，一般是每1KB或2KB就设置一个inode
+		$dumpe2fs -h /dev/sda | grep "Inode size"	#查看每个inode节点的大小
+		$df -i	#查看每个硬盘分区的inode总数和已经使用的数量
+	当用户搜索或者访问一个文件时，UNIX系统通过inode表查找到正确的inode编号(inumber)，在找到inode编号之后，相关的命令才可以
+		访问该inode，并对其进行适当的更改。如果同时有另一个用户试图对同一个文件进行编辑，由于inode已经被被分配给了第一
+		个用户，则该用户只能等待
+		$ls -i 可以查看文件的索引编号
+	注：inode和索引编号(inumber)这两个术语非常相似，并且相互关联，但它们所指的并不是同样的概念，inode指的是数据结构，而
+		索引编号实际上是inode的标识编号
+	linux中使用stat查看文件的具体inode信息
+		$stat XXX中的Inode即是inode索引编号，和ls -i XXX的效果是一样的
 	inode的结构
 		*inode编号
 		*用来识别文件类型，以及用于stat C函数的模式信息
@@ -17,17 +25,27 @@
 		*属主的GID
 		*文件的大小
 		*文件所使用的磁盘块的实际数目
-		*mtime(modify time)
-		*atime(access time)
-		*ctime(change time)
+		*mtime(modify time)	#文件内容上一次变动的时间
+		*atime(access time)	#文件上一次打开的时间
+		*ctime(change time)	#inode上一次变动的时间
 		从根本上讲，inode中包含有关文件的所有信息（除了文件的实际名称以及实际数据内容之外）
 	由于某种原因，某个文件系统的inode使用率达到100%后，您将无法在该文件系统中创建更多的文件、设备或目录。
 		对于这种情况，一种解决办法是通过smitty chfs命令(AIX)为该文件系统添加更多的空间;另一种是创建较小的inode区段
-	AIX中可以使用istat检查文件的inode信息，linux中有对应的命令stat
-	ls -i可以查看文件的索引编号
-	注：inode和索引编号(inumber)这两个术语非常相似，并且相互关联，但它们所指的并不是同样的概念，inode指的是数据结构，而
-		索引编号实际上是inode的标识编号
 	fsck可以用来修复文件系统或者修正受损的inode
+	硬链接
+		文件名不同，但是指向相同的inode。可以用不同的文件名访问相同的内容，对文件内容进行修改，会影响到所有文件名，但是
+			删除一个文件名，不影响另一个文件名的访问，这种情况就称为'inode'
+	软链接/符号链接
+		inode相同，但是文件A的内容是文件B的路径，用户读取文件A时，系统会自动将访问者导向文件B
+	Note:关于硬/软链接的具体介绍可以查看linux/linux_system的相关笔记
+	inode的特殊作用
+		1. 有时，文件名包含特殊字符，无法正常删除。这时，直接删除inode节点，就能起到删除文件的作用
+			$find . -inum [inode num] -exec rm -i {} \;
+		2. 移动文件或重命名文件，只是改变文件名，不影响inode索引编号
+		3. 打开一个文件后，系统就以inode索引编号来识别这个文件，不再考虑文件名
+		第三点使得软件更新变的简单，可以在不关闭软件的情况下进行更新，不需要重启。因为系统通过inode号码，识别运行中的文件，
+			更新的时候，新版文件以同样的文件名，生成一个新的inode，不会影响到运行中的文件，等到下一次运行这个软件的
+			时候，文件名就自动指向新版文件，旧版文件的inode则被回收
 #iops
 	input/output operation per second
 	IOPS is a common performance measurement used to benchmark computer storage devices like hard disk drives(HDD)
