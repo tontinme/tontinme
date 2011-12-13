@@ -10,6 +10,7 @@
 ------dd
 ------df
 ------du
+------exec
 ------expect
 ------find
 ------free
@@ -206,6 +207,23 @@
 	df命令可以获取硬盘被占用了多少空间，目前还剩下多少信息等
 #du
 	du的功能是逐级进入指定目录的每一个子目录并显示该目录占用文件系统数据块
+#exec
+	the exec utility shall open, close, and/or copy file descriptors as specified by ay redirections as part of the command
+	If exec is specified without command or arguments, and any file descriptors with number greater than 2 are opened with
+		associated redirection statements
+	If exec is specified with command, it shall replace the shell with command without creating a new process. If arguments 
+		are specified, they shall be arguments to command
+	EXAMPLES:
+	open readfile as file descriptors 3 for reading:
+		exec 3< readfile
+	open writefile as file descriptors 4 for writing:
+		exec 4> writefile
+	make file descriptors 5 a copy of file descriptors 0:
+		exec 5<&0
+	close file descriptors 3:
+		exec 3<&-
+	cat the file maggie by replacing the current shell with the cat utility:
+		exec cat maggie
 #expect
 	可以用于实现自动交互
 	功能比较简单，不能用于替代shell脚本
