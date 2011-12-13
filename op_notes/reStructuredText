@@ -1,0 +1,135 @@
+================
+Syntax of ReST
+================
+
+QuickStart
+===========
+Structure
+-----------
+Text is separated by blank lines (one is enough). For example:
+
+::
+	This is a paragraph. It's quite
+	short.
+
+		This paragraph will in an indented block of
+		text.
+
+	This is another one.
+
+Text Styles
+------------
+you may additionally mark text for *italics* with "*italics*" or **bold** with "**bold**".
+
+if you want something to appear as a fixed-space literal(``moonspace,等宽字体``), use "``double back-quotes(两个反引号)``"
+
+List
+-----
+enumerated lists
+~~~~~~~~~~~~~~~~~
+1. number
+2. number 2, no blank line needed!
+
+A. upper-case letters
+   and it goes over many lines
+
+   with two paragraphs and all!
+
+a. lower-case letters
+
+   3. with a sub-list starting at a different number
+   4. make sure the numbers are in the correct sequence though!
+
+bulleted list
+~~~~~~~~~~~~~~
+start the line off with a bullet point character - either "-", "+" or "*":
+
+* a bullet point using "*"
+
+  - a sub-list 
+
+    + a sub-sub-list
+
+  - another item
+
+* another item
+
+definition list
+~~~~~~~~~~~~~~~~
+what
+  definition lists associate a term with a definition
+
+*how*
+  the term is a one-line phrase 
+
+Preformatting (code samples)
+-----------------------------
+To just include a chunk of preformatted, never-to-be-fiddled-with text, finish the prior paragraph with "::".
+
+The preformatted block is finished when the text falls back to the same indentation level as a paragraph prior to
+the preformatted block.
+
+A example::
+
+    whitespace, newlines, blank lines, and all
+      kinds of markup
+   (like *this* or \this) is 
+
+           preserved by literal blocks.
+  (but not far enough)
+
+Example over
+
+**Note that:**
+  If a paragraph consists only of "::", then it's removed from the output. But preformat is still actived.
+
+Sections
+---------
+There are a single line of text with adornment: an underline alone, or an underline and an overline together, in dashes "-----",
+equals "=====", tildes "~~~~~" or any of the non-alphanumeric characters = - ' : ` " ~ ^ * _ # + < > that you feel comfortable with.
+
+The underline/overline must be at least as long as the title text.
+
+All sections marked with the same adornment style are deemed to be at the same level.
+
+::
+  Chapter 1 title
+  ================
+    Section 1.1
+    ------------
+      Subsection 1.1.1 title
+      ~~~~~~~~~~~~~~~~~~~~~~
+  Chapter 2 title
+  ================
+
+Document Title / Subtitle
+--------------------------
+::
+  ===============
+  Document Title
+  ===============
+  ---------
+  Subtitle
+  ---------
+  Section Title
+  ==============
+
+Image
+------
+include an image in your document
+::
+  .. image:: images/icon.png
+
+you can supply additional information
+::
+  .. image:: images/icon.png
+     :height: 100
+     :width: 200
+     :scale: 50
+     :alt: alternate text
+
+For More
+=========
+http://docutils.sourceforge.net/docs/user/rst/quickref.html
+http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html
+
