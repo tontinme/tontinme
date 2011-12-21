@@ -115,6 +115,31 @@
 		4.重复1到3，直到所有的选项被处理
 		5.当分析结束后，getopts返回一个非0返回值，这常用做循环的判断条件。另外，当getopts结束时，它还将变量
 		OPTIND设为最后一个参数的下标
+	EXAMPLE:
+		while getopts ":d:u:h" opt; do
+			case $opt in
+				d)
+					day=$OPTARG #get the value
+					;;
+				u)
+					user=$OPTARG #get user name
+					;;
+				h)
+					echo "show help"
+					;;
+				?)
+					echo "How to use:"
+					;;
+				:)
+					echo "Option -$OPTARG requires an argument" >&2
+					exit 1
+					;;
+			esac
+		done
+	解释：while getopts ":d:u:h" opt; do		
+	第一个冒号表示忽略错误(例如出现了不认识的参数)，并在脚本中通过:)来处理这样的错误；字母d/u表示接受参数-d,-u，d/u后面的冒号表示参数d接收值，而参数h
+	则不接受值
+	另外很多参数时也可以这样写：while getopts ":ixarm:uneh" opt; do
 #if then else
 	#then部分不执行任何指令
 		if [ -d $tmp ]
