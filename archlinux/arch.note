@@ -1,0 +1,4 @@
+
+
+获取当前机器的内核配置文件
+	$zcat /proc/config.gz > .config
