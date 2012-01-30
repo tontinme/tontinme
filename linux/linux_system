@@ -1,5 +1,6 @@
 ﻿#!/bin/sh
 
+------CR,LF,CR/LF回车换行
 ------/etc/fstab格式解释（附ulimit使用）
 ------/etc/security/limits.conf参数解释
 #------/etc/sysconfig/iptables解释
@@ -26,6 +27,15 @@
 ------刻录设备检测
 ------自定义终端提示符
 
+#CR,LF,CR/LF回车换行
+	在文本处理中，CR，LF，CR/LF是不同操作系统上使用的换行符
+	DOS和windows使用回车+换行(R/LF)表示下一行
+	UNIX/Linux使用换行符(LF)表示下一行
+	Mac OS使用回车符(CR)表示下一行
+
+	CR用符号'r'表示，十进制ASCII代码是13，十六进制代码为0x0D
+	LF用符号'n'表示，十进制ASCII代码是10，十六进制代码为0x0A
+	所以windows平台上换行在文本文件中是使用0d 0a两个字节表示，而UNIX和Mac上换行则是使用0a或0d一个字节表示
 #/etc/fstab格式解释
 	Example:
 	  LABEL=/		/        	ext3    defaults     			1 1
