@@ -4,6 +4,7 @@
 ------/etc/fstab格式解释（附ulimit使用）
 ------/etc/security/limits.conf参数解释
 #------/etc/sysconfig/iptables解释
+------RHEL 6需要注意的几点 
 ------RHEL & CentOS YUM 免费源
 ------linux stage解释(grub启动过程)
 ------linux安全关机
@@ -117,6 +118,28 @@
 	  $ulimit -v unlimited	#虚拟内存
 #/etc/sysconfig/iptables解释
 	
+#RHEL 6需要注意的几点
+	1. /etc/resolve.conf 现在是自动生成的
+	请修改/etc/sysconfig/network 和 /etc/sysconfig/network-scripts/ifcfg-eth*
+	加入：
+		DNS1=...
+		DNS2=...
+		DOMAIN="..."
+	2. /etc/sysconfig/network-scripts/ifcfg-eth* 里面必须包含
+		NM_CONTROLLED="no"
+	否则会被NetworkManager胡搞
+	3. 不要试图修改或者删除 /etc/yum.repos.d/redhat.repo，以及与之冲突的文件
+	这个文件会在update的时候自动变出来
+	4. /etc/inittab现在不可修改，所以虚机添加串口tty要比较严格的按下面做：
+	KVM guest 在grub.conf的splashimage后面加入2行
+	serial --unit=0 --speed=115200
+	terminal --timeout=5 serial console
+	然后kernel的参数加入console=tty0 console=ttyS0,115200
+	earlyprintk=serial,ttyS0,115200
+	注意保持顺序
+	5. redhat6新增了一个文件 /etc/security/limits.d/90-nproc.conf
+	里面的内容是 * soft nproc 1024 root用户启动的程序在高并发下，
+	会出现 ERROR 1135 (HY000): Can not create a new thread (errno 11); 修改1024到65535，重启程序即可
 #RHEL & CentOS YUM 免费源
 	#网易163源
 		以超级用户登路
