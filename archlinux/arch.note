@@ -2,3 +2,23 @@
 
 获取当前机器的内核配置文件
 	$zcat /proc/config.gz > .config
+package-query require pacman<3.6错误
+	升级archlinux的时候遇到如下错误
+		error: failed to prepare transaction(could not satisfy dependencies)
+		package-query: requires pacman<3.6
+	解决办法：
+	1.pacman -R yaourt package-query
+	  pacman -Syu
+	2.修改/etc/pacman.conf.pacnew
+	  去掉SigLevel = Optional TruslAll前的#
+	  在SigLevel = Never前加上#
+	3.修改/etc/pacman.d/gunpg/gpg.conf中的
+	  keyserver hkp://keys.gnupg.net 为
+	  keyserver hkp://pgp.mit.edu 或者
+	  keyserver hkp;//pgp.mit.edu:11371
+	4.复制pacman.conf文件
+	  cp /etc/pacman.conf.pacnew /etc/pacman.conf
+	  执行 pacman-key --init
+	5.重新安装yaourt
+	  pacman -S yaourt
+	6.如果还遇到类似gcc版本不兼容的错误，请google之
