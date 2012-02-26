@@ -88,6 +88,49 @@
         mysql>show variables like 'character%';
         mysql>show variables like 'collation_%';
     3.修改默认字符集	  以及Example引擎(可为快速创建定制的插件式存储引擎提供帮助)
+    4."set NAMES 'X'" statement is equivalent to these three statements:
+    	set character_set_client = x;
+	set character_set_results = x;
+	set character_set_connection = x;
+    5."set character set x" is equivalent to these three statements:
+	set character_set_client = x;
+    	set character_set_results = x;	
+	set collation_connection = @@collation_database;
+    6.系统变量
+    	character_set_server:	默认的内部操作字符集
+	character_set_client:	客户端来源数据使用的字符集
+	character_set_connection:	连接层字符集
+	character_set_results:	查询结果字符集
+	character_set_database:	当前选中数据库的默认字符集
+	character_set_system:	系统元数据（字段名等）字符集
+	还有以collation_开头的同上面对应的变量，用来描述字符序
+    7. mysql字符集转换
+    	1)MySQL Server收到请求时将请求数据从character_set_client转换为character_set_connection;
+	2)进行内部操作前将请求数据从character_set_connection转换为内部操作字符集，其确定方法如下：
+		*使用每个数据字段的character set设置;
+		*若上述值不存在，则使用对应数据表的default character set设定值（mysql扩展，非SQL标准）;
+		*若上述值不存在，则使用对应数据库的defaule character set设定值;
+		*若上述值不存在，则使用character_set_server设定值;
+	3)将操作结果从内部操作字符集转换为character_set_results;
+    8.检测字符集问题的一些手段
+    	show character set;
+	show collation;
+	show variables like "character%";
+	show variables like "collation%";
+	SQL函数HEX, LENGTH,CHAR_LENGTH;
+	SQL函数CHARSET，COLLATION
+    9.使用mysql字符集时的建议
+    	*建立数据库表/库和进行数据库操作时，尽量显式指出使用的字符集，而不是依赖Mysql的默认设置，否则
+	mysql升级时可能带来很大困扰
+	*数据库和连接字符集都使用latin1时虽然大部分情况下都可以解决乱码问题，但缺点是无法以字符为单位来
+	进行SQL操作，一般情况下将数据库和连接字符集都置为utf8是较好的选择
+	*使用mysql C API时，初始化数据库句柄后马上用mysql_options设定mysql_set_charset_name属性为utf8，
+	这样就不用显式的用set names语句指定连接字符集，且用mysql_ping重连断开的长连接时也会把连接字符集
+	重置为utf8;
+	*使用mysq php API时，一般页面级的PHP程序总运行时间较短，在连接到数据库以后显式用set names语句设置
+	*my.cnf中的default_character_set设置只影响mysql命令连接服务器时的连接字符集，不会对使用libmyclient库
+	的应用程序产生任何作用
+	*对字段进行的SQL函数操作通常是以内部操作字符集进行的，不受连接字符集设置的影响
 #导出MySQL所有用户权限
 	默认情况下，如果使用
 	  select * from mysql.user;
