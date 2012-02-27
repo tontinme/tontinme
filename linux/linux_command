@@ -621,6 +621,42 @@ man
 					#换句话说，新备份只包含已经修改过的文件，其他文件都是链接
 #sar
 	搜集、报告和存储系统活动信息
+	
+	监控项	常用的监控命令			命令说明		
+
+	#cpu	
+		sar -P ALL 2 10 > cpu.txt	2为时间间隔，10为监控次数去除ALL表示总CPU的占用；
+						加上ALL，则显示各单个CPU的具体占用
+		sar -u 2 10  > cpu.txt		2为时间间隔，10为监控次数，查看总CPU的占用情况
+	1.%user值高，一般是业务占用的，只有cpu增长，与tps增长成正比，则正常
+	2.%system，不高于5%，过高的话，可能是业务线程过多了，导致业务频繁切换可以通过
+	'sar -w 1 10'来查看上下文切换情况
+	3.%iowait是指cpu等待磁盘IO处理的时间，一般不高于5%，若过高，则表明存储有瓶颈
+
+	#带宽	
+		sar -n DEV 2 10 > net.txt	2为时间间隔，10为监控次数
+		sar -n DEV 2 10 | grep eth1	用来监控具体的网卡，eth1(网卡名)
+	1.rxpck/s,txpck/s：每秒收发的包
+	2.rxbyt/s,txbyt/s：每秒收发的字节数，而一般说的100M网卡，单位是8bit，因而换算要用到：rxbyt/s*8
+
+	#内存	
+		sar -r 2 10 > mem.txt		2为时间间隔，10为监控次数
+		sar -r 2 0 > mem.txt		0表示无限次
+	1.kbmemfree+kbbuffers+kbcached，这三个值的和才是系统真正空闲可供使用的内存
+	2.kbmemused表示已使用的内存，%memused表示使用率，总的系统内存为：kbmemused/%memused*100
+
+	#IO	
+		sar -x sdc sde -d -t 2>io.txt	这里的sdc,sde是设备名称，可通过fdisk命令获取到
+		sar -d 2 10 > io.txt		用来监控每个设备的IOPS(tps)
+		sar -b 2 10 > io.txt		用来监控总的IOPS(tps)
+	1.rrqm/s,wrqm/s一般不关注
+	2.r/s,w/s：表示每秒主机发送给磁盘的读写请求，也就是IOPS，测试时需要关注这两个值是否达到磁盘
+	阵列的极限
+	3.rsec/s,wsec/s：每秒读写的块，linux中，一个section为512byte，一般是(rsec/s)/2=rkb/s,wkb/s/2就是
+	wkb/s(这里得出的rkb/s,wkb/s就是磁盘效率)
+	4.avgqu-sz:平均队列长度，表示主机的读写请求队列排队情况，若大于5，表示磁盘阵列已经处理不过来了，
+	await与它成正比
+	5.svctm：请求在磁盘完成所使用的时间，请求从主机发送磁盘再由磁盘返回数据的时间
 #screen
 	screen可以在一个控制台（即与主机物理连接的哑终端），xterm窗口或者ssh登录shell中创建和管理多个shell窗口\
 		可以从一个shell窗口迅速切换到另一个窗口，可以离开正在运行的shell并在任何时候重新连接。实际上，\
