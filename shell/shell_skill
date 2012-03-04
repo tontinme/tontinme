@@ -1,3 +1,4 @@
+------bash socket编程
 ------diff对比远程文件跟本地文件
 ------man介绍
 ------netstat查看系统中占用端口的进程
@@ -22,6 +23,18 @@
 ------在以普通用户打开的vim中保存一个root用户文件
 ------抓取linux桌面的视频
 
+#bash socket编程
+	你可以在bash中开启一个socket连接，并且传输数据。
+	bash有两个特殊的设备文件
+		/dev/tcp/host/port	如果hostname和port合法的话，bash会尝试开启一个tcp连接
+		/dev/udp/host/port	如果hostname和Port合法的话，bashe会开启一个udp连接
+	你可以利用这个技术来测试一台主机的端口是否是开启的，而不需要使用nmap或者port扫描器
+		>#find out if TCP port 25 open or not
+		>(echo >/dev/tcp/localhost/25) &>/dev/null && echo "TCP port 25 open" || echo "TCP port 25 close"
+	你可以使用循环来查找开着的端口
+		>for p in {1..1023}; do
+		>	(echo >/dev/tcp/localhost/$p) >/dev/null 2>&1 && echo "$p open"
+		>done
 #diff对比远程文件跟本地文件
 	$ssh user@host cat /path/to/remotefile | diff /path/to/localfile -
 	-指从stdin读入
