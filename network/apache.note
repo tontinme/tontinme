@@ -1,6 +1,7 @@
+-----apache的mod_rewrite，mod_proxy和mod_caucho
 -----apache的prefork模式和worker模式
 
-apache的prefork模式和worker模式
+#apache的prefork模式和worker模式
 	prefork模式
 		    这个多路处理模块（MPM）实现了一个非线程型的、预派生的web服务器，它的工作方式
 		类似于apache1.3，它适合于没有线程安全库，需要避免线程兼容性问题的系统。它是要求
@@ -16,3 +17,6 @@ apache的prefork模式和worker模式
 		和控制允许建立的总线程数的MaxClients指令
 	prefork和worker模式的比较
 		prefork模式使用多个子进程
+#apache的mod_rewrite，mod_proxy和mod_caucho
+	mod_rewrite
+		一个基于一定规则的实时重写url请求的引擎
