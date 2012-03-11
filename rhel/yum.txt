@@ -1,0 +1,27 @@
+
+#yum特点
+	可以同时配置多个资源库(Repository)
+	简洁的配置文件(/etc/yum.conf)
+	自动解决增加或删除rpm包时遇到的依赖性问题
+	使用方便
+	保持与RPM数据库的一致性
+#yum指令
+	>yum check-update	#检查可更新的rpm包
+	>yum update		#更新所有的rpm包，
+	>yum upgrade		#大规模的版本升级，与yum update不同的是，连旧的淘汰的包也升级
+	>yum install xxx	#安装rpm包
+	>yum remove xxx		#删除rpm包
+	>yum clean packages	#清除暂存中的rpm包(/var/cache/yum/)
+	>yum clean headers	#清除暂存中的rpm头文件
+	>yum clean oldheaders	#清除暂存中旧的rpm头文件
+	>yum clean || yum clean all	#清除暂存中旧的rpm头文件和包文件(相当于yum clean packages + yum clean oldheaders)
+	>yum list [xxx]		#列出资源库中所有(指定xxx)可以安装或更新的rpm包
+	>yum list updated	#列出资源库中所有可以更新的rpm包
+	>yum list installed	#列出已经安装的所有rpm包
+	>yum list extras	#列出已经安装的但是不包含在资源库中的rpm包
+	>yum info [xxx|updates|installed|extras|]	#列出资源库中(所有|指定xxx|可以更新的|已经安装的所有|已经安装的但不包含
+							#在资源库中的)rpm包信息
+	>yum search xxx		#搜索匹配特定字符的rpm包
+	>yum provides xxx	#搜索有包含特定文件名的rpm包
+
+
