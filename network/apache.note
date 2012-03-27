@@ -1,6 +1,11 @@
 -----apache的mod_rewrite，mod_proxy和mod_caucho
------apache的prefork模式和worker模式
+-----apache的prefork模式和worker模式，perchild模式
+-----apache的请求数
+-----apache日志的设置
 
+#apache的mod_rewrite，mod_proxy和mod_caucho
+	mod_rewrite
+		一个基于一定规则的实时重写url请求的引擎
 #apache的prefork模式和worker模式
 	prefork模式
 		    这个多路处理模块（MPM）实现了一个非线程型的、预派生的web服务器，它的工作方式
@@ -16,7 +21,49 @@
 		    控制这个MPM的最重要的指令是，控制每个子进程允许建立的线程数的ThreadsPerChilds指令，
 		和控制允许建立的总线程数的MaxClients指令
 	prefork和worker模式的比较
-		prefork模式使用多个子进程
-#apache的mod_rewrite，mod_proxy和mod_caucho
-	mod_rewrite
-		一个基于一定规则的实时重写url请求的引擎
+		    prefork模式使用多个子进程，每个子进程只有一个线程。每个进程在某个确定的时间只能维持
+		一个连接。在大多数平台上，prefork模式效率要比worker模式高，但是内存使用大得多。prefork的
+		无线程设计在某些情况夏要比worker更有优势，它可以使用那些没有处理好线程安全的第三方模块，
+		并且对于那些线程调试困难的平台而言，它也更容易调试一些
+		    worker模式使用多个子进程，每个子进程有多个线程。每个线程在某个确定的时间只能维持一个
+		连接。通常来说，在一个高流量的http服务器上，worker是个比较好的选择，因为worker的内存使用
+		比prefork要低很多。但worker mpm也有不完善的地方，如果一个线程崩溃，整个进程就会连同其所有
+		线程一起“死掉”，由于线程共享内存空间，所以一个程序在运行时必须被系统识别为“每个线程都是安全的”。
+		    总的来说，prefork方式速度要稍高于worker，然而它需要的cpu和memory资源也稍多于worker
+		    出于稳定性和安全性的考虑，不建议更换apache2的运行方式，使用系统默认的prefork即可。另外
+		很多php模块不能工作在worker模式下
+	perchild模式
+		该模式下，子进程的数量是固定的，线程数不受限制。该模式用于多站点服务器
+#apache的请求数
+	netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) pring a, S[a]}'
+		FIN_WAIT_1 286
+		FIN_WAIT_2 960
+		SYN_SENT 3
+		LAST_ACK 32
+		CLOSING 1
+		CLOSED 36
+		SYN_RCVD 144	#表示正在等待处理的请求数
+		TIME_WAIT 2520	#表示处理完毕，等待超时结束的请求数
+		ESTABLISHED 352	#表示正常数据传输状态
+#apache日志的设置
+	error log格式
+		Error logs/error_log	#日志的保存位置
+		LogLevel warn		#日志的级别
+		显示的格式如下
+		[Mon Oct 10 15:54:29 2005] [error] [client 192.168.10.22] access to /download/ failed,
+		reason: user admin not allowed access
+	access log格式
+		日志的缺省格式有以下几种
+		%h -- 	客户端的ip地址或主机名
+		%l --	这是由客户端identd判断的RFC 1413身份，输出中的符号"-"表示此处信息无效
+		%u --	由http认证系统得到的访问该网页的客户端。有认证时才有效，输出中的符号"-"表示此处信息无效
+		%t --	服务器完成请求处理的时间
+		"%r" --	引号中是客户发出的包含了许多有用信息的请求内容
+		%>s --	这个是服务器返回给客户端的状态码
+		%b --	最后这项是返回给客户端的不包括响应头的字节数
+		"%{Referer}i" --	此项指明了该请求是从哪个网页提交过来的
+		"%{User-Agent}i" --	此项是客户浏览器提供的浏览器识别信息
+	一段access log实例
+		192.168.10.22 - bearzhang [10/Oct/2005:16:53:06 +0800] "GET /download/ HTTP/1.1" 200 1228
+		192.168.10.22 - - [10/Oct/2005:16:53:06 +0800] "GET /icons/blank.gif HTTP/1.1" 304 -
+		192.168.10.22 - - [10/Oct/2005:16:53:06 +0800] "GET /icons/back.gif HTTP/1.1" 304 -
