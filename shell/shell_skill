@@ -2,6 +2,8 @@
 ------diff对比远程文件跟本地文件
 ------man介绍
 ------netstat查看系统中占用端口的进程
+------shell 管道
+------shell I/O重定向
 ------ssh创建端口转发通道
 ------ssh挂载远程主机上的文件夹
 ------查看ASCII表
@@ -72,6 +74,23 @@
 		-n	直接显示IP
 		-p	显示相应的进程PID以及名称
 	如果要查看关于sockets更详细的占用信息等，可以使用lsof工具
+#shell 管道
+	set -o pipefail
+		管道中的每个命令都是在各自的sub shell中运行，如果pipefail选项被关闭，管道的退出状态就是管道中最后一个
+			结束命令的退出状态；如果pipefail被开启(set -i pipefail)，管道的退出状态是最后一个拥有非零退出
+			状态的命令的退出状态，或是0如果所有命令都成功退出
+	PIPESTATUS
+		cmd1 | cmd2 | cmd3; echo $?
+		$?返回的是管道最右边进程的退出码，若要获得cmd1或cmd2的退出码，可以使用数据PIPESTATUS，比如cmd1的退出码
+			是${PIPESTATUS[0]}，cmd3的退出码是${PIPESTATUS[2]}
+		注：CU上有人提到PIPESTATUS数组中保存的状态有时是不正确的，还有待验证
+#shell I/O重定向
+	管道：	上一个命令的stdout接到下一个命令的stdin
+	tee：	在不影响原有I/O的情况下，将stdout复制一份到档案中
+	():	将command group置于sub shell中去执行，也称nested sub-shell，它有一点非常重要的特性：继承父shell的stdin
+			stdout和stderr以及其他FD(file descriptors)
+	exec:	常用来代替当前shell并重新启动一个shell，换句话说，并没有启动子shell。使用这一命令时任何现有环境都将被
+			清除，exec在对FD进行操作时，不会覆盖你当前的shell环境
 #ssh创建端口转发通道
 	$ssh -N -L 2001:remotehost:80 user@somemachine
 	这个命令在本机打开了2001端口，对本机2001端口的请求通过somemachine作为跳板，转发到remotehost的80端口上
