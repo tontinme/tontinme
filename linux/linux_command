@@ -1,6 +1,7 @@
 #!/bin/bash
 ---Index
 ------adduser&useradd
+------acct
 ------at
 ------alias
 ------chattr(lsattr)
@@ -64,6 +65,15 @@
 		on Gentoo systems, is the same as in Centos or Fedora, adduser is just a symbolic link to useradd
 	#使用
 		请咨询man手册
+#acct/psacct
+	acct/psacct是一个工具包，里面包含有针对用户连接时间，进程执行情况等进行统计的工具。它可以记录用户登录的信息，
+		用户所执行的程序，程序执行情况信息等
+	linux下acct/psacct安装后，会建立一个/var/account/pacct的文件，保存各种信息
+	该工具包提供了多个进程活动监视工具
+		ac		显示用户连接时间的统计
+		lastcomm	显示系统执行的命令
+		accton		用于打开/关闭进程记账功能
+		sa		统计系统进程记账的情况
 #at
 	at命令允许用户向cron守护提交作业，使其在稍后的时间运行。
 	一旦一个作业被提交，at命令将会保留所有当前的环境变量。不像crontab，只提供缺省的环境。
