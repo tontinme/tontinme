@@ -6,6 +6,7 @@
 #------/etc/sysconfig/iptables解释
 ------RHEL 6需要注意的几点 
 ------RHEL & CentOS YUM 免费源
+------linx log
 ------linux stage解释(grub启动过程)
 ------linux安全关机
 ------linux单网卡绑多IP
@@ -171,6 +172,57 @@
 		gpgcheck=1
 	        gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
 		保存退出即可
+#linux log
+	1. 常用的log格式如下：
+		access-log	记录http/web格式的传输
+		acct/pacct	记录用户命令
+		aculog		记录modem的活动
+		btmp		记录失败的记录
+		lastlog		记录最近几次成功登录的事件和最后一次不成功的登录
+		messages	从syslog中记录信息（有的链接到syslog文件）
+		sudolog		记录使用sudo发出的命令
+		syslog		从syslog中记录信息(通常链接到messages文件)
+		utmp		记录当前登录的每个用户
+		wtmp		一个用户每次登录进入和退出时间的永久记录
+		xferlog		记录ftp会话
+	wtmp和utmp都是二进制文件，用户需要使用who,w,users,last和ac来使用这两个文件包含的信息
+	2. 具体命令介绍
+	who
+		who命令查询utmp文件并报告当前登录的每个用户。
+		如果指明了wtmp文件名，则who命令查询所有以前的记录。命令who /var/log/wtmp将报告自从wtmp建立或删改以来的每一次登录
+	w
+		w命令查询utmp文件显示当前系统中每个用户和他所运行的进程的信息
+	users
+		users用单独的一行打印出当前登录的用户，每个显示的用户名对应一个登录会话。如果有一个用户不止一次登录，他的用户名将和
+		会话相同的次数
+	last
+		last命令往回搜索wtmp来显示自从文件创建以来登录过的用户
+		如果指明了用户，那么last只报告该用户的近期活动
+	ac
+		ac命令根据当前的/var/log/wtmp文件中的登录进入和退出来报告用户连接的时间（小时），如果不使用标志，则报告总的时间
+	lastlog
+		lastlog文件在每次有用户登录时被查询，可以使用lastlog命令来检查某特定用户上次登录的时间，并格式化输出上次登录日志/var
+		/log/lastlog的内容
+	3. 进程统计
+		UNIX可以跟踪每个用户运行的每条命令，如果想知道昨天晚上弄乱了哪些重要的文件，进程统计子系统可以告诉你。与连接时间日志不同，
+		进程统计子系统缺省不激活，它必须启动。在linux中启动它使用命令accton命令，必须用root来运行，accton命令的形似`#accton
+		file`，file必须先存在，可以先使用touch来创建pacct文件，touch /var/log/pacct，然后运行accton。一旦accton被激活，
+		就可以使用lastcomm命令监测系统中任何时候执行的命令。若要关闭统计，可以使用任何不带参数的accton命令
+	lastcomm
+		lastcomm报告以前执行的文件。不带参数时，lastcommm命令显示当前统计文件生命周期内记录的所有命令的有关信息。包括命令名，用户，
+		tty，命令花费的CPU时间和一个时间戳。如果系统有许多用户，输入则可能很长
+	sa
+		进程统计的一个问题是pacct文件可能增长十分迅速。这是需要交互式的或经过cron机制运行sa命令来保持日志数据在系统控制内
+		sa命令报告，清理并维护进程统计文件，它能把/var/log/pacct中的信息压缩到摘要文件/var/log/savacct和/var/log/usracct中
+		sa缺省情况下先读它们，然后读pacct文件，使报告能包含所有可用的信息
+	4. syslog
+		syslog已被许多日志函数采纳，它用在许多保护措施中-任何程序都可以通过syslog记录事件。syslog可以记录系统事件，可以写到一个文件
+		或设备中，或给用户发送一个信息。它能记录本地事件或通过网络记录另一个主机上的事件
+		syslog设备一句两个重要的文件：/etc/syslogd(守护进程)和/etc/syslog.conf(配置文件)，习惯上，多数syslog信息被写道/var/adm或
+		/var/log目录下的信息文件中(messages.*)。一个典型的syslog记录包括生成程序的名字和一个文本信息。它还包括一个设备和一个优先级范围
+	5. 程序日志
+		许多程序通过维护日志来反应系统的安全状态。su命令允许用户获得另一个用户的权限，所以它的安全很重要，它的文件为sulog。同样的还有
+		sudolog。另外，像apache有两个日志：access_log和error_log
 #linux stage解释(grub启动过程)
 	总体上可以被grub看成一个mini os，它有shell，支持script，有文件系统...
 	可以把stage1,stage1_5看成一个bootloader，而stage2则是一个os，不过这个os是专门load其他os的os。为此，stage支持像kernel,initrd,chainloader
