@@ -1,0 +1,4 @@
+redhat下rpm制作
+	1.使用rpmbuild命令
+	2.rpmbuild包和/usr/src/redhat目录，这些rpm build的程序是靠spec文件的控制
+	如果不指定其他地方，那么rpm building的地方是主要在
