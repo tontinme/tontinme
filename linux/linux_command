@@ -879,6 +879,20 @@ man
 	#top中PR和NI(priority和nice)的区别
 		PR表示目前系统分配给该process的优先权，而若是特别要调整该process的优先权的话，通过提高或降低NI的数值可让PR变化。
 		PR由系统内定自行调整，要把所有process的NI值都考虑进来，调度程序才能决定一个process的PR。
+	#通过top查看某程序的内存占用
+		VIRT	virtual image(kb), The total amount of virtual memory used by the task. It include all code, data and shared
+			libraries plus pages that have been swapped out
+			VIRT = SWAP + RES
+		SWAP	swapped size(kb), The swapped out portion of a task total virtual memory image
+		RES	resident size(kb), The non-swapped physical memory a task has used
+			RES = CODE + DATA
+		CODE	code size(kb), The amount of physical memory devoted to executable code, also known as the 'text resident
+			set' size or TRS
+		DATA	Data + Stack size(kb), The amount of physical memory devoted to other than executable code, also known as
+			the 'data resident set' size or DRS
+		SHR	shared mem size(kb), The amount of shared memory used by a task. It simply reflects memory that could be
+			potentially shared with other processes
+
 #ulimit
 	ulimit用于shell启动进程所占用的资源
 	ulimit [-acdfHlmnpsStvw][size]
