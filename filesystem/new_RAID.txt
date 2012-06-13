@@ -1,0 +1,29 @@
+主要的RAID配置
+	RAID-0,RAID-1,RAID-2,RAID-3,RAID-4,RAID-5 and RAID-6
+RAID-0
+	1.这种RAID配置关注于性能，block会被写在多块磁盘上
+	2.block A1 写入disk0，block A2 写入dis1，block A3 写入disk0，以此类推
+	3.如果磁盘I/O足够块，A0和A1几乎同时写入
+	4.当有读请求时，RAID contronller会同时从两块盘读取A0和A1
+	5.一个RAID-0 group可以配置非常多的disk。当然，任何一块disk挂掉，该RAID group的所有数据都会丢失
+	6.RAID-0主要用于对I/O要求极高的地方，并且其数据要么在其他地方有备份，要么不那么重要
+	7.RAID-0 group的容量：
+		capacity = n * min(disk size)	#n是该group的disk数量
+RAID-1
+	1.写操作：block A1写入disk0，同时写入disk1。disk0和disk1的写操作可以同时进行
+	2.读操作：RAID contronller可以同时从disk0读取A1，从disk1读取A2
+	3.RAID-1 group容量：	
+		capacity = min(disk sizes)
+RAID-2
+	RAID-2已经不再被使用
+	1.bit A1写入disk0，bit A2写入disk1，以此类推，然后计算一个汉明码奇偶检验位写在磁盘或者一块单独的磁盘上
+	2.自从硬盘增加了使用汉明码容错后，这种raid配置就没有必要了
+RAID-3
+	1.假设使用4块磁盘，那么byte A1写入dis0, byte A2写入disk1, byte A3写入disk2, A1,A2,A3的一个校验byte写入disk3
+	2.最少使用3块磁盘，其中2块数据盘，1块校验盘
+	3.无法同时处理大量I/O请求，因为a block data会按照byte被分到该raid group的所有磁盘上
+	3.RAID-3可以用于由于磁盘有限而无法使用raid-0并且能够容忍因计算校验位而导致的吞吐量下降
+RAID-4
+	1.就是在RAID-1的基础上增加了一块校验盘。注意，raid-3是byte级别的，raid-4是block级别的，也就是说避免了raid-3的I/O瓶颈问题
+	2.raid-4的瓶颈在冗余校验，尤其是写操作
+	3.raid-4之所以用得很少是因为raid-5的出现
