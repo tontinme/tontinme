@@ -27,3 +27,23 @@ RAID-4
 	1.就是在RAID-1的基础上增加了一块校验盘。注意，raid-3是byte级别的，raid-4是block级别的，也就是说避免了raid-3的I/O瓶颈问题
 	2.raid-4的瓶颈在冗余校验，尤其是写操作
 	3.raid-4之所以用得很少是因为raid-5的出现
+RAID-5
+	1.RAID-5和RAID-4类似，区别在于校验信息存放在所有磁盘而不是单独的一块磁盘上,这极大的提高了写性能
+	2.RAID-5有一个"stripe"的概念
+		data stripe size = block size * (n-1) 	#n是一个RAID-5 group的磁盘数
+	3.block in stripe被改变或写入时，校验block都会重新计算或写入
+	4.在写入小数据时(小于一个stripe的数据)，由于需要多次计算校验block，RAID-5的写性能会受到部分影响
+	5.RAID-5的磁盘容量
+		capacity = min(disk szie) * (n-1)
+	6.RAID-5可以挂掉一块磁盘而不丢失数据	
+	7.RAID-对于大容量磁盘和太多磁盘组成一个raid的情况表现不佳
+RAID-6
+	1.RAID-6在每个stripe里使用两个校验block，从而允许同时坏掉2块磁盘
+	2.RAID-6的磁盘容量
+		capacity = min(disk size) * (n-2)
+	3.计算第一个校验block的方法和RAID-5一样，计算第二个校验block的方法复杂的多。所以RAID-6的写性能比RAID-5还要差一些
+	4.RAID-6的读性能和RAID-5一样，因为校验块是不用读取的
+Hybrid RAID levels(Nested RAID Levels)
+	比如RAID
+	1+0, 第一个数字表示底层(或内层)的RAID方式，第二个数字表示上层(或外层)的RAID方式。上层或外层的RAID使用底层或内层的RAID作为building
+	blocks
