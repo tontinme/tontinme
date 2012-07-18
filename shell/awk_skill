@@ -1,0 +1,40 @@
+------awk调用shell命令
+
+awk调用shell命令
+	1. getline
+	通过在awk内使用管道，可以把shell命令的输出传送给awk
+	$awk 'BEGIN{ "date" | getline var1; print var1; }'
+		$cat a.tx
+		hello
+		$awk 'BEGIN{ getline < "a.tx"; print $0}'
+		hello
+		$awk 'BEGIN{ getline < "-"; print $0}'
+		hello
+		hello
+	高级的，在shell中使用awk内部变量，其实只要把变量放在""外面即可
+		$cat b.tx
+		Wed Jul 18 23:02:05 CST 2012
+		$cat b.tx | awk '{ var=$0; "date +%s -d \""var"\"" | getline new_var; print new_var}'
+		1342623725
+		$date -d @1342623725
+		Wed Jul 18 23:02:05 CST 2012
+	括号可以保证优先级(这个例子举的不好，没体现出括号的优势来)
+		awk 'BEGIN{a=1; b=2; ("expr "a" + "b) | getline; print $0}'
+	2. 使用system
+	比如
+		$awk 'BEGIN{system("echo abc")}'
+	高级的		
+		$awk 'BEGIN{v1="echo"; v2="abc"; system(v1" "v2)}'
+	3. 使用 print cmd | "/bin/bash"
+		$awk 'BEGIN{ print "echo","abc",";","echo","123" | "/bin/bash" }'
+	4. 总结
+	无论使用哪一个，awk都是新开一个shell，把相应的cmdline参数送回给shell，所以要注意当前shell变量与新开shell变量问题
+	所以如果想要使用外部变量，需要使用export设置环境变量
+		$abc=12345
+		$awk 'BEGIN{system("echo $abc")}'
+
+		$export abc=12345
+		$awk 'BEGIN{system("echo $abc")}'
+		12345
+
+
