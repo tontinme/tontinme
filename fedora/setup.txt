@@ -1,0 +1,24 @@
+------wireless setup
+
+wireless setup
+	#From:http://wireless.kernel.org/en/users/Drivers/b43#other_distros
+		~>su -
+		~>yum install b43-fwcutter wget
+	If you are using the b43 driver from 3.2 kernel or newer:
+		~>export FIRMWARE_INSTALL_DIR="/lib/firmware"
+		~>wget http://www.lwfinger.com/b43-firmware/broadcom-wl-5.100.138.tar.bz2
+		~>tar xjf broadcom-wl-5.100.138.tar.bz2
+		~>sudo b43-fwcutter -w "$FIRMWARE_INSTALL_DIR" broadcom-wl-5.100.138/linux/wl_apsta.o
+	To load specific driver use one of the following commands:
+	(NOTE:you can pick only one command, if you know which driver is in use)
+		~>modprobe b43
+		~>modprobe brcmsmac
+		~>modprobe wl
+	To unload all known drivers
+		~>modprobe -r b43 bcma
+		~>modprobe -r brcmsmac bcma
+		~>modprobe -r wl
+	It is possible to prevent system from auto-loading some drivers by blacklisting them. This can be done with the following command
+		~>echo "blacklist drivername" >> /etc/modprobe.d/blacklist
+	NOTE:If you plan to use wl, you should blacklist b43 and brcmsmac as well as bcma.
+		Unfortunately wl does not use bcma bus driver, so this additional step is required. 
