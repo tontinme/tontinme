@@ -217,6 +217,13 @@
 	df命令可以获取硬盘被占用了多少空间，目前还剩下多少信息等
 #du
 	du的功能是逐级进入指定目录的每一个子目录并显示该目录占用文件系统数据块
+	
+	1.只查看/根目录的磁盘占用情况，不计算不挂载在/下的目录
+	EXAMPLE:
+		如果/var/，/opt，/usr没有挂载在/下，那么就不用计算这几个目录
+	man du
+	-x, --one-file-system
+		skip directories on different file systems
 #exec
 	the exec utility shall open, close, and/or copy file descriptors as specified by ay redirections as part of the command
 	If exec is specified without command or arguments, and any file descriptors with number greater than 2 are opened with
