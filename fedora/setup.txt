@@ -8,6 +8,9 @@ fcitx setup
 		export XMODIFIERS="@im=fcitx"
 		export QT_IM_MODULE=xim
 	$ gnome-session-properties
+	将候选词条更改为横排
+	$ vim ~/.config/fcitx/conf/fcitx-classic-ui.config
+		VerticalList=False
 		
 wireless setup
 	#From:http://wireless.kernel.org/en/users/Drivers/b43#other_distros
