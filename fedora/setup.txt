@@ -1,5 +1,14 @@
+------fcitx setup
 ------wireless setup
 
+fcitx setup
+	$ yum install fcitx
+	$ vim ~/.bashrc
+		export GTK_IM_MODULE=xim
+		export XMODIFIERS="@im=fcitx"
+		export QT_IM_MODULE=xim
+	$ gnome-session-properties
+		
 wireless setup
 	#From:http://wireless.kernel.org/en/users/Drivers/b43#other_distros
 		~>su -
