@@ -15,7 +15,7 @@
 ------expect
 ------find
 ------free
-------grep
+------grep,pgrep,egrep,fgrep
 ------iostat
 ------iptraf
 ------ls
@@ -49,6 +49,7 @@
 ------watch
 ------wget
 ------whoami,id,groups,newgrp
+------xargs
 ------zip,tar.gz,tar.bz2
 ------管道 |
 
@@ -328,7 +329,7 @@
 #free
 	#display the total amount of free and used physical and swap memory in the system,\
 		as well as the buffers used by the kernel
-#grep
+#grep,pgrep,egrep,fgrep
 	#find+xargs+grep	并行grep
 	xargs使用-P参数，可以启动多个grep来并发控制
 	  eg. find ./ -name "*.log" -print0 | xargs -0 -n1 -P14 grep -H "baidu" > /dev/null
@@ -354,7 +355,14 @@
 		$grep a[[:blank:]] test.txt	#匹配test.txt中的内容"a "
 		$grep -E [a-z]\{10\} test.txt	#匹配test.txt中含10个字母的单词
 		$grep Th.[[:space:]] test.txt	#匹配test.txt中的内容，以Th开头，且只含3个字母
-
+	#pgrep
+	查看进程的pid，如果有多个pid，以换行符分隔；可以使用-d来指定分隔符
+	#egrep
+	支持正则表达式的gr, same as grep -E
+	#fgrep
+	搜索字符串而不是搜索匹配表达式的模式。fgrep 命令使用快速的压缩算法。$, *, [, |, (, ) \
+	和 \ 等字符串被 fgrep 命令按字面意思解释。这些字符并不解释为正则表达式，但它们在 grep \
+	和egrep命令中解释为正则表达式
 #iostat
 	report cpu statistics and I/O statistics for devices,partitions and NFS
 	使用strace查看iostat从哪里得到的IO相关信息
@@ -1018,6 +1026,19 @@ man
 	groups		#用于显示指定用户所属的组
 	id		#用于显示用户身份
 	newgrp		#用于转换用户的当前组到指定的附加组，用户必须属于该组才可以进行
+#xargs
+	xargs reads items from the standard input, delimited by blanks (which can be protected with  \
+	 double or  single  quotes  or a backslash) or newlines,
+	可以使用xargs将输出的多行合并为一行，以空格分隔
+	$pgrep mysql
+	 8988
+	 9021
+	$pgrep mysql | xargs
+	 8988 9021
+	$pgrep -d, mysql
+	 8988,9021
+	$pgrep -d" " mysql
+	 8988 9021
 #zip,tar.gz,tar.bz2
 	zip	
 		压缩
