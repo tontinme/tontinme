@@ -1,0 +1,33 @@
+#! /usr/bin/env ruby
+
+#chatper 2 Ruby.new
+
+# 2.2 Some Basic Ruby  ruby的一些基本知识
+  
+  #方法(method)用关键字def定义
+    def good_night(name)
+      result = "Good night, #{name.capitalize}"
+      return result
+    end
+    puts good_night('uncle')
+    ~>Good night, Uncle
+  #变量和类名称命名规范
+  名称的第一个字符显示这个名称如何被使用。局部变量、方法参数和方法名都必须以小写字母或下划线开始。
+    全局变量都有美元符号($)为前缀，实例变量以"at"(@)符号开始，类变量以两个"at"(@@)符号开始。
+    最后，类名称、模块名称和常量都必须以一个大写字母开始
+
+# 2.3 Arrays and Hashes  数组和散列表
+
+  #数组(Array)使用整数作为key，hashes支持以任何对象作为它的键
+    EXAMPLE OF ARRAY
+    a = [ 1, 'cat', 3.14 ]
+    a[0] -> 1
+    a[2] = nil
+    a -> [ 1, 'cat', nil ]
+    EXAMPLE OF HASHES
+    inst_section = {
+      'cello'     => 'string',
+      'clarinet'  => 'woodwind',
+      'drum'      => 'percussion'
+    }
+    inst_seciont['drum'] -> percussion
