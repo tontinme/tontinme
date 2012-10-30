@@ -8,6 +8,7 @@
 ------ssh挂载远程主机上的文件夹
 ------查看ASCII表
 ------查看某进程的具体路径
+------查看指定程序的资源占用
 ------重置终端
 ------更友好的显示当前挂载的文件系统
 ------快速备份一个文件
@@ -104,6 +105,14 @@
 #查看某进程的具体路径
 	$ps aux | grep 'httpd' | grep -v grep | awk '{print $2}' | xargs -I {} -t ls -l /proc/{} | grep cwd
 	先查找该进程的pid，然后到/proc/$pid下有一个cwd的文件夹，是该进程所在文件夹的链接，ls -l就能看到了
+#查看指定程序的资源占用
+	$top -p `pgrep -d, mysql`
+		  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+		  8988 root      25   0 65932 1208 1000 S  0.0  0.1   0:00.01 mysqld_safe
+		  9021 mysql     15   0  184m  32m 6124 S  0.0  1.6   0:01.91 mysqld
+	或者这样
+	$top -p `pgrep mysql | xargs | tr -s ' ' ','`
+	$top -p `pgrep mysql | xargs | sed 's/ /,/g'`
 #重置终端
 	$reset
 	如果你不小心cat了某个二进制文件，很可能整个终端就傻掉了。这时敲入reset，就能恢复正常了。
