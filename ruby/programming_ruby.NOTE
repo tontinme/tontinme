@@ -34,10 +34,20 @@
 
 #chatper 3 
 
+# 3.1 inheritance and Messages
+    继承(inheritance)允许你创建一个类，作为另一个类的精炼(refinement)和特化(specialization)
 # 3.2 Objects and Attributes
 	#属性和方法的区别
 	当你设计一个类时，你决定其具有什么样的内部状态，并决定这内部状态对外界（类的用户）的表现形式。
 		内部状态保存在实例变量中，通过方法暴露出来的外部状态，我们称之为"属性"，你的类可以执行的其他动作
 		就是一般方法。当然，这并非是一个废柴重要的区别，但是通过把一个对象的外部状态称为属性，可以帮助人们
 		了解你所编写的类
+# 3.3 Class Variables and Class Methods
+    类变量使用前必须初始化
+    类方法提供不束缚于特定对象的方法，比如new方法
+    class method和instance method可以通过定义来区别:通过在方法名之前放置类名以及一个句点，来定义类方法
+# 3.4 Access Control
+    public, protected, private
+    如果方法是protected，它可以被定义了该方法的类或其子类的势力所调用。如果方法是private，它只能在当前对象的上下文
+        中被调用——不可能直接访问其他对象的私有方法，即使它与调用者都属于同一个类的对象
 
