@@ -1,6 +1,8 @@
 calalogue
 ------chapter 3 特殊字符
 ------chapter 4 变量和参数的介绍
+------chapter 5 引用
+------chapter 12 command substitution
 
 #chapter 3 特殊字符
   ;	命令分隔符，可以用来在一行中来写多个命令
@@ -133,7 +135,6 @@ calalogue
 	bash中的变量都是无类型的
 	脚本只能对它产生的子进程export变量。一个从命令行被调用的脚本中export的变量，不会影响调用该脚本的shell\
 		环境。
-	$0,$1,$2...，$0是脚本文件的名字，$1是第一个参数，$9以后就需要使用括号了，如${10}
 		#$@等特定shell变量的含义
 		$#      传递到脚本的参数个数
 		$*      以一个单字符串显示所有向脚本传递的参数。与位置变量不同，此选项参数可超过9个
@@ -243,3 +244,13 @@ calalogue
 	>	大于
 	-z	字符串为"null",就是长度为0
 	-n	字符串不为"null"
+
+#chapter 12 command substitution
+    Command Substitution reassigns the output of a command or even multiple commands; it literally plugs the command output into another context
+    1.use backquotes(`...`)
+            script_name=`basename $0`
+        OR $(...) which is newer method than backquotes
+            script_name=$(basename $0)
+        command substitution invokes a subshell
+    2.Even when there is no word splitting, command substitution can remove trailing newlines
+        cd `pwd` vs cd "$PWD"   #http://tldp.org/LDP/abs/html/commandsub.html#COMMANDSUBREF
