@@ -1,0 +1,25 @@
+------nginx超时设置
+
+
+#nginx超时设置
+	1. send_timeout
+	default:60
+	Timeout is established not on entire transfer of answer, but only between two 
+		operations of reading, if after this time client will take nothing, 
+		then nginx is shutting down this connection
+	即经过${send_timeout}时间后仍无请求该client，则nginx断开该连接
+	2. fail_timeout和max_fails
+	配合使用，来控制nginx怎样认为upsteam中的某个server是失效的.
+	当在fail_timeout时间内，某个server连接失败了max_fails次，则nginx认为该server
+		不工作了。同时，在接下来的fail_timeout时间内，nginx不再发送请求到该server
+	3. proxy_connect_timeout & proxy_read_timeout
+	connect_timout是连接client的超时时间，read_timeout是等待返回结果的超时时间
+	proxy_read_timeout
+		This directive sets the read timeout for the response of the proxied server. 
+			It determines how long nginx will wait to get the response to a request.
+			The timeout is established not for entire response. 
+	proxy_connect_timeout
+		Thie directive assigns a timeout for the connection to the proxyserver
+		In contrast to connect_timeout, read_timeout will cache a server that puts your
+			in it's connection pool but does not responds to you with anything beyond
+			that
