@@ -5,8 +5,10 @@
 ------eval
 ------export
 ------for循环
+------fork and exec
 -----getopts ------ coming soon!
 ------if then else
+------the ":" operator
 ------重定向符号>的解释
 ------脚本中实现pause效果
 ------控制通配符（Globbing）
@@ -115,6 +117,9 @@
 	12. for i in stringchar{1..10}
 	13. awk `BEGIN{for(i=1; i<=10; i++) print i}`
 	#注意：awk中的for循环写法和C语言是一样的
+#fork and exec
+    one process spawns another either by replacing itself when its done --an exec-- or, \
+    if it needs to stay around, by making a copy of itself --a fork.
 #getopts
 	getopts命令格式：
 		getopts option-string variable
@@ -175,6 +180,19 @@
 		-u filename	Check if file set-ser-id bit is set
 		-w filename	Check if file is writable
 		-x filename	Check if file is executable
+#the ":" operator
+    #replace the unix true command to make an endless while loop
+        the shell does not have to start a new process each time around the
+        loop when using ":"(as it does when you use while true)
+        while :
+            do
+                [commands]
+            done
+    #when use else in an if but leave the then empty, the ":" makes a nice
+    "do-nothing" place filler
+        if something; then :; else [commands]; fi
+    #like # comment character, you can use ":" to "fake it"
+    #it is useful with parameter substitution like ${var:-default}
 #重定向符号>的解释
 	$command>filename	将命令的执行结果送至指定的文件中
 	$command>!filename	将命令的执行结果送至指定的文件中，若文件已存在，则覆盖
