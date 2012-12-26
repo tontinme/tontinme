@@ -1,7 +1,8 @@
 ------git权限控制
+------.gitignore
 ------Problem&Solution occured
 
-1.git权限控制
+# git权限控制
 	架设git服务器最复杂的地方在于账户管理。
 	git自身不提供权限控制，需要使用第三方的工具来进行
 	常用的第三方工具有:
@@ -18,8 +19,36 @@
 		2.在主机上建立一个git账户，给每个需要权限的人发送一个ssh公钥，然后将其加入git账户的~/.ssh/authorized_keys
 		文件。注意：访问主机用的身份不会影响提交对象的提交者信息
 		3.让ssh服务器通过某个LDAP服务，或者其他已经设定好的集中授权机制，来进行授权。
-
-2.Problem:	
+# .gitignore
+	可以使用.gitignore来管理不希望加入版本控制的文件
+	EXAMPLE:
+		tmp.txt		#不加入tmp.txt
+		*.log		#不加入所有的log文件
+		tmp/*		#不加入tmp下所有项	
+		log/**/*.log	#忽略log下包含子目录的所有log文件
+		log/**/*	#忽略log目录下包含子目录的所有项(log本身这个目录仍会被加入repository)
+	其他过滤条件
+		?	代表任何一个字符
+		*	代表任意数目的字符
+		{!ab}	不符合此pattern
+		{ab,bb,cx}	符合ab,bb,cx之一pattern即可
+		[abc]	符合a,b,c中任一字符即可
+		[^abc]	不含a,b,c中任一字符
+	另外
+	由于git不会加入空目录，所以下面做法会导致tmp不会存在
+		#cat .gitignore
+		tmp/*
+	改一下做法，在tmp下也加个.gitignore，其内容为
+		#cat .gitignore
+		*
+		!.gitignore
+	FAQ
+	加入.giignore无效
+		一开始就commit，已经将文件放进repository，所以每次改变时git都会检查，这时只需要
+		# git rm --cached ignore file
+		然后再commit一次，就ok了
+	后记：但别人merge后，不知为何他的ignore_file会整个删掉
+# Problem:	
 	error: insufficient permission for adding an object to repository database .git/objects
 	error: Error building trees
   Solution:
