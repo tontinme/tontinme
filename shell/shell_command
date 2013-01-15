@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ------编写高质量的bash脚本
+------diff
 ------echo相关参数
 ------eval
 ------export
@@ -63,6 +64,11 @@
 		stty -icannon min 0 time 1800
 #=============================================
 
+#diff
+    the diff command displays the only line that differs between the two files
+    diff is prescriptive, describing what changes need to be made to the first file to make it the
+        same as the second file.
+    you can use diff3 command to look at differences between three files.
 #echo相关参数
 	-e	允许解释转义序列
 	-n	删除输出结果的换行符
