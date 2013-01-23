@@ -85,6 +85,16 @@
 		$?返回的是管道最右边进程的退出码，若要获得cmd1或cmd2的退出码，可以使用数据PIPESTATUS，比如cmd1的退出码
 			是${PIPESTATUS[0]}，cmd3的退出码是${PIPESTATUS[2]}
 		注：CU上有人提到PIPESTATUS数组中保存的状态有时是不正确的，还有待验证
+    named pipe
+        a FIFO works like a pipe, but its interface looks like a file. It has a filename and
+            permissions, and it's in a directory
+        a FIFO is useful anytime two processes need to communicate but thost processes weren't
+            started from the same parent process, so a traditional pipe can't work (because the second
+            process can't access the open file descriptor from the first process)
+        假设有write process -- A, read process -- B, read process -- C
+            B,C同时启动，取A的结果，当A启动时，B,C可能都得到结果的一部分(B,C想要的结果不冲突)，也可能后启动的read
+                process得到结果(B,C想要的结果有冲突部分)。总之，A只有一份结果，B,C是取结果，而不是只读
+            若先启动B，再启动A，最后启动C，那么所有结果都输送给了B(尽管B可能并不想要所有结果)，而C什么也得不到
 #shell I/O重定向
 	管道：	上一个命令的stdout接到下一个命令的stdin
 	tee：	在不影响原有I/O的情况下，将stdout复制一份到档案中
