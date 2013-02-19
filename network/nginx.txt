@@ -1,4 +1,5 @@
 ------nginx超时设置
+------nginx last & break
 
 
 #nginx超时设置
@@ -23,3 +24,38 @@
 		In contrast to connect_timeout, read_timeout will cache a server that puts your
 			in it's connection pool but does not responds to you with anything beyond
 			that
+
+#nginx last & break
+	last	stops processing the current set of ngx_http_rewrite_module directives followed by 
+			a search for a new location matching the changed URI
+		停止当前这个请求，并根据rewrite匹配的规则重新发起一个请求。新请求又从第一个阶段开始执行
+	break	stops processing the current set of ngx_http_rewrite_module directives
+		相对last, break并不会重新发起一个请求，只是跳过当前的rewrite阶段，并执行本请求后续的执行阶段
+	EXAMPLE:
+	'''	server {
+			listen 80 default_server;
+			server_name dcshi.com;
+			root www;
+			
+			location /break/ {
+			    rewrite ^/break/(.*) /test/$1 break;
+			    echo "break page";
+			} 
+			
+			location /last/ {
+			     rewrite ^/last/(.*) /test/$1 last;
+			     echo "last page";
+			}    
+			
+			location /test/ {
+			   echo "test page";
+			}
+		} 
+	'''
+	请求:http://test.com/break/***
+	输出:break page
+		注:一般情况下，content阶段只能对应一个输出指令，如同一个location配置两个echo, 最终只有一个echo
+			会被执行. 如果当你把break的echo注释,然后再次访问/break/***会报404，虽然break被定向到
+			test但是break指令不会重新开启一个新的请求继续匹配请求:http://test.com/last/***
+	输出:test page
+
