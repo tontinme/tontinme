@@ -1,3 +1,4 @@
+----homebrew
 ----Show hidden files in Finder
 
 
@@ -9,3 +10,25 @@ Show hidden files in Finder
 	恢复隐藏文件
 	defaults write com.apple.finder AppleShowAllFiles -bool false
 	killall Finder
+homebrew
+	brew search $package
+	brew install $package
+	brew list	#列出已安装的软件包
+	brew remote $package
+	brew info $package	#查看软件包信息
+	brew deps $package	#列出包的依赖关系
+	brew update	#更新brew
+	brew outdated	#列出过时的软件包(已安装但不是最新版)
+	brew upgrade & brew upgrade $package	#更新过时的软件包（全部或指定）
+	#定制自己的软件包
+	1. 找到源码位置
+	http://foo.com/bar.1.0.tgz
+	2. 建立自己的formula
+	brew create http://foo.com/bar.1.0.tgz
+	3. 编辑formula, 上一步成功后，brew会自动打开新建的formula进行编辑，也可以使用如下
+	命令编辑
+	brew edit bar
+	homebrew自动建立的formula已经包含了基本的configure和make install命令，对大部分软件
+	来说不需要修改，退出编辑即可
+	4. 安装自定义的软件包
+	brew install bar
