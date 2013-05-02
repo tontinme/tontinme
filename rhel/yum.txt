@@ -24,4 +24,23 @@
 	>yum search xxx		#搜索匹配特定字符的rpm包
 	>yum provides xxx	#搜索有包含特定文件名的rpm包
 
-
+#get yum to install a specific package version
+	#First 
+	>yum install yum-allowdowngrade
+	>yum --showduplicates list php-gd
+		Available Packages
+		php-gd.i386                    5.2.3-3.el5s2                        testing
+		php-gd.i386                    5.2.6-2.el5s2                        testing
+		php-gd.i386                    5.2.9-2.el5.centos                   testing
+		php-gd.i386                    5.2.10-1.el5.centos                  testing
+	#remove the previous package
+	>yum remove php-gd
+	#Use the format NAME-VERSION
+	>yum install php-gd-5.2.6
+	#Or if you want to get more specific, use NAME-VERSION-RELEASE
+	>yum install php-gd-5.2.6-2.el5s2
+	#If you are downgrading, you may need to throw in the --allow-downgrade flag
+	>yum --allow-downgrade install php-gd-5.2.6
+	#If you want to lock the version you installed to prevent any future updates, install the versionlock plugin
+	>yum install yum-versionlocks
+	>yum versionlock php-gd
