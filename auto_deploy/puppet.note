@@ -1,0 +1,19 @@
+------puppet agent
+
+
+#puppet agent
+puppet agent [--certname name] [-D|daemonize|--no-daemonize] [-d|--debug] [--detailed-exitcodes]
+[--digest digest] [--disable [message]] [--enable] [--fingerprint] [-h|--help] [-l|--logdestsyslog|file|console]
+[--no-client] [--noop] [-o|--onetime] [--server handler] [-t|--test] [-v|--verbose] [-V|--version] [-w|--waitforcert seconds]
+	#Intro
+	--detailed-exitcodes
+		provide transaction information via exit codes. It this is enabled. an exit code of '2' means there were changes,
+		'4' means there are failures during the transaction, and '6' means there were both changes and failure.
+	--disabled
+		Disabled working on the local system. This puts a lock file in place, causing 'puppet agent' do not work on the 
+		system until the lock file is removed.
+		'puppet agent' exits after executing this
+	--enable
+		Enable working on the local system. This removes any lock file. Causing 'puppet agent' to start managing the local
+		system again.
+		'puppet agent' exits after executing this
