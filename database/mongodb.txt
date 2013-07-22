@@ -1,0 +1,29 @@
+------mongodb
+
+1. mongodb
+	启动
+		mongod --dbpath=data/service/ -port=17017 --master
+		mongod --dbpath=data/service/ -port=27017 --slave --source 127.0.0.1:17017 --slavedelay 5 --autoresync
+	mongo --help
+		查看mongo(即mongodb shell管理工具)用法
+	db.stats() 和 db.serverStatus()
+		查看mongodb运行状态的两个命令
+		db.stats()主要查看单个数据库的基本情况
+			>show dbs
+			>use test
+			> db.stats()
+			{
+			        "db" : "test",
+			        "collections" : 11,
+			        "objects" : 1151,
+			        "avgObjSize" : 567.4404865334492,
+			        "dataSize" : 653124,
+			        "storageSize" : 1720320,
+			        "numExtents" : 17,
+			        "indexes" : 14,
+			        "indexSize" : 408800,
+			        "fileSize" : 201326592,
+			        "nsSizeMB" : 16,
+			        "ok" : 1
+			}
+		db.serverStatus()是介绍整个mongodb实例的运行情况，比如mongodb实例的运行状态，历史统计
