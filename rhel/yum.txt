@@ -24,6 +24,9 @@
 	>yum search xxx		#搜索匹配特定字符的rpm包
 	>yum provides xxx	#搜索有包含特定文件名的rpm包
 
+	>yum downgrade packages	#对指定包安装上一个版本
+	>yum list --showduplicates scribe	#列出指定包的所有版本
+
 #get yum to install a specific package version
 	#First 
 	>yum install yum-allowdowngrade
