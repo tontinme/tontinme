@@ -1,0 +1,17 @@
+------resource
+
+# resource
+
+metaparameters
+	before
+		used in the earlier resource
+	require
+		used in the later resource
+	notify
+	subscribe
+		'notify' and 'subscribe' metaparameters make dependency relationships the way 'before' and 'require' do, but they also make notification relationships.
+			Not only will the earlier resource in the pair get synced first, but if Puppet makes any changes to that resource, it will send a refresh event
+			to the later resource, which will react according.
+Chaining Arrows
+	-> ~>
+		File['/tmp/test1/'] -> Notify['after']
