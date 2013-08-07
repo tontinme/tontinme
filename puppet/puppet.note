@@ -1,4 +1,5 @@
 ------resource
+------Language
 
 # resource
 
@@ -15,3 +16,22 @@ metaparameters
 Chaining Arrows
 	-> ~>
 		File['/tmp/test1/'] -> Notify['after']
+
+# Language
+Language:variables
+	variables in a given scop are only available within that scope and its child scopes, and any local scope can locally override the variables it receives from its parents
+	You can access out-of-scope variables from named scopes by using their qualified names
+		For Example: $vhostdir = $apache::params::vhostdir
+	No Reassignment:: Unlike other languages, puppet only allows a given variable to be assigned once within a given scope.
+	variable assiginments are parse-order dependent, this means you cannot resolve a variable before it has been signed
+	variable names are case-sensitive and can include alphanumeric characters and underscores
+Language:scope
+	Variables and defaults declared in a local scope are only available in that scope and its children. Not available in its parent.
+	Variable and defaults declared at node scope can override those received from top scope. That is: if multiple variables with the same name are available, puppet
+		will use the "most local" one.
+	Resource defaults are processed by attribute rather than as a block. Thus, defaults that declare different attributes will be merged, and only the attributes that
+		conflict will be overridden
+	Variables provided by an ENC are set at top scope
+	all of the classes assigned by an ENC are declared at node scope
+	Note: this means compilation will fail if the site manifest tries to set a variable that was already set at top scope by an ENC
+
