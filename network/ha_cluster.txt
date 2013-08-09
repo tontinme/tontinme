@@ -1,0 +1,28 @@
+------split brain
+
+#split brain
+	Clusters Systems are geared to handle peculiar situations like Amnesia and split brain conditions.
+	Amnesia occurs when the cluster restarts after a shutdown with cluster data older than at the time 
+		of the shutdown. This can happen if multiple versions of the framework data are stored on 
+		disk and a new incarnation of the cluster is started when the latest version is not available.
+	Split Brain occurs when a single cluster has a failure that results in reconfiguration of cluster 
+		into multiple partitions, with each partitions forming its sub-cluster without the knowledge
+		of the existence of other. This would lead to collision and corruption of shared data as 
+		each sub-cluster assumes ownership of shared data.
+	The methods that are used to solve Split Brain are "quorum" and "fencing"
+	Fencing:
+	  Resource fencing: if you know what resources a node might be using, then you can use some method of keeping it from
+		accessing those resources. 
+	  Node fencing: one can keep a node from accessing all resources -- without knowing what kind of resource
+		it might be accessing, or how one might deny access to them. A common way of doing this is to power off or reset
+		the errant node. This technique is also called SHONITH - which is a graphic and colorful acronym standing for 
+		Shoot The Other Node In The Head.
+#Quorum
+	The most classic solution to selecting a single subcluster is a majority vote. If you choose a subcluster with more than
+		half of the members in it, then you know there can't be any other subcluster like this one.
+	SCSI reserve: both nodes try and reserve a disk partition available to both of them, and the SCSI reserve mechanism that
+		only one of the two of them can succeed.
+	Quorum Daemon: It has a number of significant advantages over SCSI reserve - one of which is that it can conveniently and 
+		reliably operate over geographic distances, making it ideal for disaster recovery type situations.
+	
+
