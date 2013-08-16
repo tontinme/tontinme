@@ -34,4 +34,9 @@ Language:scope
 	Variables provided by an ENC are set at top scope
 	all of the classes assigned by an ENC are declared at node scope
 	Note: this means compilation will fail if the site manifest tries to set a variable that was already set at top scope by an ENC
-
+	There are two different sets of scope lookup rules: static scope and dynamic scope. Puppet 3 uses static scope for variables and dynamic scope for resource defaults.
+Language:condition
+	If 
+	Unless
+	Case
+	Selectors
