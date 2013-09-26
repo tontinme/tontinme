@@ -21,6 +21,7 @@
 ------取得一个正在运行进程的PID
 ------取得昨天的日期
 ------shell的常用快捷键
+------shell数组操作
 ------输入时屏幕不显示（比较输入密码）
 ------数组操作
 ------统计重复行
@@ -300,6 +301,11 @@
 	CTRL + r —— 在历史命令中查找
 	CTRL + p —— 上翻前面键入的命令
 	CTRL + z —— 转入后台运行
+#shell数组操作
+	http://bbs.chinaunix.net/thread-1779167-1-1.html
+	http://leeon.me/a/linux-shell-array
+	http://www.cnblogs.com/chengmo/archive/2010/09/30/1839632.html
+	http://blog.maxiang.net/15-bash-array-tutorial/148/
 #输入时屏幕不显示（比较输入密码）
 	stty -echo	#关闭屏幕的echo
 	stty echo	#恢复屏幕原echo

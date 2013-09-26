@@ -4,6 +4,7 @@
 ------netstat查看系统中占用端口的进程
 ------shell 管道
 ------shell I/O重定向
+------shell三种并行方法
 ------ssh创建端口转发通道
 ------ssh挂载远程主机上的文件夹
 ------查看ASCII表
@@ -102,6 +103,10 @@
 			stdout和stderr以及其他FD(file descriptors)
 	exec:	常用来代替当前shell并重新启动一个shell，换句话说，并没有启动子shell。使用这一命令时任何现有环境都将被
 			清除，exec在对FD进行操作时，不会覆盖你当前的shell环境
+#shell 三种并行方法
+	数组保存pid
+	临时文件保存后台脚本状态
+	parallel
 #ssh创建端口转发通道
 	$ssh -N -L 2001:remotehost:80 user@somemachine
 	这个命令在本机打开了2001端口，对本机2001端口的请求通过somemachine作为跳板，转发到remotehost的80端口上
