@@ -7,6 +7,7 @@
 ------vim的标签功能
 ------vim多行操作(缩进、注释)
 ------退出vim时自动保存当前vim窗口的状态 重新打开后恢复原来状态
+------使用vundle管理vim插件
 ------手动编译vim
 
 #vim、gvim在windows下中文乱码的终极解决方案
@@ -101,6 +102,12 @@
 	fi
 	
 	当用gvim编辑完后，退出时，文件是以当前子窗口的名字保存窗口信息的，所以下次打开时，要用到那个窗口名字作为gvim的参数
+#使用vundle管理插件
+	将vimrc, .vim/目录等配置放在~/目录下后，先安装vundle
+	~git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+	然后打开vim，执行:BundleInstall，安装插件
+	更新插件 :BundleInstall!
+	卸载不在列表中的插件 :BundleClean
 #手动编译vim
 	$./configure --with-features=huge --enable-pythoninterp=yes  --enable-cscope --enable-fontset --enable-perlinterp
 	--enable-rubyinterp --with-python-config-dir=/usr/lib/python2.7/config/ --with-compiledby="tontinme"
