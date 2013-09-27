@@ -1,5 +1,59 @@
+------Quorum
+------RHCS Infrastructure
 ------split brain
 
+#Quorum
+	The most classic solution to selecting a single subcluster is a majority vote. If you choose a subcluster with more than
+		half of the members in it, then you know there can't be any other subcluster like this one.
+	SCSI reserve: both nodes try and reserve a disk partition available to both of them, and the SCSI reserve mechanism that
+		only one of the two of them can succeed.
+	Quorum Daemon: It has a number of significant advantages over SCSI reserve - one of which is that it can conveniently and 
+		reliably operate over geographic distances, making it ideal for disaster recovery type situations.
+#RHCS Infrastructure
+	The cluster infrastructure performs the following functions:
+	--Cluster management
+	--Lock management
+	--Fencing
+	--Cluster configuration management	
+	The maximum numbers of nodes supported in a Red Hat Cluster is 16
+1. Cluster management
+	CMAN keeps track of cluster quorum by monitoring the count of cluster nodes. If more than half the nodes are active, the 
+		cluster has quorum. if half the nodes (or fewer) are active, the cluster does not have quorum, and all cluster 
+		activity is stopped. Cluster quorum prevents the occurrence of a 'split-brain' condition. 
+	Note: by default, each node has one quorum vote. Optionally, you can configure each node to have more than one vote.
+2. Lock management
+	Lock management is a common cluster-infrastructure service that provides a mechanism for other cluster infrastructure 
+		components to synchronize their access to shared resources.
+	In RHCS, DLM (Distributed Lock Manager) is the lock manager
+3. Fencing
+	Fencing is the disconnection of a node from the cluster's shared storage. Fencing cuts off I/O from shared storage, thus
+		ensuring data integrity. The cluster infrastructure performs fencing through the fence daemon -- fenced.
+	When CMAN determines that a node has failed, it communicates to other cluster-infrastructure components that the node has
+		failed, fenced, when notified of the failure, fences the failed node.
+	RHCS provides a variety of fencing methods:
+	--Power fencing. a fencing method that uses a power controller to power off an inoperable node.
+	--SCSI3 Persistent Reservation Fencing. A fencing method that uses SCSI3 persistent reservations to disallow access to
+		shared storage.
+	--Fibre Channel switch fencing. A fencing method that disables the Fibre Channel port that connects storage to an inoperable node.
+	--GNBD fencing. A fencing method that disables an inoperable node's access th a GNBD server.
+4. Clster Configuration System
+	The cluster configuration system manages the cluster configuration and provides configuration information to other cluster
+		components in a Red Hat cluster. CCS runs in each cluster node and makes sure that the cluster configuration file in 
+		each cluster node is up to date.
+	The cluster configuration file (/etc/cluster/cluster.conf) is an XML file that describes the following cluster characteristics:
+	--Cluster name. Display the cluster name, cluster configuration file revision level, and basic fence timing properties used
+		when a node joins a cluster or is fenced from the cluster.
+	--Cluster. Display each node of the cluster, specifying node name, node ID, number of quorum votes, and fencing method for that node.
+	--Fence Device. Displays fence devices in the cluster. Parameters vary according to the type of fencing device. For example 
+		for a power controller used as a fence device, the cluster configuration defines the name of the power controller, its IP 
+		address, login, and password.
+	--Managed Resources. Display resources required to create cluster service. Managed Resources includes the definition of failover domains, 
+		resources( for example an IP address), and services. Together the managed resources define cluster services and failover behavior
+		of the cluster services.
+5. High-availability Service Management
+	Hige-availability service management provides the ability to create and manage high-availability cluster services in a Ret Hat cluster.
+		The key component for high-availability service management in a Ret Hat cluster, rgmanager, implements cold failover for off-the-shelf
+		applications. 
 #split brain
 	Clusters Systems are geared to handle peculiar situations like Amnesia and split brain conditions.
 	Amnesia occurs when the cluster restarts after a shutdown with cluster data older than at the time 
@@ -17,12 +71,3 @@
 		it might be accessing, or how one might deny access to them. A common way of doing this is to power off or reset
 		the errant node. This technique is also called SHONITH - which is a graphic and colorful acronym standing for 
 		Shoot The Other Node In The Head.
-#Quorum
-	The most classic solution to selecting a single subcluster is a majority vote. If you choose a subcluster with more than
-		half of the members in it, then you know there can't be any other subcluster like this one.
-	SCSI reserve: both nodes try and reserve a disk partition available to both of them, and the SCSI reserve mechanism that
-		only one of the two of them can succeed.
-	Quorum Daemon: It has a number of significant advantages over SCSI reserve - one of which is that it can conveniently and 
-		reliably operate over geographic distances, making it ideal for disaster recovery type situations.
-	
-
