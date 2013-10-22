@@ -24,6 +24,15 @@
 		In contrast to connect_timeout, read_timeout will cache a server that puts your
 			in it's connection pool but does not responds to you with anything beyond
 			that
+	4. 一些参数解释
+	request_time
+		指从从接收用户请求数据到发送完回复数据的时间
+	upstream_response_time
+		这个说的比较模糊，它指的是从Nginx向后端建立连接开始到接收完数据然后关闭连接为止的时间。
+		因为会有重试，它可能会有多个时间段。一般来说，$upstream_response_time会比$request_time
+		时间短
+		对于http post请求，两者相差特别大。因为nginx会把http request body缓存住，接收完毕后才会
+		把数据一起发给后端
 
 #nginx last & break
 	last	stops processing the current set of ngx_http_rewrite_module directives followed by 
