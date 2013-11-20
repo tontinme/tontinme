@@ -1,0 +1,19 @@
+
+#gem option
+  $ gem install rails --source http://rubygems.org
+  remove https source, add http source
+  $ sudo gem sources -r https://rubygems.org
+  $ sudo gem sources -a http://rubygems.org
+  $ gem install rails --version=4.0
+
+#rvm option
+Install RVM stable with ruby:
+  $ \curl -L https://get.rvm.io | bash -s stable --ruby
+install ruby throuth rvm
+  $ rvm install 2.0.0
+set default ruby version
+  $ rvm use 2.0.0
+  $ rvm use 2.0.0 --default
+  $ rvm remove 2.0.0
+list known ruby version
+  $ rvm list known
