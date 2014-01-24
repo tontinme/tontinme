@@ -1,0 +1,16 @@
+------when inode lost
+#when inode lost
+like this
+  >cd logs/
+  >ls
+    cannot access a.log: No such file or directory
+  >ls -lh
+    ????????? ? ?   ?      ?                ? a.log
+一般可能是文件系统导致的该问题，可以使用fsck修复下磁盘。
+删除该文件的方法如下：
+首先保证该文件所在目录为空，即移除logs下其他所有文件,touch同名文件
+  >touch a.log
+  >mv a.log a	#rename同名文件
+  >rm a -f	#删除同名文件
+  至此，a.log就有inode了，直接删除即可
+
