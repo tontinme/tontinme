@@ -1,0 +1,49 @@
+服务器的BIOS可以设置机器能耗，其中涉及到cpu的部分，会自动为cpu降频。当服务耗cpu比较严重时，需要注意这点，
+修改bios为最大性能，或者交给os控制，进而在系统层面管理
+
+以dell为例：
+  System BIOS Settings >> System profile Settings
+几个重要的选项：
+"CPU Power Management"	: "System DBPM", "Maximum Performance", "OS DBPM"
+解释下:
+DBPM: demand-based power management
+DAPC: Dell Advanced Power controller
+
+Minimum Power: The processor P-state is statically set to the lowest supported P-state. DBPM is disabled
+Maximum Power: The processor P-state is statically set to the highest supported P-state. DBPM is disabled
+	维持内部组件如内存，风扇等的最高电压，甚至在cpu空闲时也保持，这对于榨取服务器的性能有所帮助，当然以更高的能耗为代价
+OS DBPM: OS DBPM is enabled and all supported processor P-states are provided to the OS in the ACPI table
+	将控制器交给操作系统，linux中对应的控制服务是cpuspeed
+System DBPM: System DBPM is enabled and all supported processor P-state are available.
+
+
+dell关于高性能，低延迟的服务有一个推荐的bios设置，可参考：
+http://i.dell.com/sites/content/shared-content/data-sheets/en/Documents/configuring-low-latency-environments-on-dell-poweredge-12g-servers.pdf
+
+还有两个选项
+C1E和C States: 这些是电源节能特性，允许自动的对CPU核心进行频率调节
+
+真正能通过OS控制CPU电源管理的只有OS DBPM这个，其他的是根本无法加载模块的.
+当使用OS DBPM时，可以通过`grep Hz /proc/cpuinfo`查看cpu的当前主频和设计主频
+否则，无法加载使用cpuspeed，即该目录下的module无法加载ll /lib/modules/2.6.32-279.el6.x86_64/kernel/arch/x86/kernel/cpu/cpufreq/
+从而/proc/cpuinfo里的内容不可靠。
+
+[syscfg]
+以上查看BIOS设置可以重启进入bios查看，另外dell的DTK里提供了一个工具syscfg，可以不重启系统直接查看和修改bios设置。
+DTK:(Dell OpenManage Deployment Toolkit)
+使用syscfg前，先启动管理服务:
+  shell> /opt/dell/srvadmin/sbin/srvadmin-services start
+  shell> /opt/dell/toolkit/bin/syscfg –SysProfile=Custom
+对于低延迟系统，可以如下设置
+  syscfg –SysProfile=Custom
+  syscfg –turbomode=disable   #睿频加速禁用，禁用后可以确保稳定的性能，
+  #关闭所有电源节能特性
+  syscfg –cpuc1e=disable
+  syscfg –cstates=disable
+  syscfg –MonitorMwait=disable
+  #还有
+  syscfg –-logicproc=disable    #处理器核心逻辑禁用(Logical Processor)
+  syscfg –nodeinterleave=disable	  #节点交叉禁用(Node Interleaving)，即启用非统一内存访问(NUMA)功能
+  syscfg  –MemPatrolScrub=standard    #内存轮询检查标准(Memory Patrol Scrub)
+  syscfg –ProcPwrPerf=maxperf	#CPU电源管理(CPU Power Management)最高性能
+  syscfg –MemFrequency=maxperf	#内存频率(Memory Frequency)最高性能
