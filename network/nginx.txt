@@ -1,7 +1,20 @@
+------keepalive connections
 ------nginx超时设置
 ------nginx last & break
 
 
+#keepalive connections
+	Activates the cache for connections to upstream servers.
+	激活长连接设置，即启用长连接
+	The connections parameter sets the maximum number of idle keepalive connections to upstream
+	servers that are preserved in the cache of each worker process. When this number is exceeded,
+	the least recently used connections are closed. 
+	connections设置长连接的最大个数，当所有长连接都被占用时，按照LRU规则淘汰连接
+	It should be particularly noted that the keepalive directive does not limit the total number
+	of connections to upstream servers that an nginx worker process can open. The connections parameter
+	should be set to a number small enough to let upstream servers process new incoming connections as well. 
+	注意：该值并不限制nginx到upstream server的最大连接数(只是限制最大长连接数)，达到长连接的max后的新连接是短连接,
+	该值建议设置的upstream server有足够能力处理来自其他方面的连接
 #nginx超时设置
 	1. send_timeout
 	default:60
