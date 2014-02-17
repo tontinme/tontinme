@@ -4,6 +4,11 @@
 
 
 #keepalive connections
+	#实现nginx长连接，则每个进程需要另外一个connection pool，一旦与后端建立连接，则在当前请求结束后
+	不立即关闭连接，而是把用完的连接保存在keepalive connection pool里面，以后每次需要建立连接的时候，
+	只需从这个连接池里面找，找到合适的话，就直接使用。不需要重新创建socket或发起connect()。即可省下
+	握手的时间，也可以避免tcp连接的slow start
+
 	Activates the cache for connections to upstream servers.
 	激活长连接设置，即启用长连接
 	The connections parameter sets the maximum number of idle keepalive connections to upstream
