@@ -1,0 +1,62 @@
+------Deploy Environment
+
+#Deploy Environment
+
+##1. Install JDK
+
+download from oracle, then install
+    
+**Problem:**
+    
+1) Oracle's missing definitions of the JRE7 VM capabilities
+    
+ 	sudo vim /Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Info.plist
+    
+**replace**
+	  
+		<key>JVMCapabilities</key>
+		<array>
+			<string>CommandLine</string>
+		</array>
+
+**with**
+	  
+		<key>JVMCapabilities</key>
+		<array>
+			<string>JNI</string>
+			<string>BundledApp</string>
+			<string>WebStart</string>
+			<string>Applets</string>
+			<string>CommandLine</string>
+		</array>
+	  
+##2. Install ADT
+
+install from android.com
+
+**Problem:**
+    
+1) when running eclipse 
+ 
+	"/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/bundle/Libraries/libserver.dylib.  
+	JavaVM FATAL: Failed to load the jvm library."
+	
+vim Eclipse.app/Contents/Info.plist  
+Append  
+
+	<string>-vm</string>
+	<string>/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/server/libjvm.dylib</string>
+
+如果问题还没有解决，重置一下eclipse
+
+	  cp -r Eclipse.app Eclipse.app.bak
+	  rm -r Eclipse.app
+	  mv Eclipse.app.bak Eclipse.app
+
+2) 无法在eclipse中create avd  
+据说是adt版本bug，可以对版本进行降级，或者在eclipse外面启动avd manager，如下：
+
+	  cd ${ADT_PATH}/sdk/tools/;
+	  ./android avd
+
+
