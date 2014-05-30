@@ -46,3 +46,18 @@
 		2)gdb -c core.xxx
 		>file ./a.out
 		>bt
+	non-interactive方式查看
+		gdb executes file .gdbinit after running. So you can add your commands to this file and see if it is OK. Or
+		use the command line option below:
+		gdb --help
+			-command=file
+			-x file		#execute gdb commands from file.
+		EX:
+			gdb ./bin ./core-file -x gdbinit.self
+			cat gdbinit.self
+			>>set pagination off
+			>>set logging file gdb.log
+			>>set logging on
+			>>bt
+			>>set logging off
+			>>quit
