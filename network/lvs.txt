@@ -1,4 +1,4 @@
-------lvs的三种ip负载均衡技术
+------lvs的四种ip负载均衡技术
 
 1. VS/NAT
 	在一组服务器前有一个调度器，它们是通过switch/hub相连接的。即
@@ -37,3 +37,6 @@
 	server network	private		LAN/WAN		LAN
 	server number	loc(10~20)	High(100)	High(100)
 	server gateway	load balancer	own router	own router
+5. FULLNAT lvs
+    三层设备和lvs机群之间ospf
+    lvs机群和后端之间能够跨vlan，因此需要patch lvs的内核，因此lvs能够摆脱vlan限制
