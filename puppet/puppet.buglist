@@ -1,0 +1,78 @@
+[@djt_19_32 daemon]# rpm -ivh puppet-2.6.17-2.el5.noarch.rpm
+error: Failed dependencies:
+        /usr/bin/ruby is needed by puppet-2.6.17-2.el5.noarch
+        facter >= 1.5 is needed by puppet-2.6.17-2.el5.noarch
+        libselinux-ruby is needed by puppet-2.6.17-2.el5.noarch
+        ruby >= 1.8.5 is needed by puppet-2.6.17-2.el5.noarch
+        ruby(abi) = 1.8 is needed by puppet-2.6.17-2.el5.noarch
+        ruby(augeas) is needed by puppet-2.6.17-2.el5.noarch
+        ruby(shadow) is needed by puppet-2.6.17-2.el5.noarch
+
+1. no certificate found and waitforcert is disabled
+
+	#客户端缺少签名
+		puppetca -l
+		puppetca -s hostname	or	puppetca -s -a
+	也可以设置自动签名
+		vim /etc/puppet/puppet.conf
+			autosign = $confdir/autosign.conf
+		vim /etc/puppet/autosign.conf
+			*.web.djt.vm
+			10.0.0.0/8
+			192.168.0.0/16
+2. Could not retrieve catalog from remote server: Error 414 on SERVER: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+	<HTML>
+	<HEAD><TITLE>Request-URI Too Large</TITLE></HEAD>
+	... ...
+	
+	#http://projects.puppetlabs.com/issues/6117
+	the fix is in place with 2.7.x and POST replaced GET. The problem you have is in Webrick not Puppet. I would recommend NOT using the default Webrick server
+	
+3. NOTE: Gem.source_index is deprecated, use Specification. It will be removed on or after 2011-11-01.
+	Gem.source_index called from /usr/lib/ruby/gems/1.8/gems/bundler-1.0.12/lib/bundler/shared_helpers.rb:3.
+	NOTE: Gem.source_index is deprecated, use Specification. It will be removed on or after 2011-11-01.
+	Gem.source_index called from /usr/lib/ruby/gems/1.8/gems/bundler-1.0.12/lib/bundler/source.rb:162.
+	NOTE: Gem::SourceIndex#each is deprecated with no replacement. It will be removed on or after 2011-11-01.
+
+	downgrading rubygems
+	$ gem update --system 1.6.2
+	OR
+	$ gem update bundler
+4. Could not prepare for execution: The certificate retrieved from the master does not match the agent's private key.
+	I should have pointed out that each subordinate master has "ca =
+	false" in puppet.conf, to ensure that none of the subordinate masters
+	try to do any CA stuff.  All CA activities should only be performed on
+	the top-level master.
+5. Puppet note report
+	On Sat, Jun 30, 2012 at 11:42 PM, hai wu <haiw...@gmail.com> wrote:
+
+    This is good to know. It seems foreman has its own report plugin
+    script (foreman.rb), so it should not be a problem if I use both at
+    the same time for reporting purposes. Puppet dashboard uses reporturl,
+    as long as foreman would keep its current plugin (reports = foreman),
+    there should be no conflict of using both, correct? It seems foreman
+    has a new feature using reporturl, I won't be able to use that as
+    reporturl is currently pointing to puppet dashboard ..
+
+	yeah, it doesn't really matter, you can use either of them regardless.
+6. Dashboard report importing: undefined method `each' for nil:NilClass
+   # http://projects.puppetlabs.com/issues/10422
+   发生于向dashboard导入report时
+   
+   生成report的puppet master的ruby版本高于dashboard的ruby版本
+ 
+7. Puppet master fails with 'stack level too deep' error when storeconfigs = true
+   
+   force an older activerecord version to puppet
+   gem install activerecord -v 3.0.11
+   gem install mysql2 -v 0.2.7
+   Add this into your config.ru file.
+   #/etc/puppet/rack/config.ru
+	   # http://projects.puppetlabs.com/issues/9290
+	   gem 'activerecord', '=3.0.11'
+	   gem 'mysql2', '=0.2.7'
+8. Please install the mysql adapter: 'gem install activerecord-mysql-adapter'
+	
+   change /etc/puppet/puppet.conf to use the mysql2 adapter instead of mysql
+		dbadapter = mysql2
+	
