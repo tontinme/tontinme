@@ -1,4 +1,4 @@
-[@djt_19_32 daemon]# rpm -ivh puppet-2.6.17-2.el5.noarch.rpm
+[@localhost daemon]# rpm -ivh puppet-2.6.17-2.el5.noarch.rpm
 error: Failed dependencies:
         /usr/bin/ruby is needed by puppet-2.6.17-2.el5.noarch
         facter >= 1.5 is needed by puppet-2.6.17-2.el5.noarch
@@ -17,7 +17,7 @@ error: Failed dependencies:
 		vim /etc/puppet/puppet.conf
 			autosign = $confdir/autosign.conf
 		vim /etc/puppet/autosign.conf
-			*.web.djt.vm
+			*.databae.vm
 			10.0.0.0/8
 			192.168.0.0/16
 2. Could not retrieve catalog from remote server: Error 414 on SERVER: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">

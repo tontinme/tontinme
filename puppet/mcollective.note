@@ -1,0 +1,49 @@
+ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']"
+
+[mcollective plugin]
+	mcollective是使用插件进行操作的,插件在client和server都要下载,放到相应位置。
+	这里介绍两个插件：?puppetd 和?facter
+		
+	git clone git://github.com/puppetlabs/mcollective-plugins.git
+	cd mcollective-plugins
+	本机存放插件的位置是server.cfg中libdir指定位置下的相应目录
+	cp agent/puppetd/agent/puppetd.{ddl,rb} /usr/libexec/mcollective/mcollective/agent/
+	所有server端都设置好
+	重载插件
+	mco controller reload_agents
+
+	验证一下
+	mco rpc rpcutil agent_inventory # 能看到:agent=>"puppetd", 行
+
+	运行插件
+	mco rpc puppetd -v runonce
+	2. 使用facter插件
+	cp facts/facter/facter{,_facts}.rb /usr/libexec/mcollective/mcollective/facts/
+
+	所有server端和client端都设置好
+	在所有server端修改配置:/etc/mcollective/server.cfg	
+	factsource = facter
+	在所有server端重启mcollectived
+	运行插件
+	mco facts ipaddress
+	mco facts -v --with-fact operatingsystem='/CentOS|Debian/' memoryfree
+	mco rpc puppetd status
+
+	mco inventory --list-collectives
+	
+	
+	########################
+	Unknown collective 'beantown' known collectives are 'mcollective'
+		http://projects.puppetlabs.com/issues/19946
+	########################
+	
+	[puppetd plugin]
+		新版puppet agent需要高版本的mcollective和puppet支持
+			To use this agent you need:
+				MCollective 2.2.0 at least
+				Puppet 2.7 or 3.0
+
+	
+[puppet agent setup]
+	puppet agent --test --tags opt_mapiq_conf
+		#--test 相当于 'onetime', 'verbose', 'ignorecache', 'no-daemonize', 'no-usecacheonfailure', 'detailed-exit-codes', 'no-splay', 'show_diff'.
