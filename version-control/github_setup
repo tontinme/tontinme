@@ -32,3 +32,34 @@ Importing a Subversion Repo?
 When you're done:
 
   Continue
+
+        
+Multiple SSH Keys settings for different github account
+1. Create different ssh key
+2. edit .ssh/config
+    #tontinme account
+    Host github.com-tontinme
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_rsa_tontinme
+
+    #woenjoy account
+    Host github.com-woenjoy
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_rsa_woenjoy
+3. clone your repo and modify your git config
+    $ git config user.name "tontinme"
+    $ git config user.email "tontinme@gmail.com"
+
+    $ git config user.name "woenjoy"
+    $ git config user.email "woenjoy@gmail.com"
+
+    $git config -l  #check your setting
+4. change the [remote "origin"] / url field in your local .git/config to use the Host defined in .ssh/config
+    [remote "origin"]
+            url = git@github.com-tontinme:tontinme/gfs.git
+5. use normal flow to push your code
+    $ git add .
+    $ git commit -m 'your comments'
+    $ git push
