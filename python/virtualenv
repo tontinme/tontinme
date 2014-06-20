@@ -1,0 +1,86 @@
+virtualenv
+==========
+
+Intro
+-----
+    virtualenv is a tool to create isolated Python envirenments
+
+Installtion
+-----
+
+Virtualenvwrapper
+======
+
+Intro
+-----
+virtualenvwrapper是virtualenv的扩展包，用于更方便的管理虚拟环境，它可以做：
+
+    * 将所有虚拟环境整合到一个目录
+    * 管理（新增，删除，复制）虚拟环境
+    * 切换虚拟环境
+    * ...
+
+Pip
+=====
+
+冻结开发版本
+-----
+    > pip freeze
+    Django==1.3
+    argparse==1.2.1
+
+将输出保存到requirement.txt，就可以在其他地方，方便的安装相同的开发环境。
+
+    > pip install -r requirement.tx
+
+pip换源
+-----
+	> cat ~/.pip/pip.conf
+
+    [global]
+    index-url=http://e.pypi.python.org/simple
+    timeout = 30
+    require-virtualenv = true
+    download-cache = /tmp
+
+    [install]
+    use-mirrors = true
+    mirrors =
+    http://d.pypi.python.org
+    http://b.pypi.python.org
+    http://c.pypi.python.org
+
+Buildout
+======
+
+Intro
+-----
+使用setuptools能够用来打包应用程序，生成egg包，但对于有些程序来说，可能需要依赖很多egg包，在此基础上开发，setuptools就无能为力了。buildout不但能像setuptools一样自动下载或更新安装依赖包，还能像virtualenv一样，构建一个封闭的开发环境。
+
+Install:
+-----
+创建开发目录
+
+    > mkdir buildout-demo
+    > cd buildout-demo/
+    > touch buildout.cfg
+
+然后，下载buildout引导脚本bootstrap.py，运行bootstrap.py生成buildout相关的文件和目录
+
+    > python bootstrap.py
+
+Attention:
+-----
+zc.buildout2.0 and later does not provide isolated environment anymore.
+
+but zc.buildout1.9 and later provides completed isolation (including to not install setuptools)
+
+Thus the easiest way to get a buildout in a completed controlled environment is to run the following steps.
+
+    > cd /path/to/buildout/
+    > rm ./bin/python
+    > /path/to/virtualenv-2.7 --no-setuptools --no-site-packages --clear .
+    > ./bin/python2.7 bootstrap.py
+    # bootstrap.py has to be a recent one matching the buildout version you are using.
+    > ./bin/buildout
+
