@@ -1,0 +1,18 @@
+------kipmi0占用cpu过高
+
+#kipmi0占用cpu过高
+    kipmi is supposed to run with low priority. When you say it consumes 70-90% of the CPUs, is that constant
+    (does it still consume the processor when they are other tasks in the process queue that should have a 
+    larger slice of the CPU time) or the 70%/90% comes when the machine is idle? A second issue to investigate
+    is whether you have pending controller issues (alarms of varying nature that are not resolved) and/or older versions of controller firmware.
+
+    1. Fix: 无需修复
+    No fix required.  You should ignore increased CPU utilization as it has no impact on actual system performance.
+    2. 可以临时降低
+    echo 100 > /sys/module/ipmi_si/parameters/kipmid_max_busy_us
+    In our system, after set this parameter, the cpu of kipmi0 decrease to 15%
+    3. You can try this：永久降低
+    To make the changes persistent you can configure the options for the ipmi_si kernel module.
+    Create a file in /etc/modprobe.d/, i.e./etc/modprobe.d/ipmi.conf, and add the following content:
+	  ># Prevent kipmi0 from consuming 100% CPU
+	  >options ipmi_si kipmid_max_busy_us=100
