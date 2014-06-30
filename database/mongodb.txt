@@ -1,4 +1,5 @@
 ------mongodb
+------mongodb的内存
 
 1. mongodb
 	启动
@@ -27,3 +28,35 @@
 			        "ok" : 1
 			}
 		db.serverStatus()是介绍整个mongodb实例的运行情况，比如mongodb实例的运行状态，历史统计
+
+2. mongodb的内存
+    mongodb使用的是内存映射存储引擎，它会把数据文件映射到内存中，如果是读操作，内存中的数据起到缓冲作用，如果是写操作，内存还可以
+    把随机的写操作转换成顺序的写操作，总之可以大幅提升性能。mongodb不干涉内存管理工作，而是把这些工作交给系统的虚拟内存管理器去
+    处理，好处是简化了mongodb的工作，缺点是你没办法很方便的控制mongodb占多大内存。
+
+    MongoDB will (at least seem) to use up a lot of available memory, but it actually leaves it up to the OS's VMM to tell
+    it to release the memory (see Caching in the MongoDB docs.)
+    You should be able to release any and all memory by restarting MongoDB
+    MongoDB uses the LRU (Least Recently Used) cache algorithm to determine which "pages" to release
+    MongoDB can use all free memory on the server for cache space automatically without any configuration of a cache size
+
+    释放掉Mongodb内存
+	  mongo> use admin;
+	  mongo> db.runCommand({closeAllDatabases:1})
+	  另外，通过调整内核参数也可以释放
+	  shell> sysctl.vm.drop_caches=1
+    平时可以通过mongo命令来监控mongodb的内存使用情况
+	  mongo> db.serverStatus().mem;
+	  {
+		"resident" : 22346,
+		"virtual" : 1938524,
+		"mapped" : 962283
+	  }
+    还可以通过mongostat来监控
+	  shell> mongostat --port 27017
+
+    mongodb做内存限制
+	  shell> ulimit -m 1024000 && sudo /usr/bin/mongod
+	  #ulimit -s 4096	    #设定stack大笑
+	  #ulimit -m	    #设定内存使用
+	  #numactl --cpunodebind=0	    #将进程绑到第一颗CPU上
