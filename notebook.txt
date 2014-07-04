@@ -1,1 +1,3 @@
 shell脚本+配置文件模式
+
+docker, openshift, vagrant, virtualenv, geard, cgroup, lxc, kvm, quotas
