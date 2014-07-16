@@ -1,4 +1,7 @@
 ------lvs的四种ip负载均衡技术
+------lvs的部署
+
+#lvs的四种ip负载均衡技术
 
 1. VS/NAT
 	在一组服务器前有一个调度器，它们是通过switch/hub相连接的。即
@@ -84,3 +87,10 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
 	RS的容灾可以通过LVS定期健康检测实现，如果某台RS失去心跳，则认为其已经下线，不会在转发到该RS上。
 	LVS的容灾可以通过主备+心跳的方式实现。主LVS失去心跳后，备LVS可以作为热备立即替换。
 	容灾主要是靠KeepAlived来做的。
+
+
+#lvs的部署
+	There are several software packages in conjuction with LVS to provide high availability of the whole system, such as
+  RedHat Piranha, Keepalived, UltraMonkey, heartbeat plus Idirectord, and heartbeat plus mon.
+	For further:
+  #http://www.linuxvirtualserver.org/HighAvailability.html
