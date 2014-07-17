@@ -1,5 +1,38 @@
+------Heartbeat
 ------lvs的四种ip负载均衡技术
 ------lvs的部署
+
+
+#Heartbeat
+	Heartbeat is a daemon that provides cluster infrastructure (communication and membership) services to
+  its clients. This allows clients to know about the presence (or disappearance!) of peer processes on other
+  machines and to easily exchange messages with them.
+	In order to be useful to users, the Heartbeat daemon needs to be combined with a cluster resource
+  manager (CRM) which has the task of starting and stopping the services (IP addresses, web servers, etc)
+  that cluster will make highly available. The canonical cluster resource manager typically associated with
+  Heartbeat is Pacemaker, a highly scalable and feature-rich implementation that supports both Heartbeat and,
+  alternatively, the Corosync cluster messaging layer.
+      Heartbeat include some components:
+	  * Communication module
+	  * Cluster Consensus Membership
+	  * Cluster Plumbing Library
+	  * IPC Library
+	  * Non-blocking logging daemon
+      #For more:
+	http://www.linux-ha.org/doc/users-guide/_components.html
+	The Heartbeat communication module provides strongly authenticated, locally-ordered multicast messaging
+  over basically any media, IP-based or not. Heartbeat supports cluster communications over the following
+  network link types:
+	  * unicast UDP over IPv4;
+	  * broadcast UDP over IPv4;
+	  * multicast UDP over IPv4;
+	  * serial link communications
+	Heartbeat can detect node failure reliably in less than a half-second. It will register with the system
+  watchdog timer if configured to do so. The heartbeat layer has an API which provides the following classes of services:
+	  * intra-cluster communication - sending and receiving packets to cluster nodes
+	  * configuration queries
+	  * connectivity information (who can the current node hear packets from) - both for queries and state change notifications
+	  * basic group membership services
 
 #lvs的四种ip负载均衡技术
 
@@ -45,6 +78,12 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
 	和vs/tun一样，请求报文的目标地址为vip，响应报文的源地址肯定也为vip，所以响应报文不需要作任何修改，可以直接返回给客户，
   客户认为得到正常的服务，而不会知道是哪一台服务器处理的
 	DR模式是性能最好的一种模式。
+
+	#PS: RS为什么要配置和lvs一样的vip，并且绑定在loopback上
+	1、LVS server收到目标地址为VIP的请求包后，将MAC地址改成RS的MAC地址，并通过交换机(链路层)发给RS.
+	2、RS的链路层收到请求后，往上传给IP层。IP层需要验证请求的目标IP地址。所以RS需要配置一个VIP的loopback device。
+  这样RS的IP层收到报文后，会往上递交给传输层。之所以配置成loopback device，是因为loopback device对外不可见，不会跟LVS server的VIP冲突。
+	3、RS处理完成后，将应答包直接返回给客户端。若是公网服务器，则RS需要连上互联网（公网IP或者网关）才能将应答包返回。
 
 4. 三种方法的优缺点
 	-		VS/NAT		VS/TUN		VS/DR
@@ -94,3 +133,30 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
   RedHat Piranha, Keepalived, UltraMonkey, heartbeat plus Idirectord, and heartbeat plus mon.
 	For further:
   #http://www.linuxvirtualserver.org/HighAvailability.html
+1. Piranha
+	Piranha 方案是基于 LVS 基础上设计的一套负载均衡高可用解决方案. 
+	LVS 运行在一对有相似配置的计算机上： 
+	  一个作为活动 LVS Router(Active LVS Router)， 
+	  一个作为备份 LVS Router(Backup LVS Router)。 
+	活动 LVS Router 服务有两个角色： 
+	  *  均衡负载到真实服务器上。 
+	  *  检查真实服务器提供的服务是否正常。 
+	备份LVS Router用来监控活动的LVS Router，以备活动的LVS Router失败时由备份LVS Router 接管。
+
+	>Pulse
+	Pulse进程运行在active和backup lvs上，在备份 LVS Router 上，pulse 发送一个心跳（heartbeat）到活动 LVS Router 的公网接口
+  上以检查活动 LVS Router 是否正常。 
+	在活动 LVS Router 上，pulse 启动 lvs进程并响应来自于备份 LVS Router 的心跳。
+	>lvsd
+	lvsd进程运行在active lvs上，调用ipvsadm工具去配置和维护ipvs路由表，并为每一个在real server上的虚拟服务启动一个nanny进程。
+	>nanny
+	每一个nanny进程去检查real server上的虚拟服务状态，并将故障情况通知lvsd进程。假如有故障被发现，lvsd进程通知ipvsadm在ipvs
+  路由表中将此节点删除
+	>send_arp
+	如果backup lvs未收到active lvs的响应，它将调用send_arp将虚拟ip地址再分配到backup lvs的公网接口上。并在公网接口和局域网接口
+  分别发送一个命令去关掉active lvs上的lvsd进程，同时启动自己的lvsd进程来调度客户请求。
+
+	/etc/sysconfig/ha/lvs.cf       //由http://ip:3636 web界面配置的配置文件写入此文件. 
+    	/etc/init.d/piranha‐gui start   //启动 piranha 服务的WEB配置界面. 
+    	/etc/init.d/pulse           //启动 piranha 服务读取的就是/etc/sysconfig/ha/lvs.cf. 
+
