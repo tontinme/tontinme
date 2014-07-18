@@ -1,6 +1,7 @@
 ------Heartbeat
 ------lvs的四种ip负载均衡技术
 ------lvs的部署
+------what is vip
 
 
 #Heartbeat
@@ -160,3 +161,12 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
     	/etc/init.d/piranha‐gui start   //启动 piranha 服务的WEB配置界面. 
     	/etc/init.d/pulse           //启动 piranha 服务读取的就是/etc/sysconfig/ha/lvs.cf. 
 
+#what is vip
+	The vip is the address which you want to load balance. The vip is usually a secondary address so that the vip can be swapped
+  between two directors on failover(the vip used to be an alias(eg. eth0:1)).
+	The vip is the ip address of service, not the ip address of any of the particular systems used in providing the service
+	the vip be moved from one director to another backup director if a fault is detected(typically this is done by using mon and
+  heartbeat, or something similar). The director can have multiple vips.
+	The realservers have to be configured to work with vips on the director (this including handling the 'arp problems').
+	There can be "persistent problem" issues, if you are using cookies or https, or anything else that expects the realserver 
+  fullfilling the requests to have some connection state information.
