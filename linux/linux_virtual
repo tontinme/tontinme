@@ -5,9 +5,55 @@
 ------geard
 ------openshift
 ------cgroup
+------difference between lxc & docker
 ------difference between lxc & kvm
 
-#difference between lxc & lvm
+#difference between lxc & docker
+    Docker is not a replacement of lxc. lxc refers to capabilities of the linux kernel(sepcifically 
+	  namespaces and control groups) which allow sandboxing processes from one another, and controlling
+	  their resource allocations.
+    On top of this low-level foundation of kernel features, Docker offers a high-level tool with several
+	  powerful functionlities.
+    1) Portable deployment across machines. Docker defines a format for bundling an application and all its
+	  dependencies into a single object which can be transferred to any docker-enabled machine. and executed
+	  there with the guarantee that the execution environment exposed to the application will be the same.
+    Lxc implements process sandboxing, which is an important pre-requisite for portable deployment, but that 
+	  alone is not enough for portable deployment.
+    2) Application-centric. Docker is optimized for the deployment of applications, as opposed to machines. 
+	  This is reflected in is API, user interface, design philosophy and documention. By contrast, the lxc helper
+	  scripts focus on containers as lightweight machines - basically servers that boot faster and need less
+	  ram.
+    3) Automatic build. Docker includes a tool for developers to automatically assemable a container, inspecting 
+	  the diff between versions, committing new versions, rolling back etc.
+    4) Components re-use. Any container can be used as an "base image" to create more specialized components. This 
+	  can be done manually or as part of an automated build.
+    5) Sharing. Docker has access to a public registry where thousands of people have uploaded useful containers.
+    6) Tool ecosystem. Docker defines an API for automating and customing the creation and deployment of containers.
+	  There are a huge number of tools integrating with docker to extend its capabilities.
+
+    List of Docker's technical features.
+    a) Filesystem isolation: each process container runs in a completely seperate root filesystem
+	  Provided with plain LXC.
+    b) Resource isolation: ...
+	  Provided with plain LXC
+    c) Network isolation: ...
+	  Provided with plain LXC
+    d) Copy-on-write: root filesystems are created using copy-on-writed, which make deployment extremely fast, memory-cheap
+	  and disk-cheap.
+	  This is provided by AUFS, a union filesystem that Docker depends on. you could set up AUFS yourself manually with   
+		LXC, but Docker use it as a standard.
+    e) Logging: the standard streams(stdin/stdout/stderr) of each process container is collected and logged for real-time 
+	  or batch retrieval.
+	  Docker provided this.
+    f) Change management: changes to a container's filesystem can be committed into a new image and re-used to create more
+	  container. No templating or manual configuration required.
+	  "Templating or manual configuration" is a reference to LXC. where you would need to learn about both of these things.
+	  Docker allows you to treat containers in the way that you're used to treating virtual machines, without learing 
+	  about LXC configuration.
+    g) Interactive shell: docker can allocate a pseudo-tty and attch to the standard input of any container, for example to 
+	  run a throwaway interactive shell.
+	  LXC already provides this.
+#difference between lxc & kvm
     The main difference between the KVM virtualization and Linux Containers is that
 	  virtual machines require a separate kernel instance to run on, while containers
     	  can be deployed from the host operating system. This significantly reduces the 
