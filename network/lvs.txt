@@ -2,6 +2,7 @@
 ------lvs的四种ip负载均衡技术
 ------lvs的部署
 ------what is vip
+------some lvs tools
 
 
 #Heartbeat
@@ -131,7 +132,8 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
 
 #lvs的部署
 	There are several software packages in conjuction with LVS to provide high availability of the whole system, such as
-  RedHat Piranha, Keepalived, UltraMonkey, heartbeat plus Idirectord, and heartbeat plus mon.
+  RedHat Piranha, Keepalived, UltraMonkey, heartbeat plus Idirectord, and heartbeat plus mon. Also, you can install from 
+  source code(setup from command line or from a configure script which sets up an LVS with a single director).
 	For further:
   #http://www.linuxvirtualserver.org/HighAvailability.html
 1. Piranha
@@ -171,3 +173,12 @@ RS感知不到前面有LVS的存在。而当RS返回响应时，只要直接向�
   this including handling the 'arp problems').
 	There can be "persistent problem" issues, if you are using cookies or https, or anything else that expects the realserver 
   fullfilling the requests to have some connection state information.
+
+#some lvs tools
+  ipvsman
+    ipvsman is a curses based GUI to the ipvs loadbalancer written in python. ipvsman is a monitoring instance of ipvs to achive the
+	  desired state of loadbalancing as ldirectord or keepalived do.
+  ipvsadm
+    ipvsadm is the user code interface to LVS.
+  schedulers
+    The Scheduler is the part of the ipvs kernel code which decides which realserver will get the next new connection.
