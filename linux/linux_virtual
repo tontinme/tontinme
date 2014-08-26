@@ -5,6 +5,7 @@
 ------geard
 ------openshift
 ------cgroup
+------difference between docker & vagrant
 ------difference between lxc & docker
 ------difference between lxc & kvm
 
@@ -179,6 +180,30 @@
 	   large amounts of space (the sparse files are small, and we things up so that discards are passed through all the way back
 	   to the sparse loopbacks, so deletes in a container should fully reclaim space.
     目前已知的问题是删除的image的block文件没有被删除，看起来是kernel issue
+
+#difference between docker & vagrant
+    Vagrant, is best described as a VM manager. It designed to run on top of almost any VM tools - VirtualBox, VMWare, AWS, etc. However, 
+	  default supoort is only included for VirtualBox. However, Vagrant is still a virtual machine, albeit one with more powerful features 
+	  than the bog-standard VM tools out there. for instance you can integrate Vagrant with CM tools such as puppet and chef to provision
+	  your own VM setups and configs.
+    Docker is really an extension of LXC, which is itself a sort of supercharged linux chroot.
+    Vagrant still creates VM, although these are still lighter than the full-fat VM's created by VM emulators. Vagrant provides a reproducible way
+	  to generate fully virtualized machines using VirtualBox, Vmware or AWS as providers.
+    In some scenario, Vagrant is used to create a base VM, then when you need to create different configs that all utilize this base VM, use 
+	  Docker to provision and create different lightweight versions.
+    If you main need is isolation and you require to quickly create several different VE images, then definitely use Docker. Docker is also ideal
+	  for environments in which you are testing several short-lived images, such as when you need different scenarios for testing or debuging 
+	  software. Vagrant is better when you require full VM's and full isolation for these VM's.
+    A Summary of the difference between Docker and Vagrant
+	  Feature							  Docker			  Vagrant
+	  Virtualization Type					  VE		  		  VM
+	  Guaranteed Resources at hardware level		  No		  		  Yes
+	  Supported OS Platforms				  linux only  		  linux,Unix,Windows
+	  Startup time for created machine			  A few sec	  		  A few min
+	  Isolation level for created virtual system	  Partial			  full
+	  Weight of the created virtual system		  Very lightweight	  Heavy, but still better than full VM
+	  Other Advantages					  Quick, Easy to learn	  Integration with CM tools
+
 #difference between lxc & docker
     Docker is not a replacement of lxc. lxc refers to capabilities of the linux kernel(sepcifically 
 	  namespaces and control groups) which allow sandboxing processes from one another, and controlling
