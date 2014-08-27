@@ -30,16 +30,16 @@ Intro: etcd
 A high-available key value store for shared configuration and service discovery. etcd is inspired by
 Apache ZooKeeper and doozer, with a focus on being:
     
-    * simple: curl'able user facing API(HTTP+JSON)
-    * Secure: optional SSL client cert authentication
-    * Fast: benchmarked 1000s of writes/s per instance
-    * Reliable: properly distributed using Raft
+* simple: curl'able user facing API(HTTP+JSON)
+* Secure: optional SSL client cert authentication
+* Fast: benchmarked 1000s of writes/s per instance
+* Reliable: properly distributed using Raft
 
 Etcd is written in Go and uses the Raft consensus algorithm to manage a highly-available replicated log
 
 etcdctl is a simple command line client. or feel free to just use curl.
 
-1. Running etcd
+**1.Running etcd**
     
     ./bin/etcd -data-dir machine0 -name machine0    #This will bring up etcd listening
     on default ports(4001 for client communication and 7001 for server-to-server communication)
@@ -47,11 +47,11 @@ etcdctl is a simple command line client. or feel free to just use curl.
     snapshots to the ./machine0/ directory. The '-name machine0' tell the rest of the cluster
     that this machine is named machine0
 
-2. Getting the etcd version
+**2.Getting the etcd version**
 
     curl -L 'http://127.0.0.1:4001/version'
 
-3. Key Space Operations
+**3.Key Space Operations**
 
 Some Example:
     
@@ -78,7 +78,7 @@ Some Example:
     #read linearization
     curl -L 'http://127.0.0.1:4001/v2/keys/msg?quorum=true'
 
-4. Statistics
+**4.Statistics**
 
 Some Example:
 
@@ -86,7 +86,7 @@ Some Example:
     curl -L 'http://127.0.0.1:4001/v2/stats/self'
     curl -L 'http://127.0.0.1:4001/v2/stats/store'
 
-5. Cluster Config
+**5.Cluster Config**
 
 Some Example:
     
