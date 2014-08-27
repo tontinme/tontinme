@@ -27,6 +27,17 @@ Install Docker CoreOS Vagrant on Mac OSX
 
 Intro: etcd
 -----
+A high-available key value store for shared configuration and service discovery. etcd is inspired by
+Apache ZooKeeper and doozer, with a focus on being:
+    
+    * simple: curl'able user facing API(HTTP+JSON)
+    * Secure: optional SSL client cert authentication
+    * Fast: benchmarked 1000s of writes/s per instance
+    * Reliable: properly distributed using Raft
+
+Etcd is written in Go and uses the Raft consensus algorithm to manage a highly-available replicated log
+
+etcdctl is a simple command line client. or feel free to just use curl.
 
 1. Running etcd
     
