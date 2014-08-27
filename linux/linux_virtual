@@ -5,6 +5,7 @@
 ------geard
 ------openshift
 ------cgroup
+------difference between docker & openshift
 ------difference between docker & vagrant
 ------difference between lxc & docker
 ------difference between lxc & kvm
@@ -181,9 +182,21 @@
 	   to the sparse loopbacks, so deletes in a container should fully reclaim space.
     目前已知的问题是删除的image的block文件没有被删除，看起来是kernel issue
 
+#difference between docker & openshift
+    The primary difference is that Docker as a project is focused on the runtime container only, whereas openshift(as a system) includes both
+	  the runtime container as well as the REST API, coordination, and web interfaces to deploy and manage individual containers.
+    Comparing just the runtime containers, OpenShift and Docker both use kernel isolation features to keep tenant processes separate. For docker,
+	  that is primarily through LXC and for OpenShift that is largely through SELinux and Multiple Category Security(MCS). Both use cgroups
+	  to limit the CPU, MEM and IO of tenants. Upstream OpenShift is looking at LXC to reduce long term effort.
+    Docker uses AUFS for advanced disk and file copy-on-write sharing, OpenShift neither requires nor is incompatible with such a system.
+    Inside the container, OpenShift models units of functionality(web service, dbs) via "cartridges", which are a set of shell script hooks that
+	  are called when the system is invoked. A cartridge is similar to a docker image.
+    As of Apirl 2014 OpenShift has launched geard, a project which will form the basis of the next generation of OpenShift by combining Docker 
+	  and systemd to host Docker container. This will replace the current OpenShift node model.
+
 #difference between docker & vagrant
     Vagrant, is best described as a VM manager. It designed to run on top of almost any VM tools - VirtualBox, VMWare, AWS, etc. However, 
-	  default supoort is only included for VirtualBox. However, Vagrant is still a virtual machine, albeit one with more powerful features 
+	  default support is only included for VirtualBox. However, Vagrant is still a virtual machine, albeit one with more powerful features 
 	  than the bog-standard VM tools out there. for instance you can integrate Vagrant with CM tools such as puppet and chef to provision
 	  your own VM setups and configs.
     Docker is really an extension of LXC, which is itself a sort of supercharged linux chroot.

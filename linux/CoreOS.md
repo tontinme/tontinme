@@ -27,8 +27,9 @@ Install Docker CoreOS Vagrant on Mac OSX
 
 Intro: etcd
 -----
-A high-available key value store for shared configuration and service discovery. etcd is inspired by
-Apache ZooKeeper and doozer, with a focus on being:
+A high-available key value store for shared configuration and service discovery. Next to that it can be
+used for service discovery, or basically for any other distributed key/value based process that applies 
+to your situation. etcd is inspired by Apache ZooKeeper and doozer, with a focus on being:
     
 * simple: curl'able user facing API(HTTP+JSON)
 * Secure: optional SSL client cert authentication
@@ -96,3 +97,17 @@ Some Example:
     #remove machine
     curl -L 'http://127.0.0.1:7001/v2/admin/machines/peer2'
     curl -XDELETE -L 'http://127.0.0.1:7001/v2/admin/machines/peer2'
+
+Intro: confd
+-----
+
+confd is a configuration management tool built on top of etcd. Confd can watch certain keys in etcd, and updated the related
+configuration files as soon as the key changes. After that, confd can reload or restart applications related to the updated 
+configuration files. This allow you to automate configuration files to all the servers in your cluster, and make sure all the
+services are always looking for the latest configuration.
+
+Intro: fleet
+-----
+
+fleet is a layer on top of systemd, the well-known init system. fleet basically lets you manage your service on any server in
+your cluster transparently, and give you some convenient tools to inspect the state of your services.
