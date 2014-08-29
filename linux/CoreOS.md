@@ -180,3 +180,47 @@ Security seems to be much more of a focus within Project Atomic. SELinux is enab
  systemd. Running containers have SELinux contexts applied and SVirt is used to enforce boundaries between containers. Cockpit and SELinux don't get
  along well yet and you'll will be forced run dreaded setenforce 0 if you want to use cockpit.
 
+Install Debugging Tools
+-----
+
+You can use common debugging tools like tcpdump or strace with Toolbox. Using the filesystem of a specified docker container Toolbox will launch a 
+container with full system privileges including access to system PIDs, network interfaces and other global information. Inside the toolbox, the 
+machine's filesystem is mounted to /media/root.
+
+**QuickDebugging**
+
+By default, Toolbox uses the stock Fedora docker container. To start using it, simply run:
+
+    /usr/bin/toolbox
+
+For example, if you'd like to use tcpdump:
+
+    [root@srv-3qy0p ~]# yum install tcpdump
+    [root@srv-3qy0p ~]# tcpdump -i ens3
+    tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+    listening on ens3, link-type EN10MB (Ethernet), capture size 65535 bytes
+
+**Specify a Custom Docker Image**
+
+Create a .toolbox in the user's home folder to use a specific docker image:
+    
+    $ cat .toolboxrc
+    TOOLBOX_DOCKER_IMAGE=index.example.com/debug
+    TOOLBOX_USER=root
+    $ /usr/bin/toolbox
+    Pulling repository index.example.com/debug
+    ...
+
+**SSH Directly Into a Toolbox**
+
+Advanced users can SSH directly into a toolbox by setting up an /etc/passwd entry:
+
+    useradd bob -m -p '*' -s /usr/bin/toolbox
+
+To test, SSH as bob:
+
+    ssh bob@hostname.example.com
+    [root@srv-3qy0p ~]# yum install emacs
+    [root@srv-3qy0p ~]# emacs /media/root/etc/systemd/system/docker.service
+
+
