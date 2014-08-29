@@ -14,15 +14,15 @@ Install Docker CoreOS Vagrant on Mac OSX
 3. 启动前修改配置
 
     $ cp user-data.sample user-data
-    # cloud-config file
+	  cloud-config file
     $ cp config.rb.sample config.rb
-    # config.rb包含一些vagrant的环境设置和要启动的cluster中CoreOS的数量
+	  config.rb包含一些vagrant的环境设置和要启动的cluster中CoreOS的数量
 
 4. 启动CoreOS
 
     $ vagrant up
     $ vagrant status
-    # 查看机器的运行状态
+	  查看机器的运行状态
     $ vagrant ssh core-01 -- -A
 
 Intro: etcd
