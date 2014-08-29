@@ -8,22 +8,22 @@ Install Docker CoreOS Vagrant on Mac OSX
 
 2. 获得coreOS的vagrantfile
 
-    git clone https://github.com/coreos/coreos-vagrant.git
-    cd coreos-vagrant
+    $ git clone https://github.com/coreos/coreos-vagrant.git
+    $ cd coreos-vagrant
 
 3. 启动前修改配置
 
-    cp user-data.sample user-data
-    #cloud-config file
-    cp config.rb.sample config.rb
-    #config.rb包含一些vagrant的环境设置和要启动的cluster中CoreOS的数量
+    $ cp user-data.sample user-data
+    # cloud-config file
+    $ cp config.rb.sample config.rb
+    # config.rb包含一些vagrant的环境设置和要启动的cluster中CoreOS的数量
 
 4. 启动CoreOS
 
-    vagrant up
-    vagrant status
-    #查看机器的运行状态
-    vagrant ssh core-01 -- -A
+    $ vagrant up
+    $ vagrant status
+    # 查看机器的运行状态
+    $ vagrant ssh core-01 -- -A
 
 Intro: etcd
 =====
@@ -98,6 +98,46 @@ Some Example:
     #remove machine
     curl -L 'http://127.0.0.1:7001/v2/admin/machines/peer2'
     curl -XDELETE -L 'http://127.0.0.1:7001/v2/admin/machines/peer2'
+
+Clustering
+-----
+
+We use *--peer-addr* to specify server port and *--addr* to specify client port and *--data-dir* to specify the directory to
+store the log and info of the machine in the cluster.
+
+    ./etcd -peer-addr 127.0.0.1:7001 -addr 127.0.0.1:4001 -data-dir machines/machine1 -name machine1
+
+Join two more machines to this cluster using the *--peers* argument.
+
+    ./etcd -peer-addr 127.0.0.1:7002 -addr 127.0.0.1:4002 -peers 127.0.0.1:7001,127.0.0.1:7003 -data-dir machines/machine2 -name machine2
+    ./etcd -peer-addr 127.0.0.1:7003 -addr 127.0.0.1:4003 -peers 127.0.0.1:7001,127.0.0.1:7002 -data-dir machines/machine3 -name machine3
+
+We can retrieve a list of machines in the cluster using the HTTP API:
+    
+    curl -L http://127.0.0.1:4001/v2/machines
+
+The machine list is also available via the main key API:
+    
+    curl -L http://127.0.0.1:4001/v2/keys/_etcd/machines
+
+**Killing Node in the Cluster**
+
+If we kill the leader of the cluster, we can get the value from one of the other two machines. We can also see that a new leader has been 
+selected.
+
+    curl -L http://127.0.0.1:4002/v2/leader
+
+    http://127.0.0.1:7002
+
+Or
+
+    http://127.0.0.1:7003
+
+**Using HTTPS between servers**
+
+etcd can do internal server-to-server communication using SSL client certs. To do this just change the `-*-file` flags to `-peer-*-files`
+
+If you are using SSL for server-to-server communication, you must see it on all instances of etcd.
 
 Intro: confd
 =====
