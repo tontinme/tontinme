@@ -1,5 +1,5 @@
 Install Docker CoreOS Vagrant on Mac OSX
------
+=====
 
 1. 安装vagrant和virtualBox
 
@@ -26,7 +26,8 @@ Install Docker CoreOS Vagrant on Mac OSX
     vagrant ssh core-01 -- -A
 
 Intro: etcd
------
+=====
+
 A high-available key value store for shared configuration and service discovery. Next to that it can be
 used for service discovery, or basically for any other distributed key/value based process that applies 
 to your situation. etcd is inspired by Apache ZooKeeper and doozer, with a focus on being:
@@ -99,7 +100,7 @@ Some Example:
     curl -XDELETE -L 'http://127.0.0.1:7001/v2/admin/machines/peer2'
 
 Intro: confd
------
+=====
 
 confd is a configuration management tool built on top of etcd. Confd can watch certain keys in etcd, and updated the related
 configuration files as soon as the key changes. After that, confd can reload or restart applications related to the updated 
@@ -107,7 +108,75 @@ configuration files. This allow you to automate configuration files to all the s
 services are always looking for the latest configuration.
 
 Intro: fleet
------
+=====
 
 fleet is a layer on top of systemd, the well-known init system. fleet basically lets you manage your service on any server in
 your cluster transparently, and give you some convenient tools to inspect the state of your services.
+
+CoreOS vs Project Atomic
+=====
+
+Deployment
+-----
+
+**CoreOS**
+
+CoreOS share a key-value pair system called etcd that is clustered between all of the nodes. You can add data to etcd from any
+node and any other node can read that data. 
+
+You can use the standard *docker pull* and *docker run* commands to launch containers. Or writing systemd unit files and submitting
+them to the cluster via fleetctl. It's a good idea to pull the containers ahead of time to save time when containers are launched 
+on other nodes.
+
+When a node fails or needs to be rebooted for an update. The containers runing on a host that is going offline will be migrated to 
+another node in the cluster. If you haven't pulled the container image down to each machine in the cluster, you'll be waiting a bit 
+before the container comes up on another node.
+
+**Project Atomic**
+
+There are two deployment methods available for Project Atomic: QEMU(KVM) and VirtrualBox.
+
+Much like CoreOS, you can deploy containers using the standard docker commands. Also, the project centers around a new piece of software
+ called geard. It allows you to link different containers together and work with them as a unit.
+
+Management
+-----
+
+**CoreOS**
+
+Thers's very little to manage with CoreOS. Updates are handled using an A/B system where updated are staged and reboots are automated. 
+Rollbacks can be done during bootup if an update wend badly. Multiple update strategies are available within CoreOS.
+
+CoreOS provides quick access to many tools using a *Fedora container called toolbox* started by *systemd-nspawn*. It's a great way to dig
+through errors or test our some scripts.
+
+It offers a handy management system called *fleet*. A client, fleetctl, allows you to list all of your running containers(called units, 
+due to the systemd units files) as well as all of your nodes.
+
+**Project Atomic**
+
+Both /usr and /var are mounted read only don't even try using yum. You will update these systems using a new method: *rpm-ostree*.
+
+The idea behind rpm-ostree is similiar to tossing your OS into a git repository. Running rpm-ostree causes the tool to sync down a tree 
+of data that you'd normally get by running yum or rpm.
+
+There is a helpful GUI called *cockpit* that gives you a great status readout on all of your connected servers.
+
+Atomic's base OS is very close to Fedora 20.
+
+Security
+-----
+
+**CoreOS**
+
+Authentication in CoreOS is mainly done with public ssh keys for now. I couldn't find any options for using LDAP, Kerberos, or other centralized 
+authentication mechanisms.
+
+You'll also find that systems is built without SELinux, AppArmor and audit support. Seccomp is included. IMA is also included.
+
+**Project Atomic**
+
+Security seems to be much more of a focus within Project Atomic. SELinux is enabled by default and you'll find IMA, audit and libwrap available from
+ systemd. Running containers have SELinux contexts applied and SVirt is used to enforce boundaries between containers. Cockpit and SELinux don't get
+ along well yet and you'll will be forced run dreaded setenforce 0 if you want to use cockpit.
+
