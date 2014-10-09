@@ -191,4 +191,364 @@ groubby() only examines consecutive items, failing to sort first won't group the
 Chapter 2. Strings and Text
 =====
 
-2.1 
+2.1 Splitting strings on any of multiple delimeters
+-----
+
+re.split()是比split()支持更复杂分割的method
+
+    >>> line = 'asdf fjdk; afed, fjek,asdf, foo'
+    >>> import re
+    >>> re.split(r'[;,\s]\s*', line)
+    ['asdf', 'fjdk', 'afed', 'fjek', 'asdf', 'foo']
+
+2.2 Matching text at the start or end of a string
+-----
+
+str.startswith() and str.endswith()
+
+    >>> filename = 'spam.txt'
+    >>> filename.endswith('txt')
+    True
+
+arg需要是string or tuple，不能是list
+
+2.3 Matching strings using shell wildcards patterns
+-----
+
+    >>> from fnmatch import fnmatch, fnmatchcase
+    >>> fnmatch('Dat45.csv', 'Dat[0-9]*')
+    True
+
+fnmatchcase大小写敏感，而fnmatch是否敏感依赖于OS
+
+2.4 Matching and searching for text patterns
+-----
+
+str.find(), str.startswith(), str.endswith()
+
+For more complicated matching, use regular expression and the re module
+
+re.findall()返回所有匹配的list， re.finditer()返回匹配的iterator
+
+需要注意的是re.match()只检查string的开头，有时会返回的结果不一定是所希望的
+
+    >>> text = 'Today is 11/27/2012. PyCon starts 3/13/2013.'
+    >>> m = datepat.match('11/27/2012abcdef')
+    >>> m.group()
+    '11/27/2012'
+
+2.5 Searching and replacing text
+-----
+
+re.sub()
+
+For more complicated substitutions, it's possible to specify a substitution callback function instead.
+
+re.subn()返回两个变量，第一个是匹配后的结构，第二个是匹配的个数
+
+2.6 Searching and replacing case-insensitive text
+-----
+
+    >>> re.sub('original xxxx', 'dest xxx', text, flags=re.IGNORECASE)
+
+2.7 Specifying a regular expression for the shortest match
+-----
+
+python默认是贪婪匹配，改成非贪婪匹配需要在正则表达式后面添加'?'
+
+    >>> re.compile(r'\"(.*?)\"')
+
+2.8 Writing a regular expression for multiline patterns
+-----
+
+    >>> text = '''/* this is a
+    ...		  multiline comment */
+    ... '''
+    >>> re.compile(r'/\*((?:.|\n)*?)\*/')
+
+use (?:.|\n)
+
+for simple cases, you can also use 're.DOTALL':
+
+    >>> re.compile(r'/\*(.*?)\*/', re.DOTALL)
+
+2.9 Normalizing unicode text to a standard representation
+-----
+
+import unicodetdata
+
+2.10 Working with unicode characters in regular expressions
+-----
+
+By default, the re module is already programmed with rudimentary knowledge for certain unicode character classes.
+
+If you’re going to do it seriously, you should consider installing the third-party regex library, which provides full support for Unicode case folding
+
+2.11 Stripping unwanted characters from strings
+-----
+
+strip(), lstrip(), rstrip()
+
+##Be aware that stripping does not apply to any text in the middle of a string##
+
+    >>> s = '   hello world   \n'
+    >>> s.strip()
+    'hello world'
+
+2.12 Sanitizing and cleaning up text
+-----
+
+temperary pass
+
+2.13 Aligning text strings
+-----
+
+str.center(), str.ljust(), str.rjust()
+
+format(), one benefit of format() is that it is not specific to strings. It works with any value.
+
+    >>> '{:*^10s} {:*^10s}'.format('hello', 'world')
+    >>> '**hello*** **world***'
+
+##older usage##
+
+    >>> text = 'hello world'
+    >>> '%-20s' % text
+    'hello world         '
+
+2.14 Combining and Concatenating strings
+-----
+
+Use join() or '+'
+
+The + operator works fine as a substitute for more complicated string formatting operations.
+
+The most import thing to know is that the + operator to join a lot of strings together is grosslyg inefficient due to the memory copies 
+and garbage collection that occurs.
+
+2.15 Interpolating variables in strings
+-----
+
+Use format()
+
+if the values to be substituted are truly found in variables, you can use the combination of `format_map()` and vars()
+
+2.16 Reformatting text to a fixed number of columns
+-----
+
+    >>> import textwrap
+    >>> text = 'xxx'
+    >>> print (textwrap.fill(text, 40, initial_indent='    '))
+        Look into my eyes, look into my
+    eyes, the eyes, the eyes, the eyes, not
+    around the eyes, don't look around the
+    eyes, look into my eyes, you're under.
+
+2.17 Handling HTML and XML entities in text
+-----
+
+html.escape()
+
+    >>> from html.parser import HTMLParser
+    >>> from xml.sax.saxutils import unescape
+
+2.18 Tokenizing text
+-----
+
+即格式化，将字符串中的每部分根据正则匹配出来，然后命名
+
+2.19 Writing a simple recursive descent parse
+-----
+
+Temperary pass
+
+2.20 Performing text operations on byte strings
+-----
+
+For the most part, almost all of the operations available on the text strings will work on byte strings
+
+There are a few notable difference to be aware of
+
+* indexing of byte strings produces integers, not individual characters
+
+    >>> a = "hello"
+    >>> b = b'hello'
+    >>> a[0], b[0]
+    ('h', 104)
+
+* byte strings don’t provide a nice string representation and don’t print cleanly unless first decoded into a text string
+
+    >>> b = b'hello world'
+    >>> print (b)
+    b'hello world'
+    >>> print (b.decode('ascii'))
+    hello world
+
+* you need to be aware that using a byte string can change the semantics of certain operations—especially those related to the filesystem
+
+    >>> import os
+    >>> os.listdir('.')
+    ['jalapeño.txt']
+    >>. os.listdir(b'.')
+    [b'jalapen\xcc\x83o.txt']
+
+Chapter 3. Numbers, Dates and Times
+=====
+
+Chapter 13. Utility scripting and system administration
+=====
+
+13.1 Accepting script input via redirections, pipes, or input files
+-----
+
+    >>> import fileinput
+    >>> fileinput.input()
+
+13.2 Terminating a program with an error message
+-----
+
+    >>> raise SystemExit('It failed!')
+
+OR
+
+    >>> import sys
+    >>> sys.stderr.write('It failed\n')
+    >>> raise SystemError(2)
+
+13.3 Parsing command-line options
+-----
+
+argparse是推荐的用法，相比于getopt or optparse
+
+    #search.py
+    import argparse
+    parser = argparse.ArgumentParser(description='Search some files')
+
+    parser.add_argument(dest='filenames', metavar='filename', nargs='*')
+    parser.add_argument('-p', '--pat', metavar='pattern', required=True,
+	  dest='patterns', action='append', help='text pattern to search for')
+    parser.add_argument('-v', dest='verbose', action='store_true', help='verbose mode')
+    parser.add_argument('-o', dest='outfile', action='store', help='output file')
+    parser.add_argument('--speed', dest='speed', action='store', choices={'slow', 'fast'},
+	  default='slow', help='search speed')
+
+    args = parser.parse_args()
+
+    #output the collected arguments
+    print(args.filenames)
+    print(args.patterns)
+    print(args.verbose)
+    print(args.outfile)
+    print(args.speed)
+
+13.4 Prompting for a password at runtime
+-----
+
+get username
+
+    >>> user = input('Enter your name:')
+
+get passwd
+
+    >>> import getpass
+    >>> passwd = getpass.getpass()
+
+    >>> sys_user = getpass.getuser()	  #getpass.getuser() doesn’t prompt the user for their username.
+    Instead, it uses the current user’s login name, according to the user’s shell environment
+
+13.5 Getting the terminal size
+-----
+
+    >>> import os
+    >>> os.get_terminal_size()
+    os.terminal_size(columns=90, lines=45)
+
+13.6 Executing an external command and getting its output
+-----
+
+    >>> import subprocess
+    >>> try:
+    >>>	out_bytes = subprocess.check_output(['ls', '-l'], stderr=subprocess.STDOUT, timeout=5)
+    >>> except subprocess.CalledProcessError as e:
+    >>>	out_bytes = e.output
+    >>>	code = e.returncode
+
+该命令不依赖具体的shell环境，而是直接调用更底层的命令，比如os.execve()。不过也可以指定shell
+
+    >>> subprocess.check_output('ls -al | wc -l', shell=True)
+
+更复杂的，也可以使用subprocess.Popen()
+
+13.7 Copying or moving files and directories
+-----
+
+    >>> import shutil
+    >>> shutil.copytree(src, dst, ignore=shutil.ignore_patterns('*~','*.pyc'))
+
+需要注意软链的问题。另外，python将错误信息保存在shutil.Error中
+
+13.8 Creating and unpacking archives
+-----
+
+    >>> import shutil
+    >>> shutil.unpack_archive('Python-3.3.0.tgz')
+    >>> shutil.make_archive('py33', 'zip', 'Python-3.3.0')
+    '/Users/beazley/Downloads/py33.zip'
+    >>> shutil.get_unpack_formats()
+    [('bztar', ['.bz2'], "bzip2'ed tar-file"), ('gztar', ['.tar.gz', '.tgz'], "gzip'ed tar-file"), ('tar', ['.tar'], 'uncompressed tar file'), ('zip', ['.zip'], 'ZIP file')]
+
+13.9 Finding files by name
+-----
+
+os.walk(start)  #提供需要搜寻的目录即可
+
+13.10 Reading configuration files
+-----
+
+    >>> from configparser import ConfigParser
+    >>> cfg = ConfigParser()
+    >>> cfg.read('./config.ini')
+
+config.ini中支持'='和':'两种，且对变量没有书写的先后顺序要求，对大小写也不敏感
+
+13.11 Adding logging to simple scripts
+-----
+
+    >>> import logging
+
+级别：critical(), error(), warning(), info(), debug()
+
+log的输出格式可以在logging.baseConfig()中用format变量来规定，也可以指定单独的配置文件(logging.config.fileConfig('logconfig.ini'))
+
+13.12 Adding logging to libraries
+-----
+
+    >>> #somelib.py
+    >>> import logging
+    >>> log = logging.getLogger(__name__)
+    >>> log.addHandler(logging.NullHandler())	    #attaches a null handler to the just created logger object. A null handler ignores all logging messages by default
+    >>> def func():
+    >>>	log.critical('A Critical Error')
+    >>>	log.debug('A debug message')
+
+13.13 Making a stopwatch timer
+-----
+
+利用time自定义一个time类，包含start, stop, reset等
+
+    >>> import time
+    >>> class Timer:
+
+13.14 Putting limits on memory and cpu usage
+-----
+
+    >>> import resource
+    >>> resource.getrlimit(resource.RLIMIT.CPU)
+    >>> resource.setrlimit(resource.RLIMIT.CPU, (seconds, hard))
+
+13.15 Launching a web browser
+-----
+
+    >>> import webbrowser
+    >>> c = webbrowser('firefox')
+    >>> c.open_new_tab('www.baidu.com')
