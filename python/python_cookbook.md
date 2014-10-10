@@ -395,6 +395,126 @@ There are a few notable difference to be aware of
 Chapter 3. Numbers, Dates and Times
 =====
 
+Chapter 4. Iterators and generators
+=====
+
+4.1 Manually consuming an iterator
+-----
+
+    >>> item = [1, 2, 3]
+    >>> it = iter(item)
+    >>> next(it)
+
+4.2 Delegating iteration
+-----
+
+在类中定义一个__iter__属性即可
+
+4.3 Creating new iteration patterns with generators
+-----
+
+    def frange(start, stop, step):
+	  x = start
+	  while x < stop:
+		yield x
+		x += step
+
+4.4 Implementing the iterator protocol
+-----
+
+Temperary pass
+
+4.5 Iterating in reverse
+-----
+
+Use the built-in reversed() function
+
+4.6 Defining generator functions with extra state
+-----
+
+Temperary pass
+
+4.7 Taking a slice of an iterator
+-----
+
+itertools.islice()
+
+iterators and generators can't normally be sliced, because no information is known about their length(and they don't implement indexing).
+
+4.8 Skiping the first part of an iterable
+-----
+
+itertools.dropwhile()可以过滤符合规则的行
+itertools.islice()可以从指定行开始
+
+4.9 Iterating over all possible combinations or permutations
+-----
+
+获得iterator的所有排列组合
+
+itertools.permutations()
+
+还有itertools.combinations(), itertools.combinations_with_replacement()
+
+4.10 Iterating over the index-value pairs of a sequence
+-----
+
+    >>> li = ['a', 'b', 'c']
+    >>> for idx, val in enumerate(li)
+	  print(idx, val)
+
+4.11 Iterating over multiple sequences simultaneously
+-----
+
+use zip()
+
+    >>> liA = ['a', 'b', 'c']
+    >>> liB = ['x', 'y', 'z']
+    >>> list(zip(liA, liB))
+    [('a', 'x'), ('b', 'y'), ('c', 'z')]
+
+4.12 Iterating on items in separate containers
+-----
+
+    >>> from itertools import chain
+    >>> list(chain(liA, liB))
+    >>> ['a', 'b', 'c', 'x', 'y', 'z']
+
+4.13 Creating data processing pipelines
+-----
+
+使用函数和yield解决
+
+4.14 Flattening a nested sequence
+-----
+
+Temperary pass
+
+Use yield
+
+    >>> items = [1, 2, [3, 4, [5, 6], 7], 8]
+
+4.15 Iterating in sorted order over merged sorted iterables
+-----
+
+    >>> import heapq
+    >>> list(heapq.merge(liA, liB))
+    ['a', 'b', 'c', 'x', 'y', 'z']
+
+heapq.merge()不会一开始就读入所有的sequences，所以面对大数据时比较省资源
+
+4.16 Replacing infinite while loops with an iterator
+-----
+
+Temperary pass
+
+Use iter()
+
+Chapter 5. Files and I/O
+=====
+
+
+
 Chapter 13. Utility scripting and system administration
 =====
 
