@@ -298,7 +298,7 @@ strip(), lstrip(), rstrip()
 2.12 Sanitizing and cleaning up text
 -----
 
-temperary pass
+temporary pass
 
 2.13 Aligning text strings
 -----
@@ -360,7 +360,7 @@ html.escape()
 2.19 Writing a simple recursive descent parse
 -----
 
-Temperary pass
+temporary pass
 
 2.20 Performing text operations on byte strings
 -----
@@ -422,7 +422,7 @@ Chapter 4. Iterators and generators
 4.4 Implementing the iterator protocol
 -----
 
-Temperary pass
+temporary pass
 
 4.5 Iterating in reverse
 -----
@@ -432,7 +432,7 @@ Use the built-in reversed() function
 4.6 Defining generator functions with extra state
 -----
 
-Temperary pass
+temporary pass
 
 4.7 Taking a slice of an iterator
 -----
@@ -488,7 +488,7 @@ use zip()
 4.14 Flattening a nested sequence
 -----
 
-Temperary pass
+temporary pass
 
 Use yield
 
@@ -506,12 +506,202 @@ heapq.merge()不会一开始就读入所有的sequences，所以面对大数据�
 4.16 Replacing infinite while loops with an iterator
 -----
 
-Temperary pass
+temporary pass
 
 Use iter()
 
 Chapter 5. Files and I/O
 =====
+
+
+5.1 Reading and writing text data
+-----
+
+read: use open() with mode rt
+
+write: use open() with mode wt
+
+append: use open() with mode at
+
+with open('./access.log', 'rt') as f:   or  f = open('access.log', 'f')， 区别是前者会自动close文件，后者需要手动关闭(f.close())
+
+读取文件时可以忽略未知编码问题引起的异常
+
+    >>> g = open('sample.txt', 'rt', encoding='ascii', errors='ignore')
+
+5.2 Printing to a file
+-----
+
+    >>> with open('./test.log', 'wt') as f:
+    >>>	print("hello world", file=f)
+
+5.3 Printing with a different seperator or line ending
+-----
+
+Directly use print() or use str.join()
+
+    >>> print('ACME', 50, 91.5, sep=',', end='!!\n')
+    >>> print(','.join(('ACME', '50', '91.5')))
+    >>> row = ('ACME', 50, 91.5)
+    >>> print(','.join(str(x) for x in row))
+
+5.4 Reading and writing binary data
+-----
+
+use open() with mode 'rb' and 'wb'
+
+    >>> with open('somefile.bin', 'wb') as f:
+    >>>	f.write(b'Hello World')
+
+    >>> t = 'Hello World'
+    >>> f.write(t.encode('utf-8'))
+
+5.5 Writing to a file that doesn't already exist
+-----
+
+Use 'xt' and 'xb' mode instead of 'wt' and 'wb' mode
+
+5.6 Performing I/O operations on a string
+-----
+
+Use the io.StringIO()(be used for text data) and io.BytesIO()(be used for binary data) classes to create file-like objects that operate on string data
+
+5.7 Reading and writing compressed datafiles
+-----
+
+Use gzip.open() with mode 'rt', 'rb', 'wt', 'wb', bz2.open() with mode 'rt', 'rb', 'wt', wb'
+
+the compression level can be optionally using the compresslevel keyword argument 
+
+5.8 Iterating over fixed-sized records
+-----
+
+    >>> from functools import partial
+    >>> RECORD_SIZE = 32
+    >>> with open('somefile.bin', 'rb') as f:
+    >>>	records = iter(partial(f.read, RECORD_SIZE), b'')
+    >>>	for r in records:
+    >>>	    ...
+
+5.9 Reading binary data into a mutable buffer
+-----
+
+Use readinto() method
+
+    >>> import os.path
+    >>> def read_into_buffer(filename):
+    >>>	buf = bytearray(os.path.getsize(filename))
+    >>>	with open('filename', 'rb') as f:
+    >>>	    f.readinto(buf)
+    >>>	return buf
+
+5.10 Memory mapping binary files
+-----
+
+将文件映射到内存中，Use mmap
+
+`mmap.ACCESS_WRITE`, `mmap.ACCESS_READ`, `mmap.ACCESS_COPY`(修改数据，但是不写原文件)
+
+5.11 Manipulating pathnames
+-----
+
+    >>> dir(os.path)
+
+5.12 Testing for the existence of a file
+-----
+
+    >>> dir(os.path)
+
+5.13 Getting a directory listing
+-----
+
+获得指定目录下所有文件
+
+    >>> os.listdir('./')
+
+5.14 Bypassing filename encoding
+-----
+
+If you want to bypass this encoding for some reason, specify a filename using a raw byte string instead
+
+5.15 Printing bad filenames
+-----
+
+    >>> def bad_filename(filename):
+    >>>	return repr(filename)[1:-1]
+    >>> try:
+    >>>	print (filename)
+    >>> except UnicodeEncodeError:
+    >>>	print(bad_filename(filename))
+
+5.16 Adding or changing the encoding of an already open file
+-----
+
+use io.TextIOWrapper()
+
+5.17 Writing bytes to a text file
+-----
+
+    >>> import sys
+    >>> sys.stdout.write(b'Hello\n')
+    >>> ...
+    >>> TypeError: must be str, not bytes
+    >>> sys.stdout.buffer.write(b'Hello\n')
+    Hello
+    6
+
+The I/O system is built from layers, text files are constructed by adding a unicode encoding/decoding layer on top of a bufferd 
+binary-mode file. The `buffer` attribute simply points at this underlying file.
+
+5.18 Wrapping an existing file descriptor as a file object
+-----
+
+    # create a file object, but don't close underlying fd when done
+    >>> f = open(fd, 'wt', closefd=False)
+
+On unix systems, this technique of wrapping a file descriptor can be a convenient means for putting a file-like interface on an existing
+ I/O channel that was opened in a different way(e.g. pips, sockets, etc.)
+
+5.19 Making temporary files and directories
+-----
+
+tempfile用完后，临时文件(夹)会被自动销毁
+
+    >>> from tempfile import TemporaryFile
+    >>> from tempfile import NamedTemporaryFile	    #print("filename is:" f.name)
+    >>> from tempfile import TemporaryDirectory	    #print ("dirname is:" dir)
+
+OR at a lower level, you can use `mkstemp()` and `mkdtemp()`. it’s up to you to clean up the files if you want
+
+5.20 Communicating with serial ports
+-----
+
+    >>> import serial
+    >>> ser = serial.Serial('/dev/tty.usbmodem641',	  #Device name varies
+				baudrate=9600,
+				bytesize=8,
+				parity='N',
+				stopbits=1)
+
+5.21 Serializing python objects
+-----
+
+To dump an object to a file
+
+    >>>import pickle
+    >>> data = ...  #some python object
+    >>> f = open('somefile', 'wb')
+    >>> pickle.dump(data, f)
+
+Use pickle.dumps() to dump an object to a string
+
+To re-creaet an python object from a byte stream, use pickle.load() and pickle.loads()
+
+Chapter 6. Data encoding and processing
+=====
+
+6.1 Reading and writing CSV data
+-----
 
 
 
