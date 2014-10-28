@@ -703,6 +703,127 @@ Chapter 6. Data encoding and processing
 6.1 Reading and writing CSV data
 -----
 
+'import csv'即可获得csv文件的header和按行排列的内容
+
+也可以使用'from collections import namedtuple'，将第一行的名称添加到各个元素中
+
+csv的实例对象如下
+
+csv.reader(), csv.writer(), csv.DictReader(), csv.DictWriter()
+
+若第一行的名称含有特殊字符，或者csv的内容非string，可能需要单独处理
+
+6.2 Reading and writing JSON data
+-----
+
+for string, use json.dumps() and json.loads()
+
+for file, use json.dump() and json.load()
+
+想要了解一个多层的json的结构，使用'from pprint import pprint'是个好办法
+
+Normally, JSON decoding will create dicts or lists from the supplied data. If you want to create different kinds of objects, supply the `object_pairs_`hook or `object_hook` to json.loads()
+
+    >>> data = json.loads(s, object_pairs_hook=OrderedDict)
+
+let the keys to be sorted on output
+
+    >>> data = '{"name": "ACME", "shares": 50, "price": 490.1}'
+    >>> print(json.dumps(data, sort_keys=True))
+    {"name": "ACME", "price": 490.1, "shares": 50}
+
+6.3 Parsing Simple XML Data
+-----
+
+xml.etree.ElementTree
+
+some method: find(), iterfind(), findtext()
+
+6.4 Paring huge XML file incrementally
+-----
+
+逐步加载，逐步处理
+
+    >>> from xml.etree.ElementTree import iterparse
+    >>> def parse_and_remove(filename, path):
+    >>>	...
+
+6.5 Tuning a dictionary into XML
+-----
+
+    >>> from xml.etree.ElementTree import Element
+    >>> def dict_to_xml(tag, d):
+    >>>	...
+
+6.6 Parsing, modifying, and rewriting XML
+-----
+
+You want to read an XML document, make changes to it, and then write it back out as XML
+
+parse(), remove(), insert(), write()
+
+6.7 Parsing XML documents with namespaces
+-----
+
+    >>> class XMLNamespaces:
+    >>>	...
+
+想要处理更多的XML特性，可以使用lxml library instead of ElementTree
+
+6.8 Interacting with a relational database
+-----
+
+sqlite3 is built-in
+
+6.9 Decoding and encoding hexadecimal digits
+-----
+
+hex to byte: `binascii.b2a_hex()`, base64.b16encode()
+byte to hex: `binascii.a2b_hex()`, base64.b16decode()
+
+binascii和base64的区别是后者只能输入和输出全大写字母的hex
+
+both byte strings and unicode strings can be supplied. however unicode strings can only contain ASCII characters.
+
+6.10 Decoding and encoding base64
+-----
+
+from bytes to base64: base64.b64encode()
+
+from base64 to bytes: base64.b64decode()
+
+both byte strings and unicode strings can be supplied. however unicode strings can only contain ASCII characters.
+
+6.11 Reading and writing binary arrays of structures
+-----
+
+    >>> from struct import Struct
+    >>> def write_records(records, format, f):
+    >>>	...
+    >>> def read_records(format, f):
+    >>>	...
+
+for extracting binary data from a larger binary array, you can use `unpack_from()`
+
+6.12 Reading Nested and variable-sized binary structures
+-----
+
+__such data might include images, video, shapefils, and so on__
+
+Temparary pass...
+
+6.13 Summarizing data and preforming statistics
+-----
+
+For any kind of data analysis involving statistics, time series, and other related techniques, you should look at the 'Pandas Library'
+
+Chapter 7. Functions
+=====
+
+7.1 Writing functions that accept any number of arguments
+-----
+
+
 
 
 Chapter 13. Utility scripting and system administration
