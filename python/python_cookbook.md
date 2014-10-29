@@ -823,6 +823,131 @@ Chapter 7. Functions
 7.1 Writing functions that accept any number of arguments
 -----
 
+To write a function that accepts any number of positional arguments, use a * argument.
+
+    >>> def avg(first, *rest):
+    >>>	return (first + sum(rest)) / (1 + len(rest))
+
+To accept any number of keyword arguments, use an argument that starts with `**`
+
+    >>> def make_element(name, value, **attrs):
+    >>>	keyvals = [' %s="%s"' %item for item in attrs.items()]
+
+A * argument can only appear as __the last positional argument__ in a function definition.
+
+A `**` argument can only appear as __the last argument__.
+
+7.2 Writing functions that only accept keyword arguments
+-----
+
+Keyword-only arguments are often a good way to enforce greater code clarity when specifying optional function arguments.
+
+7.3 Attching informational metadata to function arguments
+-----
+
+    >>> def add(x:int, y:int) -> int:
+    >>>	return x + y
+
+7.4 Returning multiple values from a function
+-----
+
+    >>> def myfun():
+    >>>	return 1, 2, 3
+    >>> a, b, c = myfun()
+
+Although it looks like myfun() returns multiple values, a tuple is actually being created.
+
+7.5 Defining functions with default arguments
+-----
+
+    >>> def spam1(a, b=43):
+    >>> def spam2(a, b=None):
+    >>> _no_value = object()
+    >>> def spam3(a, b=_no_value):
+
+注意区别arg=None(spam2)和arg未赋值(spam3)，二者是不同的
+
+If the default value is supposed to be a mutable container, such as a list, set, or dictionary, use None as the default. You should not use [] or {}, the result may be not what you want.
+
+7.6 Defining anonymous or inline functions
+-----
+
+lambda
+
+    >>> add = lambda x, y: x + y
+    >>> add(2,3)
+    >>> 5
+
+7.7 Capturing variables in anonymous functions
+-----
+
+lambda中变量是运行时进行赋值的，而不是定义时
+    >>> x = 10
+    >>> a = lambda y: x + y
+    >>> x = 20
+    >>> b = lambda y: x + y
+    >>> a(10)
+    >>> 30
+
+做如下改动，得到正确结果, 给变量x赋默认值
+
+    >>> a = lambda y, x=x: x + y
+    >>> a(10)
+    >>> 20
+
+7.8 Making an N-Argument callable work as a callable with fewer arguments
+-----
+
+use function tools.partial()
+
+    >>> def spam(a,b,c,d):
+    >>>	return a,b,c,d
+    >>> from tools import partial
+    >>> s1= partial(spam, 1, 2, d=4)    #a=1, b=2, d=4
+    >>> s1(10)
+    >>> 1,2,10,4
+
+7.9 Replacing single method classes with functions
+-----
+
+    >>> def outerfunc():
+    >>>	def innerfunc():
+    >>>	    return 'some code'
+    >>>	return 'some code'
+
+7.10 Carrying extra state with callback functions
+-----
+
+One way to carry extra information in a callback is to use a bound-method instead of a simple function
+
+As an alternative to a class, you can also use a closure to capture state
+
+As yet another variation on this theme, you can sometimes use a coroutine to accomplish the same thing.
+
+7.11 Inlining callback functions
+-----
+
+Temparay pass
+
+7.12 Accessing variables defined inside a closure
+-----
+
+you can provide access by writing accessor functions and attaching them to the closure as function attributes.
+
+    >>> def sample():
+    >>>	...
+
+A slight extension to this recipe can be made to have closures emulate instances of a class.
+
+Interestingly, this code runs a bit faster than using a normal class definition.
+
+Chapter 8. Classes and Objects
+=====
+
+8.1 Changing the string representation of instances
+-----
+
+
 
 
 
