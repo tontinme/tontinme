@@ -947,6 +947,311 @@ Chapter 8. Classes and Objects
 8.1 Changing the string representation of instances
 -----
 
+    >>> class Pair:
+    >>>	def __init__(self, x, y):
+    >>>	    self.x = x
+    >>>	    self.y = y
+    >>>	def __repr__(self):
+    >>>	    return 'Pair({0.x!r}, {0.y!r})'.format(self)
+    >>>	def __str__(self):
+    >>>	    return '({0.x!s}, {0.x!y})'.format(self)
+
+The `__repr__()` method returns the code representation of an instance, and is usually the text you would type to re-create the instance. the built-in repr() function returns this text, as does the interactive interpreter when inspecting values.
+
+The `__str__()` method converts the instance to a string, and is the output produced by the str() and print() functions.
+
+    >>> p = Pair(3,4)
+    >>> p
+    Pair(3,4)
+    >>> print p
+    (3,4)
+
+If no `__repr__()` is defined, the output of `__repr()` is used as a fallback
+
+the format code {0.x} specifies the x-attribute of argument 0. So, the 0 is actually the instance itself. You could also use the % operator and the following code.
+
+    >>> def __repr(self):
+    >>>	return 'Pair(%r, %r)'.format(self.x, self.y)
+
+8.2 Customing string formatting
+-----
+
+To customize string formatting, define the `__format__()` method on a class.
+
+    >>> class Date:
+    >>>	def __format():
+    >>>	    ...
+    >>> p = Date()
+    >>> format(p)
+
+The `__format__()` method provides a hook into python's string formatting function-ality.
+
+8.3 Making objects support the context-management procotol
+-----
+
+In order to make an object compatible with the **with** statement, you need to implement `__enter__()` and `__exit__()` methods.
+
+    >>> class LazyConnectin:
+    >>> def __init():
+    >>>	...
+    >>> def __enter__():
+    >>>	...
+    >>> def __exit__(self, exc_ty, exc_val, tb):
+    >>>	...
+
+The key feature of this  class is that it represents a network connection, but it doesn't actually do anything initially. Instead, the connection is established and closed using the **with** statement
+
+The three arguments to the `__exit__()` method contain the exeception type, value and traceback for pending exceptions
+
+    >>> conn = LazyConnection()
+    >>> with conn as s:
+    >>>	#conn.__enter__() executes: connection_open
+    >>>	...
+    >>>	#conn.__exit__() executes: connectin_closed
+
+8.4 Saving memory when creating a large number of instances
+-----
+
+Use `__slots__` attribute to the class definitio
+8.4 Saving memory when creating a large number of instances
+-----
+
+Use `__slots__` attribute to the class definition.
+
+Instead of each instance consisting of a dictionary, instances are built around a small fixed-sized array, much like a tuple or list.
+
+A side effect of using slots is that it is no longer possible to add new attributes to instances. you are restricted to only those attribte names listed in the `__slots__` specifier.
+
+8.5 Encapsulating names in a class
+-----
+
+Any name that starts with a single leading `underscore(_)` should always be assumed to be internal implementation.
+
+Python doesn’t actually prevent someone from accessing internal names, he use of the leading underscore is also used for module names and module-level functions.
+
+You may also encounter the use of two leading underscores `__` on names within class definitions. The use of double leading underscores causes the name to be mangled to something else
+
+8.6 Creating Managed attributes
+-----
+
+A simple way to customize access to an attribute is to define it as a 'property'.
+
+    >>> class Person:
+    >>> def __init(self, first_name):
+    >>>	self.first_name = first_name
+    >>> @property
+    >>> def first_name(self):
+    >>>	return self._first_name
+    >>> @first_name.setter
+    >>> def first_name(self, value):
+    >>>	XXX
+    >>> @frist_name.deleter
+    >>> def first_name(self):
+    >>>	XXX
+
+All the three related methods have the same name. A property access automatically triggers the getter, setter, and deleter methods.
+
+Property can also be defined for existing get and set methods.
+
+    >>> class XXX:
+    >>>	name = property(get_first_name, set_first_name, del_first_name)
+
+A class with a property, you can find the raw methods in the fget, fset, and fdel
+
+    >>> class Person:
+    >>>	XXX
+    >>> Person.first_name.fget
+    <function Person.first_name at 0x10a52e170>
+
+Properties should only be used in cases where you actually need to perform extra pro‐ cessing on attribute access. Code repetition leads to bloated, error prone, and ugly code. As it turns out, there are much better ways to achieve the same thing using descriptors or closures
+
+8.7 Calling a method on a parent class
+-----
+
+To call a method in a parent(or superclass), use the super() function.
+
+A very common use of super() is in the handling of the `__init__()` method to make sure that parents are properly initialized. Another common use of super() is in code that overrides any of python's special methods.
+
+如下两种方法是有区别的
+
+    >>> class A:
+    >>>	def __init__(self, x):
+    >>>	    self.x = x
+    >>> class B(A):	#method 1
+    >>>	def __init__(self, y):
+    >>>	    super().__init__()
+    >>>	    self.y = y
+    >>> class C(A):	#method 2
+    >>>	def __init__(self, y):
+    >>>	    A.__init__(self)
+    >>>	    self.y = y
+
+8.8 Extending a property in a subclass
+-----
+
+Within a subclass, you want to extend the functionality of a property defined in a parent class. Use **super()** and **property**.
+
+    >>> class Xxx(Person):
+    >>>	@Person.name.getter
+    >>>	def xxx:
+    >>>	    ...
+    >>>	@Person.name.setter
+    >>>	def xxx:
+    >>>	    ...
+
+8.9 Creating a new kind of class or instance attribute
+-----
+
+If you want to create an entirely new kind of instance attribute, define its functionality in the form of a descriptor class. A descriptor is a class that implements the three core attribute access operations(get, set,and delete) in the form of `__get__()`, `__set__()`, and `__delete__()` special methods.
+
+One confusion with descriptors is that they can only be defined at the class level, not on a per-instance basis.
+
+8.10 Using lazily computed properties
+-----
+
+即第一次访问的时候计算结果并返回，同时缓存该值，再次访问时直接返回缓存结果不再重新计算
+
+An efficient way to define a lazy attributes is through the use of a descriptor class.
+
+8.11 Simplifying the initialization of data structure
+-----
+
+You can often generalize the initialization of data structures into a single `__init__()` function defined in a common base class.
+
+8.12 Defining an interface or abstract base class
+-----
+
+To define an abstract base class, use the **abc** module.
+
+    >>> from abc import ABCMeta, abstractmethod
+
+A central feature of an abstract base class is that it cannot be instantiated directly. Instead, an abstract base class is meant to be used as a base class for other classes that are expected to implement the required methods.
+
+A major use of abstract base class is in code that wants to enforce an expected programming interface.
+
+8.13 Implementing a data model or type system
+-----
+
+To do this, you should use descriptors
+
+8.14 Implementing custom containers
+-----
+
+The **collections** library defines a variety of abstract base class that are extremely useful when implementing custom container classes.
+
+    >>> import collections
+    >>> collections.Sequence()
+
+8.15 Delegating attribute access
+-----
+
+Define the **__getattr__** method
+
+Simply stated, delegation is a programming pattern where the responsibility for implementing a particular operation is handed off to a different objec.
+
+Another example of delegation is in the implementation of proxies.
+
+8.16 Defining more than one constructor in a class
+-----
+
+To define a class with more than one constructor, you should use a class method
+
+**@classmethod**
+
+To use the alternate constructor, you simply call it as a function, such as Date.today()
+
+One of the primary uses of class methods is to define alternate constructors.
+
+8.17 Creating an instance without invoking init
+-----
+
+A bare uninitialized instance can be created by directly calling the **__new__()** method of a class.
+
+    >>> class Date:
+    >>>	def __init__(self):
+    >>>	    pass
+    >>> p = Date.__new__(Date)  #without invoking __init__()
+
+It is now your responsibility to set the appropriate instance variables.
+
+8.18 Extending classes with mixins
+-----
+
+Mixin classes appear in various places in the standard library, mostly as a means for extending the functionality of other classes similar to as shown
+
+8.19 Implementing stateful objects or state machines
+-----
+
+You want to implement a state machine or an object that operates in a number of dif‐ ferent states, but don’t want to litter your code with a lot of conditionals.
+
+Use **@staticmetod** or **__class__** attribute of instances
+
+8.20 Calling a method on an object given the name as a string
+-----
+
+use getattr()
+
+    >>> class Point:
+    >>>	def __init__(self, x, y):
+    >>>	    ...
+    >>>	def distance(self, x, y):
+    >>>	    return math.hypot(self.x - x, self.y -y)
+    >>> p = Point(2,3)
+    >>> d = getattr(p, 'distance')(0,0)
+
+An alternative approach is to use operator.methodcaller()
+
+    >>> import operator
+    >>> operator.methodcaller('distance', 0, 0)(p)
+
+8.21 Implementing the vistor pattern
+-----
+
+To enable general-purpose processing, a common solution is to implement the so-called 'vistor pattern'.
+
+    >>> class NodeVistor:
+    >>>	def visit(self, node):
+    >>>	    methname = 'visit_' + type(node).__name__
+    >>>	    meth = getattr(self, methname, None)
+    >>>	    if meth is None:
+    >>>		  meth = self.generic_visit
+    >>>	    return meth(node)
+    >>>	def generic_visit(self, node):
+    >>>	    raise RuntimeError('No {} method'.format('visit_' + type(node).__name__))
+
+8.22 Implementing the vistor pattern without recursion
+-----
+
+Temporary pass
+
+8.23 managing memory in cyclic data structures
+-----
+
+A simple example of a cyclic data structure is a tree structure where a parent points to its children and the children point back to their parent. For code like this, you should consider make one of the links a weak reference using the **weakref** library.
+
+Cyclic data structures are a somewhat tricky aspect of Python that require careful study because the usual rules of garbage collection often don’t apply. Python’s garbage collection is based on simple reference count‐ ing. When the reference count of an object reaches 0, it is immediately deleted. For cyclic data structures, however, this never happens.
+
+To deal with cycles, there is a separate garbage collector that runs periodically, you can force garbage collection.
+
+8.24 Making classes support comparison operations
+-----
+
+The function **functools.total_ordering** decorator can be used to simplify thi process. To use it, you decorate a class with it, and define `__eq__()` and one other comparison method (`__lt__`, `__gt__`, `__le__`, or `__ge__`). The decorator then fills in the other comparison methods for you.
+
+8.25 Creating cached instances
+-----
+
+The problem being addressed in this recipe sometimes arises when you want to ensure that there is only one instance of a class created for a set of input arguments.
+
+To implement this behavior, you should make use of a factory function that's separate from the class itself.
+
+Caching and other creational patterns can often be solved in a more elegant (albeit advanced) manner through the use of metaclasses. See Recipe 9.13.
+
+Chapter 9. Metaprogramming
+=====
+
+9.1 Putting a wrapper around a function
+-----
 
 
 
