@@ -1,4 +1,6 @@
-#Decorator
+#python tips
+
+##Decorator
 
 decorator所实现的功能就是修改紧接decorator之后定义的函数和方法
 
@@ -64,7 +66,6 @@ decorator所实现的功能就是修改紧接decorator之后定义的函数和�
     aFunction()
 
 `````
-
     def entryExit(f):
         def new_f():
             print("Entering", f.__name__)
@@ -76,6 +77,7 @@ decorator所实现的功能就是修改紧接decorator之后定义的函数和�
         print("hello world")
 
     funcl()
+`````
 
 decorator可以做很多事情（http://wiki.python.org/moin/PythonDecoratorLibrary), 比如记忆函数，缓存，自动为类加上属性，输出函数的参数，性能分析器，同步，替换函数的实现，状态机等等。网络连接中可以用于重试，比如在connect前添加@retries(3)，即可轻松实现重连。
 
@@ -177,3 +179,7 @@ http://blog.sina.com.cn/s/blog_571b19a001013h7j.html
 http://www.cnblogs.com/SeasonLee/archive/2010/04/24/1719444.html
 
 http://www.ibm.com/developerworks/cn/linux/l-cpdecor.html
+
+##Metaclass
+
+
