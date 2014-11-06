@@ -66,6 +66,7 @@ decorator所实现的功能就是修改紧接decorator之后定义的函数和�
     aFunction()
 
 `````
+`````
     def entryExit(f):
         def new_f():
             print("Entering", f.__name__)
@@ -77,7 +78,6 @@ decorator所实现的功能就是修改紧接decorator之后定义的函数和�
         print("hello world")
 
     funcl()
-`````
 
 decorator可以做很多事情（http://wiki.python.org/moin/PythonDecoratorLibrary), 比如记忆函数，缓存，自动为类加上属性，输出函数的参数，性能分析器，同步，替换函数的实现，状态机等等。网络连接中可以用于重试，比如在connect前添加@retries(3)，即可轻松实现重连。
 
@@ -97,8 +97,40 @@ decorator写法(多个Decorator，带参数):
 
 举个实际的例子:
 
-    #! /usr/bin/env python3
-    #coding: utf-8
+以下是一个在商场买东西，和导购互动的例子
+
+基础版.
+
+    def salesgirl(method):
+        def serve(*args):
+            print "Salesgirl:Hello, what do you want?", method.__name__
+            result = method(*args)
+            if result:
+                print "Salesgirl: This shirt is 50$."
+            else:
+                print "Salesgirl: Well, how about trying another style?"
+            return result
+        return serve
+
+    @salesgirl
+    def try_this_shirt(size):
+        if size < 35:
+            print "I: %d inches is to small to me" %(size)
+            return False
+        else:
+            print "I:%d inches is just enough" %(size)
+            return True
+    result = try_this_shirt(38)
+    print "Mum:do you want to buy this?", result
+
+输出为
+
+    Salesgirl:Hello, what do you want? try_this_shirt
+    I:38 inches is just enough
+    Salesgirl: This shirt is 50$.
+    Mum:do you want to buy this? True
+
+添加导购让利的部分，用到带参数的decorator
 
     def salesgirl(discount):
         def expense(method):
@@ -123,6 +155,13 @@ decorator写法(多个Decorator，带参数):
             return True
     result = try_this_shirt(38)
     print "Mum: do you want to buy this shirt?", result
+
+输出为:
+
+    Salesgirl:Hello, what do you want? try_this_shirt
+    I:38 inches is just enough
+    Salesgirl: This shirt is 50$.As an old user, we promised to discount at 50%
+    Mum:do you want to buy this? True
 
 使用decorator可以添加或删除方法
 
