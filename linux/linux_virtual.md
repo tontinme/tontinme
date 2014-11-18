@@ -20,6 +20,8 @@
 
 ------difference between lxc & kvm
 
+------kvm, qemu, libvirt
+
 docker
 =====
 
@@ -437,3 +439,33 @@ application on the host machine, this change will apply to all sandboxes that ru
 Since containers are lightweight, a large number of them can run simultaneously on a
 host machine. The theoretical maximum is 6000 containers and 12,000 bind mounts of
 root file system directories. Also, containers are faster to create and have low startup times.
+
+kvm, qemu, libvirt
+=====
+
+虚拟化，根据抽象程度来划分，可以分为对硬件的虚拟和对操作系统或软件的虚拟。其中对硬件的虚拟，又可以分为三种:
+
+1. Full virtualization(全虚拟化)
+2. Partial virtualization(部分虚拟化)
+3. Paravirtualization(半虚拟化)
+
+软件层面的虚拟化，比如lxc
+
+kvm
+----
+
+kvm是一种支持虚拟化的技术，而且是linux内核中的一个模块。
+
+QEMU
+-----
+
+qemu也是一种虚拟化技术，就算不使用kvm，qemu也能完全实现一个虚拟机。但是由于kvm在某些方面还不能虚拟真实的机器，比如对网卡
+的虚拟，因此需要借助其他的技术做补充。qemu-kvm就是这样一种技术,它补充了kvm的不足，并且在性能上对kvm进行了优化。
+
+libvirt
+-----
+
+libvirt是一套C语言的API，现在也有其他语言的了。它负责将不同虚拟化技术间的差异屏蔽掉，提供多种语言的API接口，这样就可以直接通过编程，
+调用libvirt提供的接口实现对虚拟机的操作。
+
+libvirt主要关注底层的实现，提供对外调用的接口，而不同的虚拟机技术通过调用libvirt提供的接口来实现自己所需的功能。
