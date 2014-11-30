@@ -405,6 +405,12 @@
 		avgqu-sz: 平均请求队列的长度。毫无疑问，队列长度越短越好
 	#Note:有时候iostat会显示一些很离谱的结果，官方FAQ的解释是：http://sebastien.godard.pagesperso-orange.fr/faq.html	
 #ip
+    ip [OPTIONS] OBJECT [COMMAND [ARGUMENTS]]
+    ip link #配置网络设备
+        启动eth0
+        $ ip link set dev eth0 up
+        显示设备属性
+        $ ip link show --
     ip route
         显示路由表
         $ ip route show
