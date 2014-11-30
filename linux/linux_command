@@ -17,6 +17,7 @@
 ------free
 ------grep,pgrep,egrep,fgrep
 ------iostat
+------ip
 ------iptraf
 ------ls
 ------lsblk
@@ -403,6 +404,45 @@
 			队列时间越长，说明系统出了问题
 		avgqu-sz: 平均请求队列的长度。毫无疑问，队列长度越短越好
 	#Note:有时候iostat会显示一些很离谱的结果，官方FAQ的解释是：http://sebastien.godard.pagesperso-orange.fr/faq.html	
+#ip
+    ip route
+        显示路由表
+        $ ip route show
+        view the local routing table
+        $ ip route show table local
+        The routing cache is used by the kernel as a lookup table analogous to a quick reference card
+        $ ip route show cache 192.168.100.17
+        or
+        $ ip -s route show cach 192.168.100.17
+        增加静态路由
+        $ ip route add 10.38.0.0/24 via 192.168.100.1
+        增加禁止路由
+        $ ip route add prohibit 209.10.26.51
+        也可以使用iptables REJECT达到同样目的，二者的错误提示不一样，prohibit提示'No route to host', iptables提示'connection refused'
+        使用src
+        $ ip route add default via 205.254.211.254 src 205.254.211.198 table 7
+        增加默认路由
+        $ ip route add default via 192.168.199.254
+    使用ip route设置NAT（需要注意的是，这只是设置NAT网络的一部分，你还需要配合ip rule add nat来使用）
+        $ ip route add nat 205.254.211.17 via 192.168.100.17
+        $ ip route add nat 205.254.211.32/29 via 192.168.100.32
+        $ ip routw show table local |grep ^nat
+    使用ip route删除路由
+        $ ip route del 10.38.0.0/16 via 192.168.100.1 dev eth3
+    ip route change
+        $ ip route change default via 192.168.100.99 dev eth0
+    测试路由是否生效
+        $ ip -s route get 127.0.0.1/32
+        ip -s route get 127.0.0.1/32
+        local 127.0.0.1 dev lo  src 127.0.0.1 
+            cache <local>  users 1 used 1 mtu 16436 advmss 16396
+    清空路由表
+        $ ip route flush
+        "ip route flush" requires arguments
+        $ ip route flush 10.38.0.0/16
+        $ ip route flush main   #清空整个路由表
+    清空路由表缓存
+        $ ip route flush cache
 #iptraf
 	#iptraf command is interactive colorful IP LAN monitor. It is an ncurses-based IP LAN\
 		monitor that generates various network statistics including TCP info, UDP counts,\
