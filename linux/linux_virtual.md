@@ -22,6 +22,12 @@
 
 ------kvm, qemu, libvirt
 
+------virsh
+
+------raw, qcow2, vmdk
+
+
+
 docker
 =====
 
@@ -469,3 +475,141 @@ libvirt是一套C语言的API，现在也有其他语言的了。它负责将不
 调用libvirt提供的接口实现对虚拟机的操作。
 
 libvirt主要关注底层的实现，提供对外调用的接口，而不同的虚拟机技术通过调用libvirt提供的接口来实现自己所需的功能。
+
+virsh
+-----
+
+Manager you virtual machines from the shell using **virsh**
+
+### 使用virsh管理虚机前，需要先定义它
+
+    $ virsh --connect qemu:///system
+    Connecting to uri: qemu:///system
+    Welcome to virsh, the virtualization interactive terminal.
+
+    Type:  'help' for help with commands
+           'quit' to quit
+    virsh # define /etc/libvirt/qemu/newvm.xml
+    Domain newvm defined from /etc/libvirt/qemu/newvm.xml
+
+### 列出所有VMs
+
+    virsh # list [--inactive | --all]
+
+    # virsh list --all
+    Id Name                 State
+    ----------------------------------
+    0 Domain-0             running
+    1 Domain202            paused
+    2 Domain010            inactive
+    3 Domain9600           crashed
+
+virsh list的输出结果有6种状态
+
+* running   指目前在CPU中活跃的机器
+* blocked   说明客户端是被阻断的，且目前没有运行或无法运行。这是由于guest正在等待IO或处于睡眠状态
+* paused    暂停状态。如果管理员在virt-manager, xm pause或virsh suspend中使用pause标记就会出现这种状态。
+当guest处于该状态时，它仍会消耗内存和其他资源，但无法调度CPU资源
+* shutdown  处于关闭过程中的guest
+* dying     处于濒死状态。即还没有完全关闭或崩溃
+* crashed   guest在运行时失败且无法再运行。
+
+### 启动，关闭VMs
+
+    virsh # define /etc/libvirt/qemu/mirror.xml     #通过配置文件创建一个虚拟机，这个虚拟机还不是活动的
+            undefine mirror
+    virsh # create /etc/libvirt/qemu/mirror.xml     #创建虚拟机，创建完成后立即执行，成为活动主机
+    virsh # shutdown mirror
+            start mirror
+
+    virsh # destroy mirror  #等同于直接拔电源
+
+OR
+
+    virsh # suspend mirror
+            resume mirror
+
+当guest处于挂起状态，it consumes system RAM but not processer resources. Disk and network I/O does not occur 
+while the guest is suspended. This operation is immediate and the guest can be restarted with the **resume** option.
+
+### 将VMs当前状态保存到文件中
+
+    virsh save {domain-name, domain-id or domain-uuid} filename
+
+save会把VM的当前状态保存到文件中，该命令需要的时间取决于guest VM占用的内存大小。使用**virsh restore**重新启动保存的客户端
+
+### 编辑VMs的属性
+
+即导出xml，编辑完成后再导入
+
+    virsh dumpxml foo > /tmp/foo.xml
+    (edit /tmp/foo.xml)
+    virsh define /tmp/foo.xml
+
+### 定义CPU
+
+    <domain type='kvm'>
+      ...
+      <vcpu>2</vcpu>
+      ...
+     </domain>
+
+### 更改网卡模式
+
+kvm and qemu currently default to using the rtl8139 NIC. Supported NICs in Ubuntu 8.04 LTS are i82551, i82557b, i82559er, `ne2k_pci`, pcnet, rtl8139, e1000, and virtio.
+
+    <domain type='kvm'>
+        ...
+            <interface type='network'>
+                ...
+                <model type='virtio'/>
+            </interface>
+        ...
+    </domain>
+
+### 其他操作
+
+    virsh domain mirror     #显示虚拟机mirror的基本信息
+    virsh domuuid mirror    #显示虚拟机的uuid
+    virsh vcpuinfo mirro    #显示虚拟机的cpu信息
+    virsh setmem mirror     #给不活动的vm设置内存大小
+    virsh setvcpus mirror
+    virsh attach-device     #attach a device to a guest, using a device definition in an XML file.
+
+### 迁移虚机
+
+    virsh migrate --live GuestName DestinationURL  
+
+--live可选，用于live migrate.
+
+GuestName: the name of the guest which you want to migrate.
+
+DestinationURL: is the url or hostname of the destination system. 对目标系统有如下要求
+
+    * the same version of RHEL
+    * the same Hypervisor(KVM or Xen)
+    * the **libvirt** service must be started
+
+### 管理虚拟网络
+
+    # virsh net-list
+    Name                 State      Autostart
+    -----------------------------------------
+    default              active     yes
+    vnet1                active     yes
+    vnet2                active     yes
+
+可以只dump网络信息
+
+    # virsh net-dumpxml NetworkName
+
+之前大部分virsh命令，也都可以用在net中。比如
+
+    # virsh net-create XMLfile
+
+raw, qcow2, vmdk
+-----
+
+PASS
+
+
