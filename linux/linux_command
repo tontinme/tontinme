@@ -914,6 +914,10 @@ man
 		$tcpdump -i eth0 'tcp port 80'
 	#display all FTP session to 202.54.1.5
 		$tcpdump -i eth1 'dst 202.54.1.5 and port 20 or 21'
+    抓取tcp流量
+        $tcpdump tcp port 80 -n -s 0 -w /tmp/tcp.cap
+    抓取dhcp流量
+        $
 #tmpwatch
 	/usr/sbin/tmpwatch -m 30d /opt/resin/log/	删除某目录下30天后的过期日志，日期默认是小时，这里指定为天
 #top
