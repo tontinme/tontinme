@@ -213,7 +213,7 @@ compute()原本是不支持对sequence进行操作的，通过添加decorator，
 
 **参考资料**：
 
-http://blog.sina.com.cn/s/blog_571b19a001013h7j.html
+`http://blog.sina.com.cn/s/blog_571b19a001013h7j.html`
 
 http://www.cnblogs.com/SeasonLee/archive/2010/04/24/1719444.html
 

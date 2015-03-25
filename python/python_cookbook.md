@@ -1253,6 +1253,177 @@ Chapter 9. Metaprogramming
 9.1 Putting a wrapper around a function
 -----
 
+A decorator is a function that accepts a function as input and returns a new function as output.
+
+whenever you write code like this:
+
+    >>> @timethis
+    >>> def countdown(n):
+    >>>	...
+
+it's the same as if you had performed these separate steps.
+
+    >>> def countdown(n):
+    >>>	...
+    >>> countdown = timethis(countdown)
+
+9.2 Preserving function metadata when writing decorators
+-----
+
+Wheneve you define a decorator, you should always remember to apply the **@wraps** decorator from the functools library to the underlying wrapper function.
+
+If you forget to use @wraps, you'll find that the decorated function loses all sorts of useful information.
+
+9.3 Unwrapping a decorator
+-----
+
+You can usually gain access to the original function by accessing the `__wrapped__` attribute.
+
+    >>> @somedecorator
+    >>> def add(x, y):
+    >>>	return x + y
+    >>> orig_add = add.__wrapped__
+    >>> orig_add(3, 4)
+    7
+
+If multiple decorators have been applied to a function, the behavior of accessing `__wrapped__` is currently undefined and should probably avoided. In python3.3, it bypasses all of the layers, however, this behavior has been reported as a bug.
+
+9.4 Defining a decorator that takes arguments
+-----
+
+See the example in P335
+
+9.5 Defining a decorator with user adjustable attributes
+-----
+
+You want to write a decorator function that wraps a function, but has user adjustable attributes that can be used to control the behavior of the decorator at runtime.
+
+See the example in P336
+
+9.6 Defining a decorator that takes an optional argument
+-----
+
+Temperary pass
+
+9.7 Enforcing type checking on a function using a decorator
+-----
+
+    >>> @typeassert(int, int)
+    >>> def add(x, y):
+    >>>	return x + y
+    >>> add(2,3)
+    6
+    >>> add(2, 'hello')
+    Traceback(most recent call last):
+
+9.8 Defining decorators as part of a class
+-----
+
+You first need to sort out the manner in which the decorator will be applied. Specially, whether it is applied as an instance method or a class method.
+
+    >>> class A:
+    >>>	...
+    #as an instance method
+    >>> a = A()
+    >>> @a.decorator1
+    >>> def XXX():
+    >>>	pass
+    #as a class method
+    >>> @A.decorator2
+    >>> def XXX():
+    >>>	pass
+
+9.9 Defining decorators as classes
+-----
+
+To define a decorator as an instance, you need to make sure it implements the `__call__()` and `__get__()` methods.
+
+9.10 Applying decorators to class and static methods
+-----
+
+Applying decorators to class and static methods is straightforward, but make sure that your decorators are applied before @classmethod or @staticmethod.
+
+    ```
+    import time
+    from functools import wraps
+
+    def timethis(func):
+	  @wraps(func)
+	  def wrapper(*args, **kwargs):
+		start = time.time()
+		r = func(*args, **kwargs)
+		end = time.time()
+		print(end-start)
+		return r
+	  return wrapper
+    class Spam:
+	  @timethis
+	  def instance_method(self, n):
+		print(self, n)
+		while n > 0:
+		    n -= 1
+	  @classmethod
+	  @timethis
+	  def class_method(cls, n):
+		print(cls, n)
+		while n > 0:
+		    n -= 1
+	  @staticmethod
+	  @timethis
+	  def static_method(n):
+		print(n)
+		while n > 0:
+		    n -= 1
+
+    >>> s = Spam()
+    >>> s.instance_method(1000000)
+    <__main__.Spam object at 0x1006a6050> 1000000 0.11817407608032227
+    >>> Spam.class_method(1000000)
+    <class '__main__.Spam'> 1000000 0.11334395408630371
+    >>> Spam.static_method(1000000)
+    1000000
+    0.11740279197692871
+    ```
+
+9.11 Writing decorators that add arguments to wrapped functions
+-----
+
+Extra arguments can be injected into the calling signature using keyword-only-arguments.
+
+9.12 Using decorators to patch class definitions
+-----
+
+This might a perfect use for a class decorator.
+
+9.13 Using a metaclass to control instance creation
+-----
+
+Temperary pass
+
+9.14 Capturing class attribute definition order
+-----
+
+Capturing information about the body of class definition is easily accomplished through the use of a metaclass. use **collections.OrderedDict** to capture definition order of descriptors.
+
+9.15 Defining a metaclass that takes optional arguments
+-----
+
+In custom metaclasses, additional keyword arguments can be supplied, like this
+
+    >>> class Spam(metaclass=MyMeta, debug=True, synchronize=True):
+    >>>	...
+
+To support such keyword arguments in a metaclass, make sure you define them on the `__prepare__()`, `__new__()`, and `__init__()` methods using keyword-only arguments
+
+Adding optional keyword arguments to a metaclass requires that you understand all of the steps involved in class creation, because the extra arguments are passed to every method involved
+
+9.16 Enforcing an arguments signature on `*args` and `**kwargs`
+-----
+
+
+
+
+
 
 
 

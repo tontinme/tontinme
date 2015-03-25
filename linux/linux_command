@@ -10,6 +10,7 @@
 ------crontab
 ------dd
 ------df
+------dmidecode
 ------du
 ------exec
 ------expect
@@ -217,6 +218,19 @@
 			创建并不实际占用block的大文件后，将其拷贝到新目录，du显示为1G
 #df
 	df命令可以获取硬盘被占用了多少空间，目前还剩下多少信息等
+#dmidecode
+    查看内存插槽数，某槽位是否插了内存，容量是多少
+        dmidecode|grep -P -A5 "Memory\s+Device"|grep Size|grep -v Range
+    查看最大支持内存数
+        dmidecode|grep -P 'Maximum\s+Capacity'
+    查看槽位上的速率，没插就是unknown
+        dmidecode|grep -A16 "Memory Device"|grep 'Speed'
+    dmidecode显示指定类型的信息
+        dmidecode -t [text|number]
+        文本参数支持：
+            bios, system, baseboard, chassis, processor, memory, cache, connector, slot
+        数字参数支持很多：
+            0 - 39
 #du
 	du的功能是逐级进入指定目录的每一个子目录并显示该目录占用文件系统数据块
 	
