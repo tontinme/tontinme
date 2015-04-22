@@ -264,9 +264,21 @@
 	stage2是grub核心映像
 	stage1是通过stage1_5来找到stage2的，因为加载stage1_5后，才能识别文件系统
 	另外，通过直接指向stage2的物理地址，stage1也可以直接找到stage2
-
 	grub不支持磁盘文件系统的读写，但是对磁盘raw read/write是支持的（主要用于mbr,stage1_5所在的sector,
 		partition的开头2个sector的访问）。因此grub支持save default操作
+
+# linux boot
+    When using initrd, the system typically boots as follows:
+    1. The boot loader loads the kernel and the initial RAM disk
+    2. The kernel converts initrd into a "normal" RAM disk and  frees the memory used by initrd
+    3. initrd is mounted read-write as root
+    4. /linuxrc is executed (this can be any valid executable, including shell scripts; it is run with uid 0 and can do
+    basically everything init can do)
+    5. linuxrc mounts the "real" root file system
+    6. linuxrc places the root file system at the root directory using the pivot_root system call
+    7. The usual boot sequence (e.g. invocation of /sbin/init) is performed on the root file system
+    8. The initrd file system is removed
+
 #linux安全关机
 	键盘上有一个"Sys Rq"的键，在台式机的键盘上通常与"Print Screen"共健，在笔记本上可能在其他位置，\
 		Delete。以台式机为例，要使用这种方法需要按住Alt-Print(Sys Rq)，然后依次按下reisub这\
