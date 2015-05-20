@@ -59,3 +59,13 @@ $ sh flash-all.sh
     $ sh root-mac.sh
 
 等待手机重启即可
+
+## 开启位置报告
+
+删除google search数据（若找不到，则删除所有登录的google 帐号）
+
+下载Market Unlocker，启用解锁，模拟运营商为version
+
+重新登录google帐号
+
+打开位置报告，打开google now, google fit
