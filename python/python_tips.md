@@ -222,3 +222,16 @@ http://www.ibm.com/developerworks/cn/linux/l-cpdecor.html
 ##Metaclass
 
 
+## python中函数获取被谁调用
+
+```
+import inspect
+
+def f1():
+    f2()
+
+def f2():
+    print 'caller name:', inspect.stack()[1][3]
+```
+
+
