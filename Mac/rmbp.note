@@ -32,3 +32,22 @@ homebrew
 	来说不需要修改，退出编辑即可
 	4. 安装自定义的软件包
 	brew install bar
+
+proxychains
+    用于配置命令行使用shadowsocks代理
+    1. git
+    git可以直接配置翻墙
+    git config --global http.proxy 'socks5://127.0.0.1:8090'
+    git config --global https.proxy 'socks5://127.0.0.1:8090'
+    其中socks地址为本机的shadowsocks监听地址
+    2. 配置proxychain
+    使用proxychain，这样可以支持所有命令，比如pip
+    brew install proxychains-ng
+    配置proxychains
+    $ vim /usr/local/etc/proxychains.conf
+    配置[ProxyList]，增加socks
+    socks4 ▸127.0.0.1 8090
+    socks5 ▸127.0.0.1 8090
+    具体命令使用
+    proxychains4 git push
+
