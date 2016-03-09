@@ -46,8 +46,8 @@ proxychains
     配置proxychains
     $ vim /usr/local/etc/proxychains.conf
     配置[ProxyList]，增加socks
-    socks4 ▸127.0.0.1 8090
-    socks5 ▸127.0.0.1 8090
+    socks4 ▸127.0.0.1 1080
+    socks5 ▸127.0.0.1 1080
     具体命令使用
     proxychains4 git push
 
