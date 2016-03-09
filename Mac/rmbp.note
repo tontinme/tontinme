@@ -50,4 +50,5 @@ proxychains
     socks5 ▸127.0.0.1 1080
     具体命令使用
     proxychains4 git push
-
+    3. homebrew使用代理
+    ALL_PROXY=socks5://localhost:1080 brew install xxx
