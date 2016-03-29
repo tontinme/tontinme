@@ -1,6 +1,7 @@
 ﻿#!/bin/sh
 
 ------CR,LF,CR/LF回车换行
+------dhcp life cylce
 ------/etc/fstab格式解释（附ulimit使用）
 ------/etc/security/limits.conf参数解释
 #------/etc/sysconfig/iptables解释
@@ -38,6 +39,21 @@
 	CR用符号'r'表示，十进制ASCII代码是13，十六进制代码为0x0D
 	LF用符号'n'表示，十进制ASCII代码是10，十六进制代码为0x0A
 	所以windows平台上换行在文本文件中是使用0d 0a两个字节表示，而UNIX和Mac上换行则是使用0a或0d一个字节表示
+#DHCP life cycle
+    配置如下
+    ```
+    option dhcp-lease-time 600;
+    option dhcp-renewal-time 270;
+    option dhcp-rebinding-time 495;
+    ```
+    dhcp 的几个阶段
+    * Allocation: A client begins with no active lease, and hence, no DHCP-assigned address. It acquires a lease through a process of allocation. 
+    * Reallocation: If a client already has an address from an existing lease, then when it reboots or starts up after being shut down, it will contact the DHCP server that granted it the lease to confirm the lease and acquire operating parameters. This is sometimes called reallocation; it is similar to the full allocation process but shorter. 
+    * Normal Operation: Once a lease is active, the client functions normally, using its assigned IP address and other parameters during the “main part” of the lease. The client is said to be bound to the lease and the address. 
+    * Renewal: After a certain portion of the lease time has expired, the client will attempt to contact the server that initially granted the lease, to renew the lease so it can keep using its IP address.
+    * Rebinding: If renewal with the original leasing server fails (because, for example, the server has been taken offline), then the client will try to rebind to any active DHCP server, trying to extend its current lease with any server that will allow it to do so. 
+    * Release: The client may decide at any time that it no longer wishes to use the IP address it was assigned, and may terminate the lease, releasing the IP address. Like the apartment-renter moving out of the country, this may be done if a device is moving to a different network, for example. Of course, unlike DHCP servers, landlords usually don't let you cancel a lease at your leisure, but hey, no analogy is perfect.
+
 #/etc/fstab格式解释
 	Example:
 	  LABEL=/		/        	ext3    defaults     			1 1
