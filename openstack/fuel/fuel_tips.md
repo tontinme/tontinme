@@ -212,4 +212,31 @@ controller个数必须为奇数
 1. 在Fuel Web界面删除该node，并点击部署变更
 2. 进入机房移除该node
 
+# Howto: Shut down the whole cluster
 
+## 关闭整个集群
+
+1. 关闭所有虚拟机实例
+2. 同时关机所有节点，或者按照如下顺序关机:
+
+  * compute node
+  * Controller(one by one or all in one)
+  * Cinder/Ceph/Swift
+  * Other/Neutron(如果有单独的neutron节点)
+
+## 开启整个集群
+
+没有neutron服务的话，直接开机所有机器即可。
+如果有neutorn，按照如下顺序：
+Cinder or Ceph require Neutron, Neutron node requires database and Controllers
+
+1. 开机Ceph/Cinder/Swift/Zabbix/MongoDB节点
+2. 开机所有的controllers和neutron节点，等待pacemaker同步rabbitMQ, neutron agents and Galera完成。该步骤不超过5min
+3. 确定HAProxy服务正常
+4. 确定RabbitMQ服务正常
+5. 确定Galera集群服务正常
+6. 执行命令"crm resource restart clone_p_neutron-metadata-agent"
+7. 执行命令"crm resource restart clone_p_neutron-plugin-openvswitch-agent"
+8. 检查集群状态，"crm status", "neutron agent-list"
+9. 重启所有OpenStack服务
+10. 开机所有的计算节点
