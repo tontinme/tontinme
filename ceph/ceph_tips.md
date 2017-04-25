@@ -210,3 +210,51 @@ command_check_call: Running command: /usr/bin/udevadm settle --timeout=600
 }
 
 ```
+
+## 在ubuntu 14.04给ceph 使用perf 和火焰图
+
+快速使用方法
+```
+root@node-289:~/zhu# perf record -p 2612463
+^C[ perf record: Woken up 40 times to write data ]
+[ perf record: Captured and wrote 16.774 MB perf.data (~732860 samples) ]
+root@node-289:~/zhu# perf report
+root@node-289:~/zhu#
+```
+
+安装ceph debuginfo
+
+```
+# apt-get install ceph-dbg ceph-common-dbg
+```
+
+下载brendan的火焰图生成程序
+
+```
+# git clone https://github.com/brendangregg/FlameGraph  
+```
+
+记录CPU
+
+```
+# perf record -e cpu-clock --call-graph dwarf -p 1857681 -- sleep 30
+```
+
+会自动生成 perf.data 文件
+
+```
+# perf script | ../FlameGraph/stackcollapse-perf.pl > rgw-perf.out
+```
+
+生成火焰图
+
+```
+# ../FlameGraph/flamegraph.pl rgw-perf.out > perf-rgw.svg
+```
+
+用浏览器打开, 点击具体进程可以查看详情
+示例图形
+解决tcmalloc问题之前
+![bad case](./bad-perf-rgw.svg)
+解决tcmalloc问题之后
+![good case](./good-perf-rgw.svg)
