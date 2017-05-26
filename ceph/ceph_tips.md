@@ -258,3 +258,117 @@ root@node-289:~/zhu#
 ![bad case](./bad-perf-rgw.svg)
 解决tcmalloc问题之后
 ![good case](./good-perf-rgw.svg)
+
+
+## ceph osd near full
+
+1. ceph pg dump > /tmp/ori.pgdump
+
+2. ceph osd df
+
+weight   ...  reweight
+
+
+3. ceph osd reweight [X] [Y]
+OR
+ceph osd crush reweight [X] [Y]
+
+4. ceph -s
+
+
+自动调整osd数据分布
+Reweights all the OSDs by reducing the weight of OSDs which are heavily overused. By default it will adjust the weights downward on OSDs which have 120% of the average utilization, but if you include threshold it will use that percentage instead
+
+```
+ceph osd reweight-by-utilization
+```
+
+## MOS Ceph 替换journal
+
+    # 停止osd
+    stop ceph-osd id=50
+    # 刷新journal到磁盘
+    ceph-osd --flush-journal -i 50
+    # 查看journal指向的磁盘
+    ll
+    # unlink
+    unlink journal
+    ll /dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9
+    # 用新盘重新link
+    ln -s /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5 journal
+    ceph-osd --mkjournal -i 50
+    # 启动osd
+    start ceph-osd id=50
+    # 清除旧journal数据
+    dd if=/dev/zero of=/dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9 bs=1M count=100
+    ll
+    ll /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5
+    # 检查集群状态
+    ceph -s
+    lsblk
+
+如果需要新建journal分区，操作步骤如下
+
+    # 查看journal磁盘当前情况
+    sgdisk --print /dev/sdv
+    # 根据末位标记新建分区
+    sgdisk -n 8:0:+10G -c 8:'primary' /dev/sdv
+    ll /dev/disk/by-partuuid/ | grep sdv8
+    sgdisk --print /dev/sdv
+    lsblk
+    # 通知系统，识别新分区
+    partprobe /dev/sdv
+    lsblk
+    sgdisk --print /dev/sdv
+
+
+ssd 替换journal
+
+ssd使用当前磁盘做journal即可。即在本地创建一个journal文件，作为journal使用。
+
+先保存当前的journal分配信息
+
+    cd /var/lib/ceph/osd/
+    for i in `ls .`; do ls -l $i/journal; done > ~/c2-journal
+    vim ~/c2-journal
+    ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11
+    ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11 >> ~/c2-journal
+    # 编辑文件，记录当前的journal分配信息
+    vim ~/c2-journal
+    lsblk
+
+这里ceph-9为ssd类型的osd，之前使用sdv为journal盘，现在替换为本地
+
+    cd ceph-9
+    ll
+    # 停止osd，并将journal刷入磁盘
+    stop ceph-osd id=9
+    ceph-osd --flush-journal -i 9
+    ll
+    unlink journal
+    # 在本地创建2GB的磁盘分区
+    dd if=/dev/zero of=/var/lib/ceph/osd/ceph-9/journal bs=1M count=2048
+    ll
+    ceph-osd --mkjournal -i 9
+    start ceph-osd id=9
+    # 清除旧journal的数据
+    dd if=/dev/zero of=/dev/disk/by-partuuid/d0f88ce2-7c7d-4cd5-9852-f6b839c2e313 bs=1M count=100
+    ceph -s
+
+## ceph动态调整参数，debug
+
+方法一
+
+    ceph tell osd.11 injectargs --debug-osd 5/5
+
+方法二
+
+    ceph daemon osd.11 config set debug_osd 0/0
+
+## fio测试
+
+rbd写满磁盘
+
+```
+fio --size=100% --ioengine=rbd --direct=1 --thread=1 --numjobs=1 --rw=write --name=writefile --bs=1m --pool=test --iodepth=200  --direct=1 --sync=0 --randrepeat=0 --refill_buffers --end_fsync=1 --rbdname=1TB_test_image_1 --group_reporting
+```
