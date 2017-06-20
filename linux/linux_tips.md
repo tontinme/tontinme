@@ -57,3 +57,34 @@
 然后再生成源
 
     createrepo -pdo xx/el7/x86_64/
+
+# kvm虚拟机挂载config drive
+
+部分openstack社区提供的虚拟机镜像默认不提供密码登录，只能通过秘钥访问。
+如果通过kvm直接启动镜像，需要通过给虚拟机挂载config-drive的方式，将公钥导入到虚拟机 
+
+方式如下
+先获得制作config-drive的脚本
+
+```
+curl -q https://raw.githubusercontent.com/larsks/virt-utils/master/create-config-drive |\
+sed s,/bin/sh,/bin/bash,g > create-config-drive.sh
+chmod +x create-config-drive.sh
+```
+
+拷贝本机公钥到config-drive
+```
+./create-config-drive.sh -k ~/.ssh/id_rsa.pub -u vm-config.sh -h cfg01  /var/lib/libvirt/images/vm-config.iso
+```
+
+如上，启动虚拟机时，在xml文件中定义如下cdrom即可
+
+``
+...
+    <disk device="cdrom" type="file">
+      <target bus="ide" dev="hda"/>
+      <source file="/var/lib/libvirt/images/vm-config.iso"/>
+      <driver type="raw" name="qemu"/>
+    </disk>
+...
+```
