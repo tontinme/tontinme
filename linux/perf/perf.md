@@ -1,15 +1,7 @@
-##Linux性能诊断perf使用指南
+# Linux性能诊断perf使用指南
 
-###作者
-digoal
+## 背景
 
-###日期
-2016-11-27
-
-
-----
-
-##背景
 Linux在服务端已占据非常大的比例，很多业务很多服务都跑在Linux上面。
 
 软件运行在Linux下，软件本身、以及Linux系统的性能诊断也成为热门的话题。
@@ -38,7 +30,7 @@ WhatreasonsarethreadsleavingtheCPU?
 
 本文将介绍一下perf的用法，网上很多叫法如perf_events,perfprofiler,PerformanceCountersforLinux。叫法不同，都指perf。
 
-##什么是perf
+## 什么是perf
 perf是Linux2.6+内核中的一个工具，在内核源码包中的位置tools/perf。
 
 perf利用Linux的trace特性，可以用于实时跟踪，统计event计数(perfstat)；或者使用采样(perfrecord)，报告(perfreport|script|annotate)的使用方式进行诊断。
@@ -47,7 +39,8 @@ perf命令行接口并不能利用所有的Linuxtrace特性，有些trace需要�
 
 参考https://github.com/brendangregg/perf-tools
 
-##perf工作原理
+## perf工作原理
+
 ![pic](20161127_01_pic_001.png)
 
 这张图大致列出了perf支持的跟踪事件，从kernerl到userspace，支持块设备、网络、CPU、文件系统、内存等，同时还支持系统调用，用户库的事件跟踪。
@@ -80,10 +73,11 @@ writeback:writeback_task_start[Tracepointevent]
 writeback:writeback_task_stop[Tracepointevent]
 ```
 
-###perfbackground
+### perfbackground
+
 我们看到perf支持这么多的事件和trace，它依赖了很多的接口来干这件事情。
 
-1\.Symbols
+1. Symbols
 
 没有符号表，无法将内存地址翻译成函数和变量名。
 
@@ -134,11 +128,11 @@ CONFIG_KALLSYMS_EXTRA_PASS=y
 
 如果是用户自己编译的，例如使用GCC编译时加上-g选项。
 
-2\.perfannotate
+2. perfannotate
 
 perfannotatecangeneratesourcecodelevelinformationiftheapplicationiscompiledwith-ggdb.
 
-3\.StackTraces(使用perfrecord-g收集stacktraces)
+3. StackTraces(使用perfrecord-g收集stacktraces)
 
 要跟踪完整的stack，编译时需要注意几个东西。
 
@@ -152,7 +146,7 @@ Therearetwowaystofixthis:
 eitherusingdwarfdatatounwindthestack,orreturningtheframepointers.
 ```
 
-3\.1编译perf时包含libunwind和-gdwarf，需要3.9以上的内核版本。
+3.1 编译perf时包含libunwind和-gdwarf，需要3.9以上的内核版本。
 
 ```
 Sinceaboutthe3.9kernel,perf_eventshassupportedaworkaroundformissingframepointersinuser-levelstacks:libunwind,whichusesdwarf.
@@ -166,7 +160,7 @@ ProducedebugginginformationinDWARFformat(ifthatissupported).Thisistheformatusedb
 NotethatwithDWARFversion2someportsrequire,andwillalwaysuse,somenon-conflictingDWARF3extensionsintheunwindtables.
 ```
 
-3\.2有些编译优化项会忽略framepointer，所以编译软件时必须指定-fno-omit-frame-pointer，才能跟踪完整的stacktrace.
+3.2 有些编译优化项会忽略framepointer，所以编译软件时必须指定-fno-omit-frame-pointer，才能跟踪完整的stacktrace.
 
 ```
 TheearliersshdexamplewasadefaultbuildofOpenSSH,whichusescompileroptimizations(-O2),whichinthiscasehasomittedtheframepointer.
@@ -174,11 +168,12 @@ TheearliersshdexamplewasadefaultbuildofOpenSSH,whichusescompileroptimizations(-O
 Here'showitlooksafterrecompilingOpenSSHwith-fno-omit-frame-pointer
 ```
 
-3\.3编译内核时包含CONFIG_FRAME_POINTER=y
+3.3 编译内核时包含CONFIG_FRAME_POINTER=y
 
 总结一下，要愉快的跟踪更完备的信息，就要在编译软件时打开符号表的支持(gcc-g)，开启annotate的支持(gcc-ggdb)，以及Stacktrace的支持(gcc-fno-omit-frame-pointer)。
 
-###perfpre-definedevent说明
+### perfpre-definedevent说明
+
 ```
 Hardware[Cache]Events:
 CPU相关计数器
@@ -217,7 +212,7 @@ ThisiscommonlyusedforCPUusageprofiling,andworksbycreatingcustomtimedinterrupteve
 
 当然，你也可以不指定事件，全面采样。
 
-##buildperf
+## buildperf
 例如centos你可以使用yum安装，也可以使用源码安装。
 
 perf在内核源码的tools/perf中，所以下载与你的内核大版本一致的内核源码即可
@@ -251,7 +246,8 @@ msg:=$(warningNonuma.hfound,disables'perfbenchnumamem'benchmark,pleaseinstallnum
 
 通常依赖gccmakebisonflexelfutilslibelf-devlibdw-devlibaudit-devpython-devbinutils-dev
 
-###perf依赖的kernel宏
+### perf依赖的kernel宏
+
 并不是每个开关都需要，但是有些没有就不方便或者功能缺失，例如没有打开符号表的话，看到的是一堆内存地址。
 
 ```
@@ -283,11 +279,11 @@ CONFIG_DEBUG_INFO=y
 
 一些开关的用途介绍
 
-1\.Kernel-levelsymbolsareinthekerneldebuginfopackage,orwhenthekerneliscompiledwithCONFIG_KALLSYMS.
+1. Kernel-levelsymbolsareinthekerneldebuginfopackage,orwhenthekerneliscompiledwithCONFIG_KALLSYMS.
 
-2\.Thekernelstacktracesareincomplete.NowasimilarprofilewithCONFIG_FRAME_POINTER=y
+2. Thekernelstacktracesareincomplete.NowasimilarprofilewithCONFIG_FRAME_POINTER=y
 
-3\.当我们使用perfrecord[stacktraces(-g)]时，可以跟踪stack，但是如果内核编译时没有指定CONFIG_FRAME_POINTER=y，perfreport时就会看到缺失的信息。
+3. 当我们使用perfrecord[stacktraces(-g)]时，可以跟踪stack，但是如果内核编译时没有指定CONFIG_FRAME_POINTER=y，perfreport时就会看到缺失的信息。
 
 不包含CONFIG_FRAME_POINTER=y时
 
@@ -344,13 +340,13 @@ system_call_fastpath
 __write_nocancel
 ```
 
-4\.如果要使用动态跟踪，即跟踪任意指定代码，则需要打开这些开关:
+4. 如果要使用动态跟踪，即跟踪任意指定代码，则需要打开这些开关:
 
 Forkernelanalysis,usingCONFIG_KPROBES=yandCONFIG_KPROBE_EVENTS=y,toenablekerneldynamictracing.andCONFIG_FRAME_POINTER=y,forframepointer-basedkernelstacks.
 
 Foruser-levelanalysis,CONFIG_UPROBES=yandCONFIG_UPROBE_EVENTS=y,foruser-leveldynamictracing.
 
-5\.如果打开了CONFIG_DEBUG_INFO，则可以在动态跟踪中打印内核变量的值。
+5. 如果打开了CONFIG_DEBUG_INFO，则可以在动态跟踪中打印内核变量的值。
 
 Ifyourkernelhasdebuginfo(CONFIG_DEBUG_INFO=y),youcanfishoutkernelvariablesfromfunctions.Thisisasimpleexampleofexaminingasize_t(integer)
 
@@ -398,8 +394,10 @@ CONFIG_GENERIC_CMOS_UPDATE=y
 .......
 ```
 
-##perf使用说明
-###perf--help
+## perf使用说明
+
+### perf--help
+
 先了解一下概貌
 
 perf命令用法还是挺简单的，根据功能区分了COMMAND，每个COMMAND有各自的用法。
@@ -438,7 +436,8 @@ tracestraceinspiredtool
 See'perfhelpCOMMAND'formoreinformationonaspecificcommand.
 ```
 
-###perfhelpCOMMAND
+### perfhelpCOMMAND
+
 要得到每个command的用法也蛮简单，可以使用perfhelpCOMMAND得到。
 
 例如
@@ -466,7 +465,8 @@ Anycommandyoucanspecifyinashell.
 .....
 ```
 
-###perftop跟踪实时信息
+### perftop跟踪实时信息
+
 跟踪时可以指定事件，CPU，以及是否跟踪stacktrace。
 
 ```
@@ -578,10 +578,11 @@ Symbol列[]中字符代表的含义如下，通常是k或者.表示kernel和user
 [H]:hypervisor
 ```
 
-###perfrecord收集统计信息
+### perfrecord收集统计信息
+
 perfrecord用来收集统计信息，通常的用法包括
 
-1\.使用record收集统计信息，可以收集全局的，指定PID或者线程ID的，指定CPU的，指定USERID的。
+1. 使用record收集统计信息，可以收集全局的，指定PID或者线程ID的，指定CPU的，指定USERID的。
 
 ```
 -a,--all-cpus
@@ -594,7 +595,7 @@ RecordeventsonexistingthreadID(commaseparatedlist).Thisoptionalsodisablesinherit
 Recordeventsinthreadsownedbyuid.Nameornumber.
 ```
 
-2\.收集间隔，可以指定采样的频率，采样的EVENT数，采样时间。
+2. 收集间隔，可以指定采样的频率，采样的EVENT数，采样时间。
 
 ```
 -c,--count=
@@ -603,7 +604,7 @@ Eventperiodtosample.
 Profileatthisfrequency.
 ```
 
-3\.采集的详细程度，可以指定event，使用CPU实时调度策略的进程（可以参考RHEL讲CGROUPcpu部分的文章），是否跟踪stackchain，
+3. 采集的详细程度，可以指定event，使用CPU实时调度策略的进程（可以参考RHEL讲CGROUPcpu部分的文章），是否跟踪stackchain，
 
 ```
 -r,--realtime=
@@ -660,7 +661,8 @@ perfrecord-ag
 Ctrl-C，退出perfrecord，统计信息已输出到perf.data。
 ```
 
-###perfreport
+### perfreport
+
 解读前面收集到的perf.data.
 
 常用的开关如下，--tui是交互式的文本显示窗口，--stdio是文本显示窗口。
@@ -825,7 +827,8 @@ __libc_start_main
 后面。。。。。。略
 ```
 
-###perfscript
+### perfscript
+
 一条条打印perf.data内的数据，输出的是perfrecord收集到的原始数据。
 
 生成热力图、火焰图也需要perfscript的输出，从最原始的信息中提取数据，生成svg。
@@ -849,7 +852,8 @@ Whenprintingsymbolsdonotdisplaycallchain.
 详细内容就不列出了，非常多
 ```
 
-###perfannotate
+### perfannotate
+
 解读前面收集到的perf.data，辅以汇编指令显示。
 
 ```
@@ -1135,7 +1139,8 @@ Sortedsummaryforfile/lib64/libc-2.12.so
 略
 ```
 
-###perfbench
+### perfbench
+
 用来测试系统的一些常见指标的性能(如IPC,messageorpipe,memcpy)。
 
 ```
@@ -1287,7 +1292,8 @@ Totaltime:7.967[sec]
 855.431993MB/Sec
 ```
 
-###perfstat
+### perfstat
+
 perf除了可以采样(使用perfrecord)（包括callstacktrace），还可以用于event计数。
 
 perfstat就是用于event计数的，可以跟踪指定命令的event计数。
@@ -1409,7 +1415,8 @@ Performancecounterstatsfor'psql-Upostgrescraig-cdroptableifexistsx;createtablexa
 perfstat-eblock:*,syscalls:*-a-r5--psql-q-Upostgrescraig-c"droptableifexistsx;createtablexasselectaFROMgenerate_series(1,1000000)a;";
 ```
 
-###perfeventmodifier
+### perfeventmodifier
+
 使用instruction:modifier可以指定要跟踪的instruction在哪里？在kernelspace或userspace，又或者在虚拟机，虚拟机OS，宿主机OS等。
 
 modifier用法如下，写在event:后面。
@@ -1428,7 +1435,8 @@ G|	monitorguestmachineonavirtualizationenvironment	|event:G
 perfstat-einstructions:uddif=/dev/zeroof=/dev/nullcount=100000
 ```
 
-###perf高级用法-动态跟踪
+### perf高级用法-动态跟踪
+
 perfprobe可以实现动态跟踪，指哪打哪。静态跟踪是预置的，而动态跟踪是补充预置不足的。
 
 ![pic](20161127_01_pic_002.png)
@@ -1650,7 +1658,8 @@ Asaworkaround,youcanaccesstheregisters(onLinux3.7+).Forexample,onx86_64:
 probe_libc:malloc(on0x800c0withsize=%di)
 ```
 
-###perftracepoint
+### perftracepoint
+
 event中的一种类型，实际上是一些比较常见的系统调用。
 
 不在里面的可以使用前面介绍的动态跟踪的方式进行跟踪。
@@ -1709,7 +1718,8 @@ swapper0[000]6011.850615:block:block_rq_complete:254,16R()108589633+16[0]
 [...]
 ```
 
-##绘制perf火焰图
+## 绘制perf火焰图
+
 使用perfreport-tui或者-stdio输出的文本不够直观的话，使用火焰图可以很直观的表现出哪些代码是瓶颈所在。
 
 ```
@@ -1732,7 +1742,8 @@ $pgbench-Mprepared-n-r-P1-c32-j32-T100
 
 ![pic](20161127_01_pic_003.png)
 
-##绘制perf热力图
+## 绘制perf热力图
+
 ```
 压测
 $pgbench-Mprepared-n-r-P1-c32-j32-T100
@@ -1755,7 +1766,8 @@ $5~/complete/{if(l=ts[$6,$9]){printf"%.f%.f\n",$4*1000000,
 
 ![pic](20161127_01_pic_004.png)
 
-##小结
+## 小结
+
 要完备的跟踪和打印跟踪（符号表、callstacktrace、汇编指令）信息，建议内核编译时加上
 
 ```
@@ -1783,28 +1795,157 @@ gcc-g-ggdb-fno-omit-frame-pointer
 
 如果是yum安装的软件，可以安装对应的debuginfo包。
 
-##参考
-1\.http://www.brendangregg.com/perf.html
+## 参考
 
-2\.https://perf.wiki.kernel.org/index.php/Main_Page
+1. http://www.brendangregg.com/perf.html
 
-3\.http://www.linux-kongress.org/2010/slides/lk2010-perf-acme.pdf
+2. https://perf.wiki.kernel.org/index.php/Main_Page
 
-4\.https://perf.wiki.kernel.org/index.php/Tutorial
+3. http://www.linux-kongress.org/2010/slides/lk2010-perf-acme.pdf
 
-5\.火焰图
+4. https://perf.wiki.kernel.org/index.php/Tutorial
 
-https://github.com/brendangregg/FlameGraph
+5. 火焰图
 
-6\.热力图
+ht ps://github.com/brendangregg/FlameGraph
 
-https://github.com/brendangregg/HeatMap
+6. 热力图
 
-7\.https://github.com/brendangregg/perf-tools
+ht ps://github.com/brendangregg/HeatMap
 
-8\.https://kernel.org/
+7. https://github.com/brendangregg/perf-tools
 
-9\.https://www.quora.com/How-do-I-compile-a-Linux-perf-tool-with-all-features-For-Linux-4-0-on-Ubuntu
+8. https://kernel.org/
+
+9. https://www.quora.com/How-do-I-compile-a-Linux-perf-tool-with-all-features-For-Linux-4-0-on-Ubuntu
 
 [Count](http://info.flagcounter.com/h9V1)
 
+
+
+## perf使用实例
+
+使用火焰图非常的简单，我们仅仅需要将代码 clone 下来就可以了，我通常喜欢将相关脚本扔到 /opt/FlameGraph 下面，后面也会用这个目录举例说明。
+
+一个简单安装的例子：
+
+```
+wget https://github.com/brendangregg/FlameGraph/archive/master.zip
+unzip master.zip
+sudo mv FlameGraph-master/ /opt/FlameGraph
+```
+
+### CPU 
+
+对于 TiKV 来说，性能问题最开始关注的就是 CPU，毕竟这个是一个非常直观的东西。 
+当我们发现 TiKV CPU 压力很大的时候，通常会对 TiKV 进行 perf，如下：
+
+```
+perf record -F 99 -p tikv_pid -g -- sleep 60
+perf script > out.perf
+```
+
+上面，我们对一个 TiKV 使用 99 HZ 的频繁采样 60 s，然后生成对应的采样文件。然后我们生成火焰图：
+
+```
+/opt/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+/opt/FlameGraph/flamegraph.pl out.folded > cpu.svg
+```
+![pic](perf_sample_01.png)
+
+上面就是生成的一个 TiKV 火焰图，我们会发现 gRPC 线程主要开销在 c gRPC core 上面，而这个也是现在 c gRPC core 大家普遍反映的一个问题，就是太费 CPU，但我相信凭借 Google gRPC team 的实力，这问题应该能够搞定。
+
+另外，在 gRPC 线程上面，我们可以发现，protobuf 的编解码也占用了很多 CPU，这个也是现阶段 rust protobuf 库的一个问题，性能比较差，但幸好后面的办法有一个优化，我们准备马上采用。
+
+另外，还需要注意，raftstore 线程主要的开销在于 RocksDB 的 Get 和 Write，对于 TiKV 来说，如果 raftstore 线程出现了瓶颈，那么整个 Raft 流程都会被拖慢，所以自然这个线程就是我们的重点优化对象。
+
+可以看到，Get 的开销其实就是我们拿到 Raft 的 committed entries，然后扔给 apply Raft log 线程去异步 apply，所以自然这一步 Get 自然能扔到 apply worker 去处理。另外，对于 Write，鉴于 Raft log 的格式，我们可以非常方便的使用 RocksDB 一个 insert_with_hint  特性来优化，或者将 Write 也放到另一个线程去 async 处理。
+
+可以看到，我们通过火焰图，能够非常方便的发现 CPU 大部分时间开销都消耗在哪里，也就知道如何优化了。
+
+这里在说一下，大家通常喜欢将目光定在 CPU 消耗大头的地方，但有时候一些小的不起眼的地方，也需要引起大家的注意。这里并不是这些小地方会占用多少 CPU，而是要问为啥会在火焰图里面出现，因为按照正常逻辑是不可能的。我们通过观察 CPU 火焰图这些不起眼的小地方，至少发现了几处代码 bug。
+
+### Memory
+
+通常大家用的最多的是 CPU 火焰图，毕竟这个最直观，但火焰图可不仅仅只有 CPU 的。我们还需要关注除了 CPU 之外的其他指标。有一段时间，我对 TiKV 的内存持续上涨问题一直很头疼，虽然 TiKV 有 OOM，但总没有很好的办法来定位到底是哪里出了问题。于是也就研究了一下 memory 火焰图。
+要 profile TiKV 的 memory 火焰图，其实我们就需要监控 TiKV 的 malloc 分配，只要有 malloc，就表明这时候 TiKV 在进行内存分配。因为 TiKV 是自己内部使用了 jemalloc，并没有用系统的 malloc，所以我们不能直接用 perf 来探查系统的 malloc 函数。幸运的是，perf 能支持动态添加探针，我们将 TiKV 的 malloc 加入：
+
+    perf probe -x /deploy/bin/tikv-server -a malloc
+
+然后采样生成火焰图:
+
+```
+perf record -e probe_tikv:malloc -F 99 -p tikv_pid -g -- sleep 10
+perf script > out.perf
+/opt/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+/opt/FlameGraph/flamegraph.pl  --colors=mem out.folded > mem.svg
+```
+
+![pic](perf_sample_02.png)
+
+上面是生成的一个 malloc 火焰图，我们可以看到，大部分的内存开销仍然是在 RocksDB 上面。
+通过 malloc 火焰图，我们曾发现过 RocksDB 的 ReadOption 在非常频繁的调用分配，后面准备考虑直接在 stack 上面分配，不过这个其实对性能到没啥太大影响
+除了 malloc，我们也可以 probe minor page fault 和 major page fault，因为用 pidstat 观察发现 TiKV 很少有 major page fault，所以我们只 probe 了 minor，如下：
+
+```
+perf record -e minor-faults -F 99 -p $1 -g -- sleep 10
+perf script > out.perf
+/opt/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+/opt/FlameGraph/flamegraph.pl  --colors=mem out.folded > minflt.svg
+```
+
+### Off CPU
+
+有时候，我们还会面临一个问题。系统的性能上不去，但 CPU 也很闲，这种的很大可能都是在等 IO ，或者 lock 这些的了，所以我们需要看到底 CPU 等在什么地方。
+对于 perf 来说，我们可以使用如下方式采样 off CPU。
+
+```
+perf record -e sched:sched_stat_sleep -e sched:sched_switch \
+    -e sched:sched_process_exit -p tikv_pid -g -o perf.data.raw sleep 10
+perf inject -v -s -i perf.data.raw -o perf.data
+```
+
+但不幸的是，上面的代码在 Ubuntu 或者 CentOS 上面通常都会失败，主要是现在最新的系统为了性能考虑，并没有支持 sched statistics。 对于 Ubuntu，貌似只能重新编译内核，而对于 CentOS，只需要安装 kernel debuginfo，然后在打开 sched statistics 就可以了，如下:
+dnf install kernel-debug kernel-debug-devel kernel-debug-debuginfo
+echo 1 | sudo tee /proc/sys/kernel/sched_schedstats
+然后生成 off cpu 火焰图:
+
+```
+perf script -F comm,pid,tid,cpu,time,period,event,ip,sym,dso,trace | awk '
+    NF > 4 { exec = $1; period_ms = int($5 / 1000000) }
+    NF > 1 && NF <= 4 && period_ms > 0 { print $2 }
+    NF < 2 && period_ms > 0 { printf "%s\n%d\n\n", exec, period_ms }' | \
+    /opt/FlameGraph/stackcollapse.pl | \
+    /opt/FlameGraph/flamegraph.pl --countname=ms --title="Off-CPU Time Flame Graph" --colors=io > offcpu.svg
+```
+
+![pic](perf_sample_03.png)
+
+上面就是 TiKV 一次 off CPU 的火焰图，可以发现只要是 server event loop 和 time monitor 两个线程 off CPU 比较长，server event loop 是等待外部的网络请求，因为我在 perf 的时候并没有进行压力测试，所以 wait 是正常的。而 time monitor 则是 sleep 一段时间，然后检查时间是不是出现了 jump back，因为有长时间的 sleep，所以也是正常的。
+上面我说到，对于 Ubuntu 用户，貌似只能重新编译内核，打开 sched statistics，如果不想折腾，我们可以通过 systemtap 来搞定。systemtap 是另外一种 profile 工具，其实应该算另一门语言了。
+我们可以直接使用 OpenResty 的 systemtap 工具，来生成 off CPU 火焰图，如下：
+
+```
+wget https://raw.githubusercontent.com/openresty/openresty-systemtap-toolkit/master/sample-bt-off-cpu
+chmod +x sample-bt-off-cpu
+
+./sample-bt-off-cpu -t 10 -p 13491 -u > out.stap
+/opt/FlameGraph/stackcollapse-stap.pl out.stap > out.folded
+/opt/FlameGraph/flamegraph.pl --colors=io out.folded > offcpu.svg
+```
+
+可以看到，使用 systemptap 的方式跟 perf 没啥不一样，但 systemtap 更加复杂，毕竟它可以算是一门语言。而 FlameGraph 里面也自带了 systemaptap 相关的火焰图生成工具。
+
+### Diff 火焰图
+
+除了通常的几种火焰图，我们其实还可以将两个火焰图进行 diff，生成一个 diff 火焰图，如下：
+
+    /opt/difffolded.pl out.folded1 out.folded2 | ./flamegraph.pl > diff2.svg
+
+![pic](perf_sample_04.png)
+
+但现在我仅仅只会生成，还没有详细对其研究过，这里就不做过多说明了。
+
+### 总结
+
+上面简单介绍了我们在 TiKV 里面如何使用火焰图来排查问题，现阶段主要还是通过 CPU 火焰图发现了不少问题，但我相信对于其他火焰图的使用研究，后续还是会很有帮助的。
