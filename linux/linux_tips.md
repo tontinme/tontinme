@@ -88,3 +88,15 @@ chmod +x create-config-drive.sh
     </disk>
 ...
 ```
+
+# linux设置高级路由
+
+如果centos或者ubuntu有多个网口配置同一网段的IP。那么需要为每个口设置默认路由，以保证从该口进入的流量，能够继续从该口出去。
+
+因为IP信息是属于操作系统的，而不是属于网口设备，因此无法控制本机发出的流量走哪个口。
+
+具体配置可以参考以下链接
+
+[centos](https://access.redhat.com/solutions/30564)
+
+[ubuntu](https://www.thomas-krenn.com/en/wiki/Two_Default_Gateways_on_One_System)

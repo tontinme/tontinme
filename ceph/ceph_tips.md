@@ -372,3 +372,71 @@ rbd写满磁盘
 ```
 fio --size=100% --ioengine=rbd --direct=1 --thread=1 --numjobs=1 --rw=write --name=writefile --bs=1m --pool=test --iodepth=200  --direct=1 --sync=0 --randrepeat=0 --refill_buffers --end_fsync=1 --rbdname=1TB_test_image_1 --group_reporting
 ```
+
+## 创建测试pool，测试osd性能
+
+### 创建单盘osd的pool
+
+先获得当前crushmap
+
+root@Ceph-P-1:~# ceph osd getcrushmap -o /tmp/p.bin
+got crush map from osdmap epoch 2634
+root@Ceph-P-1:~# crushtool -d /tmp/p.bin -o /tmp/p.bin.txt
+
+root@Ceph-P-2:~# ceph osd crush add-bucket only-a-osd root
+added bucket only-a-osd type root to crush map
+root@Ceph-P-2:~# ceph osd crush add osd.61 1 root=only-a-osd
+add item id 61 name 'osd.61' weight 1 at location {root=only-a-osd} to crush map
+
+root@Ceph-P-2:~# ceph osd crush rule create-simple only_a_osd_ruleset only-a-osd osd
+
+root@Ceph-P-1:~# ceph osd crush rm only-a-osd
+Error ENOTEMPTY: (39) Directory not empty
+root@Ceph-P-1:~# ceph osd crush rm osd.61 only-a-osd
+removed item id 61 name 'osd.61' from crush map
+root@Ceph-P-1:~# ceph osd tree
+
+root@Ceph-P-1:~# ceph osd crush move osd.61 1 root=only-a-osd
+Error EINVAL: (22) Invalid argument
+root@Ceph-P-1:~# ceph osd crush create-or-move osd.61 1 root=only-a-osd
+create-or-move updating item name 'osd.61' weight 1 at location {root=only-a-osd} to crush map
+
+root@Ceph-P-1:~# ceph osd pool create a-osd-pool 64 64
+pool 'a-osd-pool' created
+root@Ceph-P-1:~# ceph osd pool set a-osd-pool size 1
+set pool 27 size to 1
+root@Ceph-P-1:~# ceph osd pool set a-osd-pool crush_ruleset 1
+set pool 27 crush_ruleset to 1
+root@Ceph-P-1:~# ceph osd dump  |grep pool
+
+root@Ceph-P-1:~# rbd -p a-osd-pool create --image test_image --size 51200
+root@Ceph-P-1:~# rbd -p a-osd-pool create info test_image
+rbd: too many arguments
+root@Ceph-P-1:~# rbd -p a-osd-pool info test_image
+rbd image 'test_image':
+        size 51200 MB in 12800 objects
+        order 22 (4096 kB objects)
+        block_name_prefix: rbd_data.13565574b0dc51
+        format: 2
+        features: layering, exclusive-lock, object-map, fast-diff, deep-flatten
+        flags:
+
+
+# 换盘流程
+https://mp.weixin.qq.com/s?__biz=MzI0NDE0NjUxMQ==&mid=2651256423&idx=1&sn=b0cc580db2d9c090f96ea46f741fee25&chksm=f2901e47c5e79751b45f9003b9a72629357e7243d5dfcb0570a77fc782f40a2af274e8bd867e&mpshare=1&scene=1&srcid=061968OlUHGz4P8SSIurb1sT&key=2b4a905e8c07cb21bc512fb21bd3ea3e33f1565f18b4a7bd9166803133b0727e8b679329a1a224e09bbe40499af33e8fe029407c35c8ff30e1fe2ad3d1b8475e1ed994df1b592159e3b30417182191b1&ascene=0&uin=MTU1OTUyMzc1&devicetype=iMac+MacBookPro12%2C1+OSX+OSX+10.12.5+build(16F73)&version=12020810&nettype=WIFI&fontScale=100&pass_ticket=IsbxGZXfR2MpL0vfwotdOU%2F%2Fs0Q0bDwBtLhZVkmq9TQ%3D
+
+磁盘故障后，OSD 需要被替换
+管理员需要重新部署新的 OSD
+这两步骤需要在最小数据迁移情况下进行，同时需要让原来的 OSD 在原来的 CRUSH 层次中。
+
+流程
+
+1. ceph osd destroy N --yes-i-really-mean-it
+用于移除 OSD 私有配置，比如加密密钥，cephx key，同时这个命令用于确保后续的 prepare 没有误操作正在使用的 OSD
+2. ceph-disk prepare /dev/sdN --replace-osd-id X
+ceph-disk 会使用一个新的 MON 命令， 'osd new'同时接受一些参数
+ * uuid
+ * replace-id 
+ * secret
+ * config-key key/value pairs
+
