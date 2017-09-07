@@ -440,3 +440,20 @@ ceph-disk 会使用一个新的 MON 命令， 'osd new'同时接受一些参数
  * secret
  * config-key key/value pairs
 
+
+# 剔除硬盘
+NOTE: 该步骤指永久移除硬盘，不是替换
+
+为了避免二次重平衡数据，需要先将osd从crush中移除
+
+- ceph osd crush reweight osd.X 0.0
+- ... wait for rebalance to finish....
+- - ceph osd out X
+- ... stop OSD daemon ....
+- - ceph osd crush remove osd.X
+- - ceph auth del osd.X
+- - ceph osd rm X
+
+如果按照如下步骤，则需要两次rebalance操作
+- ceph osd out X    # osd权重改变,第一次rebalance
+- ceph osd crush remove osd.X   # host权重改变，第二次rebalance
