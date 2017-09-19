@@ -24,6 +24,7 @@
 
 2. 导入rpm并签名
 
+    # 使用之前导出的公钥
     rpm --import RPM-GPG-KEY-umcloud
 
 确认是否导入成功
@@ -54,9 +55,13 @@
 
     rpm --checksig (sha1) dsa sha1 md5 gpg OK
 
+导出公钥
+
+    gpg --export -a umcloud > keys/release.asc
+
 然后再生成源
 
-    createrepo -pdo xx/el7/x86_64/
+    createrepo -pdo xx/el7/x86_64/ xx/el7/x86_64/
 
 # kvm虚拟机挂载config drive
 
