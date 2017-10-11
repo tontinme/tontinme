@@ -421,6 +421,43 @@ rbd image 'test_image':
         features: layering, exclusive-lock, object-map, fast-diff, deep-flatten
         flags:
 
+### 利用现有crushmap，测试
+
+```
+当前crushmap如下
+root@njB-m05-mon-01:~/crush# ceph osd tree | grep -v ' up '
+ID  WEIGHT     TYPE NAME                       UP/DOWN REWEIGHT PRIMARY-AFFINITY
+-16          0 root only-a-hg
+ -1 1178.49463 root apple
+-14 1178.49463     copy-set cs01
+-11  392.83154         host-group m04
+ -5  130.94385             host njB-m04-osd-01
+ -9  130.94385             host njB-m04-osd-02
+ -6  130.94385             host njB-m05-osd-04
+-12  392.83154         host-group m05
+ -8  130.94385             host njB-m05-osd-01
+-10  130.94385             host njB-m05-osd-02
+ -4  130.94385             host njB-m05-osd-03
+-13  392.83154         host-group m06
+ -2  130.94385             host njB-m06-osd-01
+ -7  130.94385             host njB-m06-osd-02
+ -3  130.94385             host njB-m06-osd-03
+
+root@njB-m05-mon-01:~/crush# ceph osd crush rule create-simple only_a_hg_ruleset m05 host
+root@njB-m05-mon-01:~/crush# ceph osd pool create only_a_hg 1024
+pool 'only_a_hg' created
+root@njB-m05-mon-01:~/crush# ceph osd pool set only_a_hg crush_ruleset 1
+set pool 8 crush_ruleset to 1
+root@njB-m05-mon-01:~/crush# rbd -p only_a_hg create --image mm --size 900G
+root@njB-m05-mon-01:~/crush# rbd -p only_a_hg rm mm
+Removing image: 100% complete...done.
+root@njB-m05-mon-01:~/crush# ceph osd pool rm only_a_hg only_a_hg --yes-i-really-really-mean-it
+pool 'only_a_hg' removed
+root@njB-m05-mon-01:~/crush# ceph osd crush rule rm only_a_hg_ruleset
+root@njB-m05-mon-01:~/crush# ceph osd crush rule create-simple only_a_hg_ruleset m06 host
+```
+
+
 
 # 换盘流程
 https://mp.weixin.qq.com/s?__biz=MzI0NDE0NjUxMQ==&mid=2651256423&idx=1&sn=b0cc580db2d9c090f96ea46f741fee25&chksm=f2901e47c5e79751b45f9003b9a72629357e7243d5dfcb0570a77fc782f40a2af274e8bd867e&mpshare=1&scene=1&srcid=061968OlUHGz4P8SSIurb1sT&key=2b4a905e8c07cb21bc512fb21bd3ea3e33f1565f18b4a7bd9166803133b0727e8b679329a1a224e09bbe40499af33e8fe029407c35c8ff30e1fe2ad3d1b8475e1ed994df1b592159e3b30417182191b1&ascene=0&uin=MTU1OTUyMzc1&devicetype=iMac+MacBookPro12%2C1+OSX+OSX+10.12.5+build(16F73)&version=12020810&nettype=WIFI&fontScale=100&pass_ticket=IsbxGZXfR2MpL0vfwotdOU%2F%2Fs0Q0bDwBtLhZVkmq9TQ%3D
