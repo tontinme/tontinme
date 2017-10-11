@@ -11,6 +11,7 @@
 ------使用别名
 ------通过authorized_keys指定登录后要执行的命令
 ------通过中间主机建立ssh连接
+------ssh代理
 
 #dsh(代替ssh管理大量计算机)
 	dsh(Distributed Shell)是专为在远程系统上运行shell命令设计的，可以简化对大量计算机的操作
@@ -123,3 +124,18 @@
 #通过中间主机建立ssh连接
 	$ssh -t reachable_host ssh unreachable_host
 	unreachable_host表示从本地网络无法直接访问的主机，但可以从reachable_host所在网络访问
+
+#ssh代理
+
+    反向代理
+        #将本机的22端口代理到226上面的localhost:6666
+        ssh -NTfC -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -R 6666:localhost:22 tian@123.59.92.226
+        #将本机的19088端口代理到226上面的226:19088
+        ssh -NTfC -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -R 123.59.92.226:19088:localhost:19088 tian@123.59.92.226
+    正向代理
+        #将144.39上的5901端口代理到本地
+        ssh -gNf -L 5901:127.0.0.1:5901 root@10.125.144.39
+        #将133.8上的19088端口代理到本地。其中本地能访问132.2，132.2能访问132.8的19088端口
+        ssh -gNf -L 19088:10.106.133.8:19088 root@10.106.132.2
+        #建立本机到gcp-instance的隧道。浏览器设置socks proxy，这样浏览器访问的所有流量将通过gcp-instance转发出去
+        ssh -gNf -D 127.0.0.1:8011 gcp-instance
