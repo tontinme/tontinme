@@ -78,6 +78,7 @@ sudo ceph-disk --log-stdout -v activate /dev/sdf1
 ```
 
 格式化的详细输出
+
 ```
 [onest@BFJD-PSC-oNest-Sst-SV22 ~]$ sudo ceph-disk --log-stdout -v zap /dev/sdc
 get_dm_uuid: get_dm_uuid /dev/sdc uuid path is /sys/dev/block/8:32/dm/uuid
@@ -214,6 +215,7 @@ command_check_call: Running command: /usr/bin/udevadm settle --timeout=600
 ## 在ubuntu 14.04给ceph 使用perf 和火焰图
 
 快速使用方法
+
 ```
 root@node-289:~/zhu# perf record -p 2612463
 ^C[ perf record: Woken up 40 times to write data ]
@@ -285,41 +287,45 @@ ceph osd reweight-by-utilization
 
 ## MOS Ceph 替换journal
 
-    # 停止osd
-    stop ceph-osd id=50
-    # 刷新journal到磁盘
-    ceph-osd --flush-journal -i 50
-    # 查看journal指向的磁盘
-    ll
-    # unlink
-    unlink journal
-    ll /dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9
-    # 用新盘重新link
-    ln -s /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5 journal
-    ceph-osd --mkjournal -i 50
-    # 启动osd
-    start ceph-osd id=50
-    # 清除旧journal数据
-    dd if=/dev/zero of=/dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9 bs=1M count=100
-    ll
-    ll /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5
-    # 检查集群状态
-    ceph -s
-    lsblk
+```
+# 停止osd
+stop ceph-osd id=50
+# 刷新journal到磁盘
+ceph-osd --flush-journal -i 50
+# 查看journal指向的磁盘
+ll
+# unlink
+unlink journal
+ll /dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9
+# 用新盘重新link
+ln -s /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5 journal
+ceph-osd --mkjournal -i 50
+# 启动osd
+start ceph-osd id=50
+# 清除旧journal数据
+dd if=/dev/zero of=/dev/disk/by-partuuid/a50517e1-080b-4465-9791-073e2f8506b9 bs=1M count=100
+ll
+ll /dev/disk/by-partuuid/8b48109d-ee7d-48b3-a31e-0938a8a4e1a5
+# 检查集群状态
+ceph -s
+lsblk
+```
 
 如果需要新建journal分区，操作步骤如下
 
-    # 查看journal磁盘当前情况
-    sgdisk --print /dev/sdv
-    # 根据末位标记新建分区
-    sgdisk -n 8:0:+10G -c 8:'primary' /dev/sdv
-    ll /dev/disk/by-partuuid/ | grep sdv8
-    sgdisk --print /dev/sdv
-    lsblk
-    # 通知系统，识别新分区
-    partprobe /dev/sdv
-    lsblk
-    sgdisk --print /dev/sdv
+```
+# 查看journal磁盘当前情况
+sgdisk --print /dev/sdv
+# 根据末位标记新建分区
+sgdisk -n 8:0:+10G -c 8:'primary' /dev/sdv
+ll /dev/disk/by-partuuid/ | grep sdv8
+sgdisk --print /dev/sdv
+lsblk
+# 通知系统，识别新分区
+partprobe /dev/sdv
+lsblk
+sgdisk --print /dev/sdv
+```
 
 
 ssd 替换journal
@@ -328,32 +334,36 @@ ssd使用当前磁盘做journal即可。即在本地创建一个journal文件，
 
 先保存当前的journal分配信息
 
-    cd /var/lib/ceph/osd/
-    for i in `ls .`; do ls -l $i/journal; done > ~/c2-journal
-    vim ~/c2-journal
-    ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11
-    ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11 >> ~/c2-journal
-    # 编辑文件，记录当前的journal分配信息
-    vim ~/c2-journal
-    lsblk
+```
+cd /var/lib/ceph/osd/
+for i in `ls .`; do ls -l $i/journal; done > ~/c2-journal
+vim ~/c2-journal
+ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11
+ls -l /dev/disk/by-partuuid/ | grep -e 'sdt' -e 'sdu' -e 'sdv' | sort -k 11 >> ~/c2-journal
+# 编辑文件，记录当前的journal分配信息
+vim ~/c2-journal
+lsblk
+```
 
 这里ceph-9为ssd类型的osd，之前使用sdv为journal盘，现在替换为本地
 
-    cd ceph-9
-    ll
-    # 停止osd，并将journal刷入磁盘
-    stop ceph-osd id=9
-    ceph-osd --flush-journal -i 9
-    ll
-    unlink journal
-    # 在本地创建2GB的磁盘分区
-    dd if=/dev/zero of=/var/lib/ceph/osd/ceph-9/journal bs=1M count=2048
-    ll
-    ceph-osd --mkjournal -i 9
-    start ceph-osd id=9
-    # 清除旧journal的数据
-    dd if=/dev/zero of=/dev/disk/by-partuuid/d0f88ce2-7c7d-4cd5-9852-f6b839c2e313 bs=1M count=100
-    ceph -s
+```
+cd ceph-9
+ll
+#停止osd，并将journal刷入磁盘
+stop ceph-osd id=9
+ceph-osd --flush-journal -i 9
+ll
+unlink journal
+#在本地创建2GB的磁盘分区
+dd if=/dev/zero of=/var/lib/ceph/osd/ceph-9/journal bs=1M count=2048
+ll
+ceph-osd --mkjournal -i 9
+start ceph-osd id=9
+# 清除旧journal的数据
+dd if=/dev/zero of=/dev/disk/by-partuuid/d0f88ce2-7c7d-4cd5-9852-f6b839c2e313 bs=1M count=100
+ceph -s
+```
 
 ## ceph动态调整参数，debug
 
@@ -379,6 +389,7 @@ fio --size=100% --ioengine=rbd --direct=1 --thread=1 --numjobs=1 --rw=write --na
 
 先获得当前crushmap
 
+```
 root@Ceph-P-1:~# ceph osd getcrushmap -o /tmp/p.bin
 got crush map from osdmap epoch 2634
 root@Ceph-P-1:~# crushtool -d /tmp/p.bin -o /tmp/p.bin.txt
@@ -401,6 +412,8 @@ Error EINVAL: (22) Invalid argument
 root@Ceph-P-1:~# ceph osd crush create-or-move osd.61 1 root=only-a-osd
 create-or-move updating item name 'osd.61' weight 1 at location {root=only-a-osd} to crush map
 
+# root@Ceph-P-1:~# ceph osd crush create-or-move osd.61 1 host=njA-m04-osd-04
+
 root@Ceph-P-1:~# ceph osd pool create a-osd-pool 64 64
 pool 'a-osd-pool' created
 root@Ceph-P-1:~# ceph osd pool set a-osd-pool size 1
@@ -420,6 +433,7 @@ rbd image 'test_image':
         format: 2
         features: layering, exclusive-lock, object-map, fast-diff, deep-flatten
         flags:
+```
 
 ### 利用现有crushmap，测试
 
@@ -459,7 +473,8 @@ root@njB-m05-mon-01:~/crush# ceph osd crush rule create-simple only_a_hg_ruleset
 
 
 
-# 换盘流程
+## 换盘流程
+
 https://mp.weixin.qq.com/s?__biz=MzI0NDE0NjUxMQ==&mid=2651256423&idx=1&sn=b0cc580db2d9c090f96ea46f741fee25&chksm=f2901e47c5e79751b45f9003b9a72629357e7243d5dfcb0570a77fc782f40a2af274e8bd867e&mpshare=1&scene=1&srcid=061968OlUHGz4P8SSIurb1sT&key=2b4a905e8c07cb21bc512fb21bd3ea3e33f1565f18b4a7bd9166803133b0727e8b679329a1a224e09bbe40499af33e8fe029407c35c8ff30e1fe2ad3d1b8475e1ed994df1b592159e3b30417182191b1&ascene=0&uin=MTU1OTUyMzc1&devicetype=iMac+MacBookPro12%2C1+OSX+OSX+10.12.5+build(16F73)&version=12020810&nettype=WIFI&fontScale=100&pass_ticket=IsbxGZXfR2MpL0vfwotdOU%2F%2Fs0Q0bDwBtLhZVkmq9TQ%3D
 
 磁盘故障后，OSD 需要被替换
@@ -478,7 +493,7 @@ ceph-disk 会使用一个新的 MON 命令， 'osd new'同时接受一些参数
  * config-key key/value pairs
 
 
-# 剔除硬盘
+## 剔除硬盘
 NOTE: 该步骤指永久移除硬盘，不是替换
 
 为了避免二次重平衡数据，需要先将osd从crush中移除
@@ -494,3 +509,142 @@ NOTE: 该步骤指永久移除硬盘，不是替换
 如果按照如下步骤，则需要两次rebalance操作
 - ceph osd out X    # osd权重改变,第一次rebalance
 - ceph osd crush remove osd.X   # host权重改变，第二次rebalance
+
+
+## ceph osd扩容/重新加入集群
+
+分两种情况，扩容和重新加入集群
+
+区别是 
+
+扩容：新添加的节点之前在crushmap里面是不存在的，刚写进crushmap时可以设置crush weight为0，逐步增加crush weeight，避免对集群影响过大
+重新加入集群：这些节点在crushmap中已经存在了，且crush weight正常，没有降低。这时就需要考虑如何尽量少的影响正常运行的节点
+
+### 重新加入集群
+
+osd节点因为问题被踢出集群，修复好后，需要重新加入集群。
+
+如果一次加入的节点较多，也建议一次全部加进去。
+
+调整crush weight不设置一步到位，可以分3~4步完成。一开始建议crush weight设置为0，以防止crush map设置错误。确认crush map添加正确后，在逐步把crush weight加上去。
+
+首先设置集群
+
+```
+# 手动mark in osd
+root@c-h01-mon-01:~# ceph osd set noin
+# 禁止自动开始rebalance
+root@c-h01-mon-01:~# ceph osd set norebalance
+# 关闭auto out
+root@c-h01-mon-01:~# ceph osd set noout
+# 避免scrub操作对rebalance产生影响
+root@c-h01-mon-01:~# ceph osd set noscrub
+root@c-h01-mon-01:~# ceph osd set nodeep-scrub
+```
+
+观察集群
+
+```
+    cluster 218fd621-9d6e-4b2c-963f-128bd5a0c5e9
+     health HEALTH_WARN
+            too many PGs per OSD (443 > max 400)
+            noout,noin,norebalance,noscrub,nodeep-scrub flag(s) set
+     monmap e1: 3 mons at {c...}
+            election epoch 82, quorum 0,1,2 c-...
+     osdmap e18533: 608 osds: 527 up, 513 in
+            flags noout,noin,norebalance,noscrub,nodeep-scrub,sortbitwise,require_jewel_osds
+      pgmap v7814453: 75776 pgs, 6 pools, 4655 GB data, 1457 kobjects
+            13679 GB used, 1763 TB / 1777 TB avail
+               75776 active+clean
+  client io 0 B/s rd, 4652 kB/s wr, 143 op/s rd, 196 op/s wr
+```
+
+启动所有要恢复/添加的osd进程。ceph osd tree观察osd均为up状态，此时reweight应为0
+
+将这些osd的crush weight设置为0。ceph osd tree观察osd状态，ceph -s观察osd状态
+
+将这些osd加入到集群(mark in), 会自动重算数据分布，但是因为设置了norebalance，所以不会开始rebalance
+
+
+把rebalance速率先降低，开始数据迁移后，根据情况可以把速率升高
+
+ceph tell osd.* injectargs --osd_recovery_max_active=10
+ceph tell osd.* injectargs --osd_recovery_max_single_start=10
+ceph tell osd.* injectargs --osd_max_backfills=5
+
+
+## 常见运维操作
+
+### stop a normal(up + in) osd without rebalancing
+
+```
+$ ceph osd set noout
+$ ceph osd set nodeep-scrub
+# Stop OSD.N Daemon
+$ service stop osd.N
+```
+
+1. PGs within the stopped OSDs will become degraded
+2. then, the OSDs will be marked as down, so that will cause the PGs to go into a degraded state, but they will stay marked as 'in', not triggering date re-distribution.
+
+after maintenance. 
+
+```
+# Start OSD.N Daemon
+$ service start osd.N
+# unset the cluster from noout
+$ ceph osd unset noout
+$ ceph osd unset nodeepscrub
+```
+
+### decrease, remove a normal(up+in) OSD gracefully
+
+directly out the OSD will immediately lead to ceph rebalancing. So, gracefully means not directly out the OSD.
+
+```
+$ ceph osd reweight osd.N 0.8
+# 0.6 > 0.4 > 0.2 > 0
+```
+
+### ceph-object-store-tool
+
+用法
+
+```
+# list PGs on OSD
+$ ceph-object-store-tool --op list-pgs
+# list PG's info
+$ ceph-object-store-tool --pgid <pgid> --op info
+# list Objects in PG
+$ ceph-object-store-tool --pgid <pgid> --op list
+# show PG log
+$ ceph-object-store-tool --pgid <pgid> --op log
+# Remove a PG
+$ ceph-object-store-tool --pgid <pgid> --op remove
+# export a PG
+$ ceph-object-store-tool --pgid <pgid> --op export --file <export-to-file>
+# import PG from a file
+$ ceph-object-store-tool --op import --file <from-exported-file>
+# Dump super_block info of an OSD
+$ ceph-object-store-tool --op dump-super
+# Dump metadata info of an Object
+$ ceph-object-store-tool <Object> dump
+# Object like rbd_data.6e742ae8944a.0000000000000013
+```
+
+pg的导出导入
+
+```
+# List up set and acting set of PG
+$ ceph pg map 2.2d0
+# If OSD is UP, output locked
+$ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-56/ --journal /var/lib/ceph/osd/ceph-56/journal --op info --pgid 2.2d0
+OSD has the store locked
+# ceph-56 is the osd OSD to which pg 2.2d0 maps (down and can not be started)
+# we can export the data of this pg on ceph-56
+$ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-56/ --journal-path /var/lib/ceph/osd/ceph-56/journal --op export --pgid 2.2d0 --file /tmp/2.2d0.export
+# ceph-52 is the new OSD to which pg 2.2d0 maps.
+# import the exported data from ceph-56
+$ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-52/ --journal-path /var/lib/ceph/osd/ceph-52/journal --op import --file /tmp/2.2d0.export
+```
+
