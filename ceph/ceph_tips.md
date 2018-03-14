@@ -40,9 +40,96 @@
 
 ## Ceph Debug Tips
 
+#### osd debug 
+
 查看osd配置
 
   ceph daemon osd.438 config show | less
+
+查看osd性能
+
+```
+ceph daemon osd.438 perf dump | less
+...
+   "filestore": {
+        "journal_queue_ops": 0,
+        "journal_queue_bytes": 0,
+        "op_queue_max_ops": 1000,
+        "op_queue_ops": 1000,
+        "ops": 5784052,
+        "op_queue_max_bytes": 104857600,
+        "op_queue_bytes": 6150888,
+...
+    "osd": {
+        "op_wip": 279,
+        "op": 3197864,
+        "op_in_bytes": 253509575757,
+...
+    "throttle-osd_client_messages": {
+        "val": 329,
+        "max": 5000000,
+        "get": 3440850,
+        "get_sum": 3440850,
+
+重点关注指标
+**op_queue_ops**
+**op_wip**
+**val**(client_messages)
+```
+
+查看osd op执行详情
+
+```
+ceph daemon osd.438 dump_historic_ops | less
+...
+               [
+                    {
+                        "time": "2018-01-31 00:09:44.094935",
+                        "event": "initiated"
+                    },
+                    {
+                        "time": "2018-01-31 00:09:44.094962",
+                        "event": "queued_for_pg"
+                    },
+                    {
+                        "time": "2018-01-31 00:09:50.467307",
+                        "event": "reached_pg"
+                    },
+                    {
+                        "time": "2018-01-31 00:09:50.473305",
+                        "event": "waiting for rw locks"
+                    },
+                    {
+                        "time": "2018-01-31 00:09:59.327202",
+                        "event": "reached_pg"
+                    },
+                    {
+                        "time": "2018-01-31 00:09:59.467363",
+                        "event": "waiting for rw locks"
+...
+可以发现reached_pg之前，共queue了6s，时间消耗很长
+reached_pg之后，等待rw lock消耗了很长时间，怀疑是磁盘性能太差
+```
+
+### slow request
+
+集群出现slow request，先通过日志查看对应的osd。
+
+通过上文的方法分析该osd的请求路径，是否卡在哪一步。
+
+通过脚本获得osd的pg分布（尤其注意是访问哪个pool时出现的slow request，重点关注属于该pool的pg在该osd上的数量）。
+
+由于会存在pg分布不均匀的问题，如果某个pool在该osd上pg过多，会导致这个osd压力过大，从而出现slow request，即出现slow request，不一定就是硬盘物理损坏。
+
+系统安装perf，查看性能瓶颈。比如tcmalloc问题导致的性能下降
+
+```
+#获得osd的PID，查看性能消耗在哪一步
+# perf top -p PID
+#也可以先打压力，然后保存结果查看
+# perf record -p PID
+# perf report
+```
 
 ## 修复osd
 
