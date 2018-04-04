@@ -7,6 +7,12 @@
     gpg --gen-key  # 选项都默认即可，需要填写用户名和邮箱
     gpg --list-keys
 
+一个技巧是通过
+
+    ping -f ip
+
+来增加熵，ip 为执行 gpg 时所在机器的 IP 地址。 gpg 命令成功执行后可以通过
+
 或者导入key。公钥和私钥都需要导入
     
     # public key
