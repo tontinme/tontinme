@@ -111,3 +111,29 @@ chmod +x create-config-drive.sh
 [centos](https://access.redhat.com/solutions/30564)
 
 [ubuntu](https://www.thomas-krenn.com/en/wiki/Two_Default_Gateways_on_One_System)
+
+# linux提供网关服务，允许其他节点通过本机访问公网
+
+假设内网只有一台机器A能访问外网，其他机器如果有公网访问需求，可以通过A进行转发
+
+步骤如下
+
+```
+iptables -t nat -I POSTROUTING 6 -s 192.168.2.0/24 ! -d 192.168.2.0/24 -j MASQUERADE
+iptables -I FORWARD 1 -s 192.168.2.0/24 -o enp7s0f0 -j ACCEPT
+echo  1 > /proc/sys/net/ipv4/ip_forward
+```
+
+如果遇到如下错误
+
+```
+iptables: Index of insertion too big.
+```
+
+去掉其中的6，即
+
+```
+iptables -t nat -I POSTROUTING -s 192.168.2.0/24 ! -d 192.168.2.0/24 -j MASQUERADE
+```
+
+在其他节点设置网关或静态路由到机器A，既可访问外网
