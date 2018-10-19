@@ -172,3 +172,76 @@ rebase --autosquash -i  会激活一个交互式的 rebase 编辑器，但是编
 * [reset](http://git-scm.com/docs/git-reset)
 * [revert](http://git-scm.com/docs/git-revert)
 * [rm](http://git-scm.com/docs/git-rm)
+
+## 更新某次提交的author信息
+
+使用 git rebase -i <earliercommit>
+
+如果是最近的一次提交，直接使用如下命令
+
+```
+git commit --amend --author="Author Name <email@address.com>"
+```
+
+例如，commit历史信息为 A-B-C-D-E-F(F is HEAD)。现在需要修改C和D的author信息
+
+执行 **git rebase -i B**
+( if you need to edit A, use git rebase -i --root )
+
+```
+pick 1fc6c95 Patch A
+pick 6b2481b Patch B
+pick dd1475d something I want to split
+pick c619268 A fix for Patch B
+pick fa39187 something to add to patch A
+pick 4ca2acc i cant' typ goods
+pick 7b36971 something to move before patch B
+
+# Rebase 41a72e6..7b36971 onto 41a72e6
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+# However, if you remove everything, the rebase will be aborted.
+#
+```
+
+如上所示，将C和D从pick改为edit状态. rebase开始后，会先暂停到C. 
+
+通过如下命令更新C的commit author信息
+
+```
+git commit --amend --author="Author Name <email@address.com>"
+```
+
+然后继续下一个
+
+```
+git rebase --continue
+```
+
+这时会暂停到D. 继续更新author信息
+
+```
+git commit --amend --author="Author Name <email@address.com>" again
+git rebase --continue
+```
+
+到这里，author信息已更新完成。提交新的commit信息
+
+```
+git push -f
+```
+
+参考
+
++ [How to change the commit author for one specific commit?](https://stackoverflow.com/questions/3042437/how-to-change-the-commit-author-for-one-specific-commit)
++ [an-example-of-using-git-rebase](https://help.github.com/articles/about-git-rebase/#an-example-of-using-git-rebase)
+
+
