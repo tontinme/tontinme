@@ -111,6 +111,27 @@ ceph daemon osd.438 dump_historic_ops | less
 reached_pg之后，等待rw lock消耗了很长时间，怀疑是磁盘性能太差
 ```
 
+### 集群卡
+
+现象:
+ceph集群状态显示正常。
+部分虚拟机重启无法进入系统，部分虚拟机IO操作hang住，部分image下载失败。
+执行rbd export命令卡住，rados -p images ls卡住。
+
+原因:
+J版Ceph有个参数osd_client_message_cap，用于限制client连接数，防止osd占用过多内存，默认值为100。当ceph集群规模较大，在多个client情况下，有可能出现活锁，导致client到该osd的请求连接无法建立，表现为虚拟机IO卡，重启时读取硬盘超时。
+
+```
+#ceph -s
+#rbd  -p images export 554a5b1e-9634-4025-9865-e85840f96025 ./aaa
+#rados -p images ls
+# 在ceph.conf中设置debug_ms = 5/5
+# 再次执行 rados -p images ls 找出是哪个IP卡住
+#ceph osd dump | grep ‘10.125.136.34:6813’
+#ceph osd find 312
+#systemctl restart ceph-osd@312
+```
+
 ### slow request
 
 集群出现slow request，先通过日志查看对应的osd。
@@ -461,6 +482,7 @@ ceph -s
 方法二
 
     ceph daemon osd.11 config set debug_osd 0/0
+    ceph daemon /var/run/ceph/ceph-client.rgw.d-m05-mon-01.asok config set debug_rgw 0/0
 
 ## fio测试
 
