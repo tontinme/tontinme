@@ -414,10 +414,48 @@
 			如果长时间大于这个数值，说明系统出了问题
 		#Note:svctm参数在未来某个版本的iostat会被删除
 		await: 平均每次请求的等待时间，这个时间包括了队列时间和服务时间
-		       也就是说，一般情况下，await大于svctm，它们的差值越小，则说明队列时间越短，反之差值越大\
-			队列时间越长，说明系统出了问题
+               在Linux上，每个I/O的平均耗时是用await表示的，但它不能反映硬盘设备的性能，因为await不仅 \
+               包括硬盘设备处理I/O的时间，还包括了在队列中等待的时间。I/O请求在队列中的时候尚未发送给硬盘设备，\
+               即队列中的等待时间不是硬盘设备消耗的，所以说await体现不了硬盘设备的速度，内核的问题 \
+               比如I/O调度器什么的也有可能导致await变大。那么有没有哪个指标可以衡量硬盘设备的性能呢？\
+               非常遗憾的是，iostat(1)和sar(1)都没有，这是因为它们所依赖的/proc/diskstats不提供这项数据.
 		avgqu-sz: 平均请求队列的长度。毫无疑问，队列长度越短越好
 	#Note:有时候iostat会显示一些很离谱的结果，官方FAQ的解释是：http://sebastien.godard.pagesperso-orange.fr/faq.html	
+
+    /proc/diskstats 含义
+    https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
+
+		 1 - major number
+		 2 - minor mumber
+		 3 - device name
+		 4 - reads completed successfully
+		 5 - reads merged
+		 6 - sectors read
+		 7 - time spent reading (ms)
+		 8 - writes completed
+		 9 - writes merged
+		10 - sectors written
+		11 - time spent writing (ms)
+		12 - I/Os currently in progress
+		13 - time spent doing I/Os (ms)
+		14 - weighted time spent doing I/Os (ms)
+
+		Kernel 4.18+ appends four more fields for discard
+		tracking putting the total at 18:
+
+		15 - discards completed successfully
+		16 - discards merged
+		17 - sectors discarded
+		18 - time spent discarding
+
+		For more details refer to Documentation/iostats.txt
+
+    python版本的iostat
+    https://github.com/idning/iostat-py
+
+    参考文档
+    http://www.udpwork.com/item/12931.html
+
 #ip
     ip [OPTIONS] OBJECT [COMMAND [ARGUMENTS]]
     ip link #配置网络设备

@@ -33,6 +33,22 @@ Table of Contents
     # private key
     gpg --export-secret-key -a umcloud > secret-umcloud
 
+    import或者delete公钥私钥时，如果遇到如下错误。那么需要
+    安装pinentry-gtk或者pinentry-qt, 然后在gpg-agent中指定pinentry路径
+    # cat ~/.gnupg/gpg-agent.conf
+        allow-preset-passphrase
+        pinentry-program /usr/bin/pinentry-curses
+
+    This is a secret key! - really delete? (y/N) y
+    gpg: deleting secret key failed: No pinentry
+    gpg: deleting secret subkey failed: No pinentry
+    gpg: umstor001: delete key failed: No pinentry
+
+    [root@umstor-repo utils]# gpg --allow-secret-key-import --import secret-umstor
+    gpg: key 4330CA6A5F7819A6: "umstor001 <umstor001@umcloud.com>" not changed
+    gpg: key 4330CA6A5F7819A6/4330CA6A5F7819A6: error sending to agent: No pinentry
+    gpg: error building skey array: No pinentry
+
 2. 导入rpm并签名
 
     # 使用之前导出的公钥
