@@ -626,7 +626,7 @@ NOTE: 该步骤指永久移除硬盘，不是替换
 
 区别是 
 
-扩容：新添加的节点之前在crushmap里面是不存在的，刚写进crushmap时可以设置crush weight为0，逐步增加crush weeight，避免对集群影响过大
+扩容：新添加的节点之前在crushmap里面是不存在的，刚写进crushmap时可以设置crush weight为0，逐步增加crush weight，避免对集群影响过大
 重新加入集群：这些节点在crushmap中已经存在了，且crush weight正常，没有降低。这时就需要考虑如何尽量少的影响正常运行的节点
 
 ### 重新加入集群
@@ -680,6 +680,81 @@ root@c-h01-mon-01:~# ceph osd set nodeep-scrub
 ceph tell osd.* injectargs --osd_recovery_max_active=10
 ceph tell osd.* injectargs --osd_recovery_max_single_start=10
 ceph tell osd.* injectargs --osd_max_backfills=5
+
+### 扩容示例
+
+ceph osd tree初始状态如下
+新加osd编号从9开始, 所属host为(compute-6, compute-7, compute-8)
+
+```
+ID WEIGHT  TYPE  NAME          UP/DOWN      REWEIGHT  PRIMARY-AFFINITY
+-1 7.27991 root default
+-2 1.81998    host compute-2
+0 0.90999       osd.0          up           1.00000  1.00000
+5 0.90999       osd.5          up           1.00000  1.00000
+-3 1.81998    host compute-2
+0 0.90999       osd.0          up           1.00000  1.00000
+5 0.90999       osd.5          up           1.00000  1.00000
+...
+9       0  osd.9               up           1.00000  1.00000
+10      0  osd.10              up           1.00000  1.00000
+...
+```
+
+添加新的host信息
+
+```
+ceph osd crush add-bucket compute-6 host
+ceph osd crush add-bucket compute-7 host
+ceph osd crush add-bucket compute-8 host
+```
+
+找到osd所属的host，并依次添加（0.45为osd weight值）
+
+```
+ceph osd crush create-or-move osd.9 0.45 host=compute-6
+…
+```
+
+观察( ceph -s, ceph osd tree )
+
+三台新host设置crush weight为0
+
+```
+ceph osd crush reweight compute-6 0
+ceph osd crush reweight compute-7 0
+ceph osd crush reweight compute-8 0
+```
+
+将三台新节点扩容到已有集群
+
+```
+ceph osd crush move compute-6 root=default
+ceph osd crush move compute-7 root=default
+ceph osd crush move compute-8 root=default
+```
+
+观察( ceph -s, ceph osd tree )
+
+逐步调整crush weight, 开始平衡
+
+观察集群状态
+
+```
+ceph osd tree
+ceph -s
+```
+
+平衡完成后
+
+```
+ceph osd unset noout
+```
+
+保存crushmap
+
+```
+ceph osd getcrushmap -o ./ceph-1227-new.bin
 
 
 ## 常见运维操作
@@ -756,4 +831,5 @@ $ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-56/ --journal-path /v
 # import the exported data from ceph-56
 $ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-52/ --journal-path /var/lib/ceph/osd/ceph-52/journal --op import --file /tmp/2.2d0.export
 ```
+
 
