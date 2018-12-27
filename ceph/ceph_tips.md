@@ -745,7 +745,9 @@ ceph osd tree
 ceph -s
 ```
 
-平衡完成后
+平衡完成后，根据情况决定是否扩容pg
+
+最后，集群恢复正常后，取消noout
 
 ```
 ceph osd unset noout
