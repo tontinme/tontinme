@@ -244,4 +244,16 @@ git push -f
 + [How to change the commit author for one specific commit?](https://stackoverflow.com/questions/3042437/how-to-change-the-commit-author-for-one-specific-commit)
 + [an-example-of-using-git-rebase](https://help.github.com/articles/about-git-rebase/#an-example-of-using-git-rebase)
 
+## git删除远程分支
 
+删除本地分支
+
+```
+git branch -d feature/login
+```
+
+删除远程分支
+
+```
+git push origin --delete feature/login
+```
