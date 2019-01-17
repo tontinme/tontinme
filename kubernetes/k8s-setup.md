@@ -1,5 +1,12 @@
 # Kubernetes Setup
 
+## Table of Content
+
+[install through kubeadm](#Install through kubeadm)
+[install ipvs](#Install IPVS)
+[install metrics-server](#Install metrics-server)
+[apply example](#Running example)
+
 ## Install through kubeadm
 
 | role | count | IPs | OS |
@@ -21,6 +28,8 @@
 安装kubernetes
 
 [Creating a single master cluster with kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/)
+
+**如果使用ipvs代替iptables，请先阅读ipvs install文档，修改配置后，再执行init命令**
 
 + 检查参数
 + 执行kubeadm init
@@ -197,4 +206,109 @@ token:      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZ
 
 使用token登录dashboard
 
+
+## Install IPVS
+
+[ipvs](https://github.com/kubernetes/kubernetes/blob/master/pkg/proxy/ipvs/README.md)
+
+## Install metrics-server
+
+[metrics-server](https://github.com/kubernetes-incubator/metrics-server)
+
+git下载项目
+
+按照说明文档，执行安装
+
+```
+cd metrics-server/
+kubectl apply -f deploy/1.8+/
+```
+
+等待几分钟，执行如下命令，查看是否部署成功
+
+```
+[root@next-1 1.8+]# kubectl top node
+NAME     CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+next-1   167m         2%     1623Mi          38%
+next-2   31m          0%     574Mi           13%
+next-3   51m          0%     645Mi           15%
+
+kubectl top pods
+
+```
+
+查看metrics-server是否成功运行
+
+```
+# 查看apiservice
+kubectl get apiservice
+...
+v1beta1.metrics.k8s.io                 kube-system/metrics-server   True        41m
+...
+
+kubectl describe apiservice v1beta1.metrics.k8s.io
+...
+Status:
+  Conditions:
+    Last Transition Time:  2018-11-18T12:02:09Z
+    Message:               all checks passed
+    Reason:                Passed
+    Status:                True
+    Type:                  Available
+...
+```
+
+如果一直提示如下报错
+
+```
+[root@next-1 1.8+]# kubectl top node
+error: metrics not available yet
+```
+
+可能遇到hostname解析问题，需要修改如下[链接](https://github.com/kubernetes-incubator/metrics-server/issues/131)
+
+打开metrics-server-deployment.yaml
+
+```
+# 添加如下内容
+        command:
+        - /metrics-server
+        - --kubelet-insecure-tls
+        - --kubelet-preferred-address-types=InternalIP
+
+kubectl apply -f metrics-server-deployment.yaml
+```
+
+## Running example
+
+基于安全原因，k8s默认不允许调度pods到master节点。执行如下命令，允许其调度
+
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+运行一个nginx示例
+
+
+```
+# kubectl apply -f nginx.yml
+
+# cat nginx.yml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+```
 
