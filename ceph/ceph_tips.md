@@ -834,4 +834,13 @@ $ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-56/ --journal-path /v
 $ ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-52/ --journal-path /var/lib/ceph/osd/ceph-52/journal --op import --file /tmp/2.2d0.export
 ```
 
+## reweight and weight
 
+ceph osd reweight = reweight
+ceph osd crush reweight = weight
+
+reweight是0.0~1.0之间的一个数，可以理解为一个百分比。weight一般表示为磁盘的容量(单位GB)，weight之和是host的weight值
+
+out即ceph osd reweight，不影响host weight，不影响host的pg总数. 调整一个osd的reweight值， 相应的pg会分配到同host的其他osd，重平衡快，但是这些本机的其他osd，pg数量会变多，相应的，数据使用量变大
+
+调整crush reweight会影响host weight，整个host的权重会降低，剔除节点的时候一定要使用crush reweight
