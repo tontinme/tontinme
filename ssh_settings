@@ -139,3 +139,33 @@
         ssh -gNf -L 19088:10.106.133.8:19088 root@10.106.132.2
         #建立本机到gcp-instance的隧道。浏览器设置socks proxy，这样浏览器访问的所有流量将通过gcp-instance转发出去
         ssh -gNf -D 127.0.0.1:8011 gcp-instance
+    使用systemd自动开启
+    ```
+    # cat /usr/lib/systemd/system/ssh-tunnel@.service
+    [Unit]
+    Description=Setup a secure tunnel to %I
+    After=network.target
+    
+    [Service]
+    Environment="LOCAL_ADDR=localhost"
+    EnvironmentFile=/etc/default/secure-tunnel@%i
+    #ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -L ${LOCAL_ADDR}:${LOCAL_PORT}:localhost:${REMOTE_PORT} ${TARGET}
+    ExecStart=/usr/bin/ssh -NTC -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${TARGET}
+    
+    # Restart every >2 seconds to avoid StartLimitInterval failure
+    RestartSec=5
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
+
+    # cat /etc/default/secure-tunnel\@qcloud
+    TARGET=qcloud
+    LOCAL_PORT=localhost
+    LOCAL_PORT=22
+    REMOTE_PORT=6666
+    ```
+
+    systemctl start ssh-tunnel@qcloud.service
+    systemctl status ssh-tunnel@qcloud.service
+    systemctl enable ssh-tunnel@qlcoud.service
