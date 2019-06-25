@@ -1,0 +1,366 @@
+---
+
+swagger: '2.0'
+
+info:
+  version: 0.0.1
+  title: CM-Injector API
+  description: API of the Hakweye CM-Injector (https://git.umcloud.io/storage/cm-injector)
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+paths:
+  /namespaces:
+    get:
+      tags:
+        - namespace
+      operationId: getNamespaces
+      description: Get a list of namespaces
+      responses:
+        '200':
+          description: Get namespaces response
+          schema:
+            $ref: '#/definitions/getNamespaces'
+  /namespaces/{nsName}:
+    parameters:
+      - in: path
+        name: nsName
+        type: string
+        required: true
+        description: Name of the namespace to get
+    get:
+      tags:
+        - namespace
+      operationId: getNamespace
+      description: name of a namespace to get
+      responses:
+        '200':
+          description: Get namespace response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/getNamespace'
+        '500':
+          $ref: '#/responses/InternalServerError'
+  /namespaces/{nsName}/secrets:
+    parameters:
+      - in: path
+        name: nsName
+        type: string
+        required: true
+        description: Name of the namespace to get
+    get:
+      tags:
+        - secret
+      operationId: getSecrets
+      description: Get a list of secret
+      responses:
+        '200':
+          description: Get secrets response
+          schema:
+            $ref: '#/definitions/getSecrets'
+      parameters:
+        - name: filter
+          in: query
+          description: A list of matchers to filter secrets by
+          required: false
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+  /namespaces/{nsName}/secret/{secretName}:
+    parameters:
+      - in: path
+        name: nsName
+        type: string
+        required: true
+        description: Name of the namespace to get
+      - in: path
+        name: secretName
+        type: string
+        required: true
+        description: Name of the secret to get
+    get:
+      tags:
+        - secret
+      operationId: getSecret
+      description: Get a secret by its Name
+      responses:
+        '200':
+          description: Get secret response
+          schema:
+            $ref: '#/definitions/getSecret'
+        '404':
+          description: A secret with the specified ID was not found
+        '500':
+          $ref: '#/responses/InternalServerError'
+  /namespaces/{nsName}/secret/alertmanager:
+    parameters:
+      - in: path
+        name: nsName
+        type: string
+        required: true
+        description: Name of the namespace to get
+    get:
+      tags:
+        - alertmanager
+      operationId: getAlertmanager
+      description: Get config of alertmanager
+      responses:
+        '200':
+          description: Get config response
+          schema:
+            $ref: '#/definitions/getAlertmanager'
+        '404':
+          description: The config of alertmanager was not found
+        '500':
+          $ref: '#/responses/InternalServerError'
+    post:
+      tags:
+        - alertmanager
+      operationId: postAlertmanager
+      # accurately **patch** of kubernetes
+      description: Update / patch an existing secret
+      parameters:
+        - in: body
+          name: alertmanager.yaml
+          description: The config to update
+          required: true
+          schema:
+            $ref: '#/definitions/postAlertmanager'
+      responses:
+        '200':
+          description: Update / patch config response
+          schema:
+            type: object
+            properties:
+              configName:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '404':
+          description: The config with the specified Name was not found
+          schema:
+            type: string
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      type: string
+  InternalServerError:
+    description: Internal server error
+    schema:
+      type: string
+
+definitions:
+  getNamespaces:
+    type: array
+    items:
+      $ref: '#/definitions/getNSList'
+  getNSList:
+    type: object
+    properties:
+      name:
+        type: string
+      status:
+        type: string
+        enum: ["Active", "Terminating"]
+      age:
+        type: string
+    required:
+      - name
+      - status
+      - age
+  getNamespace:
+    type: object
+    properties:
+      version:
+        type: string
+      kind:
+        type: string
+      metadata:
+        $ref: '#/definitions/nsMetadata'
+      spec:
+        $ref: '#/definitions/nsSpec'
+      status:
+        $ref: '#/definitions/nsStatus'
+    required:
+      - version
+      - kind
+      - metadata
+      - spec
+      - status
+  nsMetadata:
+    type: object
+    properties:
+      name:
+        type: string
+      createtime:
+        type: string
+        format: date-time
+      resversion:
+        type: string
+      selflink:
+        type: string
+      uid:
+        type: string
+    required:
+      - name
+      - createtime
+      - resversion
+      - selflink
+      - uid
+  nsSpec:
+    type: object
+    properties:
+      finalizers:
+        type: array
+        items:
+          type: string
+    required:
+      - finalizers
+  nsStatus:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: ["Active", "Terminating"]
+    required:
+      - phase
+  getSecrets:
+    type: array
+    items:
+      $ref: '#/definitions/getSecList'
+  getSecList:
+    type: object
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      data:
+        type: string
+      age:
+        type: string
+    required:
+      - name
+      - type
+      - data
+      - age
+  # todo: getSecret
+  getSecret:
+    type: string
+  getAlertmanager:
+    type: object
+    properties:
+      sender:
+        $ref: '#/definitions/getSender'
+      receiver:
+        $ref: '#/definitions/getReceiver'
+    required:
+      - sender
+      - receiver
+  getSender:
+    type: object
+    properties:
+      smtp_host:
+        type: string
+      tls_require:
+        type: boolean
+        default: false
+      send_from:
+        type: string
+      auth_username:
+        type: string
+      auth_password:
+        type: string
+    required:
+      - smtp_host
+      - tls_require
+      - send_from
+      - auth_username
+      - auth_password
+  getReceiver:
+    type: object
+    properties:
+      sys_ops:
+        $ref: '#/definitions/getGroup'
+      sys_ops_l2:
+        $ref: '#/definitions/getGroup'
+      umstor_ops:
+        $ref: '#/definitions/getGroup'
+      umstor_ops_l2:
+        $ref: '#/definitions/getGroup'
+    required:
+      - sys_ops
+      - sys_ops_l2
+      - umstor_ops
+      - umstor_ops_l2
+  getGroup:
+    type: object
+    properties:
+      email:
+        $ref: '#/definitions/getEmail'
+      sms:
+        $ref: '#/definitions/getSms'
+      alerta:
+        $ref: '#/definitions/getAlerta'
+    required:
+      - email
+  getEmail:
+    type: array
+    items:
+      $ref: '#/definitions/email'
+  getSms:
+    type: array
+    items:
+      $ref: '#/definitions/sms'
+  getAlerta:
+    type: array
+    items:
+      $ref: '#/definitions/alerta'
+  email:
+    type: object
+    properties:
+      account:
+        type: string
+      send_resolved:
+        type: boolean
+        default: true
+    required:
+      - account
+      - send_resolved
+  sms:
+    type: object
+    properties:
+      account:
+        type: string
+    required:
+      - account
+  alerta:
+    type: string
+  postAlertmanager:
+    type: object
+    properties:
+      sender:
+        $ref: '#/definitions/getSender'
+      receiver:
+        $ref: '#/definitions/getReceiver'
+    required:
+      - sender
+      - receiver
+
+tags:
+  - name: namespace
+    description: Everything related to Namespaces
+  - name: secret
+    description: Everything related to secrets
+  - name: alertmanager
+    description: config.yaml of alertmanager
