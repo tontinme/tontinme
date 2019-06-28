@@ -1,6 +1,12 @@
 ---
-
 swagger: '2.0'
+
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+schemes:
+  - http
 
 info:
   version: 0.0.1
@@ -10,13 +16,22 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-consumes:
-  - "application/json"
-produces:
-  - "application/json"
+responses:
+  errorNotFound:
+    description: The request not found
+    schema:
+      type: string
+  BadRequest:
+    description: Bad request
+    schema:
+      type: string
+  InternalServerError:
+    description: Internal server error
+    schema:
+      type: string
 
 paths:
-  /namespaces:
+  /api/v1/namespaces:
     get:
       tags:
         - namespace
@@ -27,7 +42,7 @@ paths:
           description: Get namespaces response
           schema:
             $ref: '#/definitions/getNamespaces'
-  /namespaces/{nsName}:
+  /api/v1/namespaces/{nsName}:
     parameters:
       - in: path
         name: nsName
@@ -48,7 +63,7 @@ paths:
               $ref: '#/definitions/getNamespace'
         '500':
           $ref: '#/responses/InternalServerError'
-  /namespaces/{nsName}/secrets:
+  /api/v1/namespaces/{nsName}/secrets:
     parameters:
       - in: path
         name: nsName
@@ -74,7 +89,7 @@ paths:
           collectionFormat: multi
           items:
             type: string
-  /namespaces/{nsName}/secret/{secretName}:
+  /api/v1/namespaces/{nsName}/secret/{secretName}:
     parameters:
       - in: path
         name: nsName
@@ -100,7 +115,7 @@ paths:
           description: A secret with the specified ID was not found
         '500':
           $ref: '#/responses/InternalServerError'
-  /namespaces/{nsName}/secret/alertmanager:
+  /api/v1/namespaces/{nsName}/secret/alertmanager:
     parameters:
       - in: path
         name: nsName
@@ -118,7 +133,7 @@ paths:
           schema:
             $ref: '#/definitions/getAlertmanager'
         '404':
-          description: The config of alertmanager was not found
+          $ref: '#/responses/errorNotFound'
         '500':
           $ref: '#/responses/InternalServerError'
     post:
@@ -147,17 +162,9 @@ paths:
         '404':
           description: The config with the specified Name was not found
           schema:
-            type: string
-
-responses:
-  BadRequest:
-    description: Bad request
-    schema:
-      type: string
-  InternalServerError:
-    description: Internal server error
-    schema:
-      type: string
+            $ref: '#/responses/errorNotFound'
+        '500':
+          $ref: '#/responses/InternalServerError'
 
 definitions:
   getNamespaces:
@@ -279,11 +286,12 @@ definitions:
         type: string
       auth_username:
         type: string
+      # use string instead of secret, cannot implements the json.Marshaler interface did by Alertmanager
       auth_password:
         type: string
     required:
       - smtp_host
-      - tls_require
+      #- tls_require
       - send_from
       - auth_username
       - auth_password
