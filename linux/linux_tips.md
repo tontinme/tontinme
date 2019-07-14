@@ -158,3 +158,30 @@ iptables -t nat -I POSTROUTING -s 192.168.2.0/24 ! -d 192.168.2.0/24 -j MASQUERA
 ```
 
 在其他节点设置网关或静态路由到机器A，既可访问外网
+
+# ntp配置及检查
+
+`ntpq -p` will display the offsets for each reachable server in milliseconds (`ntpdc -p` uses seconds instead).
+
+`ntpdc -c loopinfo` will display the combined offset in seconds, as seen at the last poll. If supported, `ntpdc -c kerninfo` will display the current remaining correction, just as `ntptime` does.
+
+```
+# ntpq -p
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+*169.254.0.2     100.122.36.4     2 u  739 1024  377   33.359   -1.780   3.222
+```
+
+> `when`: number of seconds passed since last response
+
+> `poll`: polling interval, in seconds, for source
+
+> `reach`: indicates success/failure to reach source, 377 all attempts successful
+
+> `delay`: indicates the roundtrip time, in milliseconds, to receive a reply
+
+> `offset`: indicates the time difference, in milliseconds, between the client server and source
+
+> `disp/jitter`: indicates the difference, in milliseconds, between two samples
+
+
