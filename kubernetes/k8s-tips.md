@@ -172,3 +172,44 @@ node not ready时，controller-manager会迁移所有pod
 * 业务方要用正确的姿势使用容器，如数据与逻辑分离，无状态化，增强对异常处理等
 * 分布式存储
 * 可靠的 Service／DNS 服务或者保持异地重建后的 IP 不变
+
+### 3.2 pod如何获得真实的client地址
+
+将Service的spec.externalTrafficPolicy 字段设置为local，这就保证了所有Pod通过Service 收到请求之后，一定可以看到真正的、外部 client 的源地址。
+
+### 3.3 
+
+kubelet --eviction-hard=imagefs.available<10%,memory.available<500Mi,nodefs.available<5%,nodefs.inodesFree<5% --eviction-soft=imagefs.available<30%,nodefs.available<10% --eviction-soft-grace-period=imagefs.available=2m,nodefs.available=2m --eviction-max-pod-grace-period=600
+
+Kubernetes 计算 Eviction 阈值的数据来源，主要依赖于从 Cgroups 读取到的值，以及使用 cAdvisor 监控到的数据。
+
+而当 Eviction 发生的时候，kubelet 具体会挑选哪些 Pod 进行删除操作，就需要参考这些 Pod 的 QoS 类别了。
+
+首当其冲的，自然是 BestEffort 类别的 Pod。
+
+其次，是属于 Burstable 类别、并且发生“饥饿”的资源使用量已经超出了 requests 的 Pod。
+
+最后，才是 Guaranteed 类别。并且，Kubernetes 会保证只有当 Guaranteed 类别的 Pod 的资源使用量超过了其 limits 的限制，或者宿主机本身正处于 Memory Pressure 状状态时，Guaranteed 的 Pod 才可能被选中进行 Eviction 操作。
+
+cpuset
+首先，你的 Pod 必须是 Guaranteed 的 QoS 类型；
+然后，你只需要将 Pod 的 CPU 资源的 requests 和 limits 设置为同一个相等的整数值即可。
+
+### 3.4 容器GC问题
+
+container的GC主要有3个用户定义变量：
+
+MinAge：容器被GC的最短时间
+
+MaxPerPodContainer: 允许每个PodContainer中死容器的最大数目,PodContainer指1个Container而非pod
+
+MaxContainers：死容器的最大数目
+
+Minage=0，MaxPerPodContainer和MaxContainers <0, 表示禁用这些变量
+
+GC用于unidentified、deleted或超出边界的容器(3个用户定义变量)。
+
+最旧的container通常首先被移除。如果
+
+MaxPerPodContainer>MaxContainers,maxperpodcontainer会进行调整，直至降级为1，并逐出最旧的容器。
+pods所拥有的已删除的容器一旦超过MinAge，就会被删除。未由Kubelet管理的容器不受容器垃圾收集的约束。
