@@ -1,7 +1,71 @@
-# 介绍
+# 证书介绍文档
+
+## Table of Contents
+
+[TLS证书简介](#TLS证书简介)
+
+[认证](#认证)
+
+[授权](#授权)
+
+[准入控制](#准入控制)
+
+[手动创建证书](#手动创建证书)
+
+[证书续约](#证书续约)
+
+[附录](#附)
+
+# TLS证书简介
+
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            b4:1e:8b:32:69:96:d0:0b
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=kubernetes
+        Validity
+            Not Before: Sep 20 00:15:03 2019 GMT
+            Not After : Sep 17 00:15:03 2029 GMT
+        Subject: O=system:masters, CN=kube-apiserver-kubelet-client
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:ec:a6:65:f6:31:e4:05:0e:d0:85:5c:6d:37:12:
+                    2a:2c:48:1a:4f:83:1f:80:ea:dd:02:59:2b:c5:83:
+                    c8:56:2e:eb:f8:f9:ce:6f:5c:b2:64:89:e4:ec:5b:
+                    ...
+                    4d:f3:d8:b8:18:61:ae:3d:b2:94:ad:1a:b8:af:1a:
+                    bb:67
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage:
+                TLS Web Client Authentication
+    Signature Algorithm: sha256WithRSAEncryption
+         2a:5b:0f:fc:62:5a:f0:3f:22:b6:7a:ff:5e:40:85:05:9c:1c:
+         a7:b4:b2:78:c4:3d:f0:a3:0d:d5:11:22:09:8f:a5:3b:58:63:
+         1c:34:a4:34:a6:98:5e:48:21:d9:77:d3:99:a6:af:ef:48:81:
+         ...
+         cd:6c:06:eb:d8:54:0d:38:ea:ac:91:03:76:88:41:c0:05:46:
+         20:b1:30:c6:d8:91:40:eb:e1:85:b9:ce:f3:67:48:f2:fb:93:
+         a9:fb:f9:58
+```
+
+证书包含主体公钥、身份信息，证书授权中心，签名信息等。签名信息需要使用名为kubernetes的CA的公钥进行验证，如果解密出来的签名信息和本地对比一致，则验证通过）。签名命令
+
+```
+# openssl verify -CAfile ca.crt apiserver-kubelet-client.crt
+apiserver-kubelet-client.crt: OK
+```
+
 
 > 认证：识别用户身份
-> 鉴权：用户有哪些权限
+> 授权：用户有哪些权限
 > 准入控制：作用于kubernetes对象，通过合理的权限管理，保证系统安全可靠
 
 # 认证(Authentication)
@@ -44,7 +108,7 @@ curl --cacert ./ca.crt https://xxx
 curl -k https://xxx/ --cert ./client.crt --key client.key
 ```
 
-kubernetes(kubeadm)证书介绍
+## kubernetes(kubeadm)证书介绍
 
 ### pki
 
@@ -152,7 +216,9 @@ Certificate:
 ```
 
 
-# 鉴权(Authorization)
+# 授权(Authorization)
+
+识别是否有相应操作权力。授权者，通过组合属性（用户属性，资源属性，实体）的策略向用户授予访问权限。
 
 支持的鉴权策略
 
@@ -163,12 +229,14 @@ Certificate:
 
 ## Node
 
-配合NodeRestriction准入控制来限制kubelet，使其仅可访问node, endpoint, pod, service以及secret, configmap, pv, pvc等相关资源。在apiserver中使用以下配置开启node鉴权机制
+专门为配合NodeRestriction(限制其只能操作本机资源)准入控制来限制kubelet的一种授权方式，使其仅可访问node, endpoint, pod, service以及secret, configmap, pv, pvc等相关资源。在apiserver中使用以下配置开启node鉴权机制
 
 ```
 KUBE_ADMISSION_CONTROL="...,NodeRestriction,..."
 KUBE_API_ARGS="...,--authorization-mode=Node,..."
 ```
+
+由于要对整个集群的pod，node等资源进行操作，权限太大，所以需要设置准入控制NodeRestriction。
 
 ## RBAC
 
@@ -177,6 +245,8 @@ KUBE_API_ARGS="...,--authorization-mode=Node,..."
 > RoleBinding: 绑定关系
 
 # 准入控制(Admission Control)
+
+判断你的操作是否符合集群要求，用户还可以根据自己的需求定义准入插件来管理集群。kubernetes将准入模块分为三种，validating(验证型)，mutating(修改型)以及两者兼有。
 
 官方有推荐默认的内置规则。
 
