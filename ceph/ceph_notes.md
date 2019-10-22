@@ -173,6 +173,20 @@ pg所在的所有osd都挂了
 
     ceph pg repair <pg_id>
 
+## snapshot与clone
+
+ceph默认使用cow(copy on write)创建快照。
+
+> cow - copy on write. 对快照进行首次修改时，先读取源数据，并写到新位置，再更新源数据，一次读两次写，写性能不好
+> row - redirect on write. 对快照首次修改时，先读取源数据，然后直接将变更写到新位置，将指针移到新位置，避免了写放大，但是数据放在多个快照上，碎片化严重，因此读性能不行，写性能好
+
+nova创建虚拟机使用rbd clone技术
+
+> snapshot - 基于cow，快照为只读
+> clone - 基于cow，基于快照创建可读可写的新卷
+
+新创建的clone为空，当写数据时，直接上溯到快照（一直到源镜像），拷贝到本地后再进行写操作。由于这里对源镜像只进行读操作，因此使用cow性能更好。
+但是如果base snapshot已经有多个快照的话，依然会有性能问题
 
 
 
