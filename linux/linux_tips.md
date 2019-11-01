@@ -2,6 +2,7 @@ Table of Contents
 
 [rpm制作源签名](rpm制作源签名)
 [linux设置高级路由](linux设置高级路由)
+[BPF和eBPF](BPF和eBPF)
 
 # rpm制作源签名
 
@@ -184,4 +185,13 @@ iptables -t nat -I POSTROUTING -s 192.168.2.0/24 ! -d 192.168.2.0/24 -j MASQUERA
 
 > `disp/jitter`: indicates the difference, in milliseconds, between two samples
 
+# BPF和eBPF
 
+> netfilter: 当前iptables使用的用于过滤网络的内核模块
+> bpf: bpfilter（基于bpf）会替换netfilter供iptables使用。tcpdump，wireshark等也是基于bpf
+
+> ptrace: gdb和strace基于ptrace. ptrace有很多缺点，比如需要改变目标调试进程的父亲，还不允许多个调试者同时分析同一个进程. gdb在调试过程中设置断点会发出SIGSTOP信号，这会让被调试进程进入T（TASK_STOPPED or TASK_TRACED）暂停状态或跟踪状态.
+> 动态追踪(dynamic-tracing): dtrace(solaris), systemtap(基于utrace,或者uprobes, uretprobes), perf(kprobes, uprobes), bcc(基于ebpf)
+
+gdb注重交互性，适合离线调试，比如调试core dump
+systemtap适合在线分析，对进程影响小

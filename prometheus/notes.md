@@ -28,3 +28,26 @@ dec(): 进行减1操作
 dec(v double): 进行减v操作
 set(v double): 将gauge的值设置为v
 ```
+
+# operator
+
+> serviceMonitor: 和prometheus/kubernetes_sd_config的endpoints相对应. 能够应对大多数k8s场景
+> podMonitor: 和prometheus/kubernetes_sd_config的pod相对应. 有时需要监控某个svc下面的非全部，即部分pod，比如guarantined pods. 
+
+```
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: PodMonitor
+metadata:
+  name: frontend
+  labels:
+    tier: frontend
+spec:
+  selector:
+    # label selector as in ServiceMonitor but doesn't select services of which we discover pods
+    # but directly selects pods.
+  endpoints:
+    # similar to ServiceMonitor, just we don't differentiate between target ports and service ports.
+```
+
+
+

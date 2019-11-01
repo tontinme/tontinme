@@ -1,4 +1,8 @@
 ---
+# TOC
+
+[introduce](#introduce)
+
 # introduce
 
 ## 1. 概念介绍
@@ -213,3 +217,14 @@ GC用于unidentified、deleted或超出边界的容器(3个用户定义变量)�
 
 MaxPerPodContainer>MaxContainers,maxperpodcontainer会进行调整，直至降级为1，并逐出最旧的容器。
 pods所拥有的已删除的容器一旦超过MinAge，就会被删除。未由Kubelet管理的容器不受容器垃圾收集的约束。
+
+# 修改kubeadm部署的集群配置
+
+以下四个模块通过static pod部署，直接修改/etc/kubernetes/manifest/下面的配置即可。修改完成后，kubelet会自动监测文件
+变化，并重建pod。通过kubectl观察pod状态，通过ps查看进程参数是否生效
+
+```
+etcd.yaml  kube-apiserver.yaml  kube-controller-manager.yaml  kube-scheduler.yaml
+```
+
+kubelet可以修改/var/lib/kubelet/kubeadm-flags.env，将参数添加到文件中，然后重启kubelet进程
