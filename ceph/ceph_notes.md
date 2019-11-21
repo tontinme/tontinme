@@ -1,5 +1,13 @@
 # About ceph notes
 
+- [librbd feature list](#librbd feature list)
+- [ceph pg stat](#ceph pg stat)
+- [snapshot与clone](#snapshot与clone)
+- [ceph读写流程介绍](#ceph读写流程介绍)
+- [ceph bucket reshard](#ceph bucket reshard)
+- [故障与数据恢复](#故障与数据恢复)
+
+
 ## librbd feature list
 
 * layering
@@ -179,7 +187,7 @@ pg所在的所有osd都挂了
 ceph默认使用cow(copy on write)创建快照。
 
 > cow - copy on write. 对快照进行首次修改时，先读取源数据，并写到新位置，再更新源数据，一次读两次写，写性能不好
-> row - redirect on write. 对快照首次修改时，先读取源数据，然后直接将变更写到新位置，将指针移到新位置，避免了写放大，但是数据放在多个快照上，碎片化严重，因此读性能不行，写性能好
+> row - redirect on write. 对快照首次修改时，先读取源数据，然后直接将变更写到新位置，将指针移到新位置，避免了写放大，但是数据放在多个快照上，碎片化严重，因此读性能不行，写性能好.
 
 nova创建虚拟机使用rbd clone技术
 
@@ -197,6 +205,8 @@ nova创建虚拟机使用rbd clone技术
 > librbd: 创建rbd设备后，通过调用librbd接口，实现对rbd设备的访问。librbd对二进制分块，默认为4M大小，librbd调用librados将对象写入集群
 
 librados将数据首先写入primary osd，primary osd发送写请求给其他secondary osd。之后三副本的osd执行相同的操作。先写pglog(类似sql中的undo log，用于回滚)，再写磁盘（如果有journal，则先写journal即返回ack）。secondary osd写完后发送ack给primary osd， primary osd确认所有osd写完后，返回client写入成功。
+
+
 
 ## ceph bucket reshard
 
@@ -256,6 +266,43 @@ pglog类似于数据库的undo log, 一般只保留最近几千条的操作记�
 2.3.1 如果故障osd拥有primary pg, 该pg在对比pglog后发现自己需要backfill，它会发送请求给monitor，临时将replicate置为primary pg。等自己完全恢复了才会接管primary角色。
 
 2.3.2 故障osd拥有replicate角色，该pg的primary osd会发起backfill流程向该osd复制数据，这时不影响正常IO处理
+
+## ceph df容量计算
+
+```
+[root@test01 ~]# ceph osd df
+ID CLASS WEIGHT  REWEIGHT SIZE    RAW USE DATA   OMAP   META     AVAIL   %USE  VAR  PGS STATUS
+ 0   hdd 0.06740  1.00000  69 GiB  17 GiB 16 GiB 15 KiB 1024 MiB  52 GiB 25.07 0.81 232     up
+ 1   hdd 0.04790  1.00000  49 GiB  17 GiB 16 GiB 15 KiB 1024 MiB  32 GiB 35.31 1.14 232     up
+ 2   hdd 0.04790  1.00000  49 GiB  17 GiB 16 GiB 15 KiB 1024 MiB  32 GiB 35.31 1.14 232     up
+                    TOTAL 167 GiB  52 GiB 49 GiB 47 KiB  3.0 GiB 115 GiB 31.08
+
+[root@test01 ~]# ceph df
+RAW STORAGE:
+    CLASS     SIZE        AVAIL       USED       RAW USED     %RAW USED
+    hdd       167 GiB     115 GiB     49 GiB       52 GiB         31.08
+    TOTAL     167 GiB     115 GiB     49 GiB       52 GiB         31.08
+
+POOLS:
+    POOL                           ID     STORED      OBJECTS     USED        %USED     MAX AVAIL
+    cephfs_data                     1      22 MiB           9      67 MiB      0.07        33 GiB
+    cephfs_metadata                 2     139 KiB          23     2.1 MiB         0        33 GiB
+    volume                          7      16 GiB       4.17k      49 GiB     32.83        33 GiB
+    default.rgw.buckets.index       8         0 B           1         0 B         0        33 GiB
+    default.rgw.buckets.data        9      36 MiB          12     109 MiB      0.11        33 GiB
+    default.rgw.buckets.non-ec     10         0 B           0         0 B         0        33 GiB
+```
+
+max avail的计算方法
+
+MAX AVAIL = GLOBAL.SIZE * ( full_ratio - MAX(ceph osd df used%)) / replication_size
+
+由于crush分配并不均匀，实际计算时，选择使用量最大的那个osd作为整个集群的利用率。
+
+假如full_ratio=0.95，最大osd使用率为35%，则max avail为
+
+167 * ( 0.95 - 0.35 ) / 3 = 33.4GB
+
 
 
 
