@@ -408,7 +408,10 @@
 		util		设备的利用率
 	  这些参数的含义（相对重要的是后面几个）
 		util: 设备的利用率。如果它接近100%，通常说明设备能力趋于饱和（并不绝对，比如设备有写缓冲）
-		      有时会出现大于100%的情况，这是因为读取数据的时候并非原子操作
+		      有时会出现大于100%的情况，这是因为读取数据的时候并非原子操作.
+              util的计算方法: rate(time_spent_doing_I/Os[1m]). time_spent_doing_io表示该时间区间内有IO操作的时间，\
+                  如果是100%，就表示该时间区间内持续有IO操作。对于单个本地盘，就可以表示磁盘负载较高，但是对于分布式\
+                  存储，后端有很多个磁盘，IO虽然是连续的，但是可能落在不同磁盘上，因此util达到100%不能说明存储出现性能问题。
 		svctm: 平均每次请求的服务时间，(r/s+w/s)*(svctm/1000)=util
 		       eg.如果util达到100%，那么svctm=1000/(r/s+w/s),假设IOPS是1000，那么svctm大概在1ms左右，\
 			如果长时间大于这个数值，说明系统出了问题
@@ -428,16 +431,16 @@
 		 1 - major number
 		 2 - minor mumber
 		 3 - device name
-		 4 - reads completed successfully
+         4 - reads completed successfully
 		 5 - reads merged
 		 6 - sectors read
-		 7 - time spent reading (ms)
-		 8 - writes completed
+         7 - (rd_ticks) time spent reading (ms)
+         8 - writes completed
 		 9 - writes merged
 		10 - sectors written
-		11 - time spent writing (ms)
-		12 - I/Os currently in progress
-		13 - time spent doing I/Os (ms)
+        11 - (wr_ticks) time spent writing (ms)
+        12 - (in_flight) I/Os currently in progress
+        13 - (io_ticks) time spent doing I/Os (ms)
 		14 - weighted time spent doing I/Os (ms)
 
 		Kernel 4.18+ appends four more fields for discard
@@ -451,10 +454,13 @@
 		For more details refer to Documentation/iostats.txt
 
     python版本的iostat
-    https://github.com/idning/iostat-py
+    https: //github.com/idning/iostat-py
+    
+    请注意io_ticks与rd_ticks(字段#7)和wr_ticks(字段#11)的区别，rd_ticks和wr_ticks是把每一个I/O所消耗的时间累加在一起，因为硬盘设备通常可以并行处理多个I/O，所以rd_ticks和wr_ticks往往会比自然时间大。而io_ticks表示该设备有I/O（即非空闲）的时间，不考虑I/O有多少，只考虑有没有。在实际计算时，字段#12(in_flight)不为零的时候io_ticks保持计时，字段#12(in_flight)为零的时候io_ticks停止计时。
 
     参考文档
     http://www.udpwork.com/item/12931.html
+    http://linuxperf.com/?p=156
 
 #ip
     ip [OPTIONS] OBJECT [COMMAND [ARGUMENTS]]
