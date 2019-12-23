@@ -1,7 +1,23 @@
 ---
 # TOC
 
-[introduce](#introduce)
+- [introduce](#introduce)
+-   [概念介绍](#概念介绍)
+-     [RC和RS的区别](#RC和RS的区别)
+-     [namespace](#namespace)
+-     [statefulset](#statefulset)
+-   [典型操作](#典型操作)
+-     [版本管理](#版本管理(回滚))
+-     [service account与role](#service-account与role)
+-     [查看etcd的信息](#查看etcd的信息)
+-     [如何访问集群](#如何访问集群)
+-     [查看开启和未开启的admission controle](#查看开启和未开启的admission-control)
+-     [在线修改k8s模块配置](#在线修改k8s模块配置)
+-   [最佳实践](#最佳实践)
+-     [驱逐与迁移](#驱逐与迁移)
+-     [pod如何获得真实的client地址](#pod如何获得真实的client地址)
+-     [pod驱逐优先级](#pod驱逐优先级)
+-     [容器gc问题](#容器gc问题)
 
 # introduce
 
@@ -181,7 +197,7 @@ node not ready时，controller-manager会迁移所有pod
 
 将Service的spec.externalTrafficPolicy 字段设置为local，这就保证了所有Pod通过Service 收到请求之后，一定可以看到真正的、外部 client 的源地址。
 
-### 3.3 
+### 3.3 pod驱逐优先级
 
 kubelet --eviction-hard=imagefs.available<10%,memory.available<500Mi,nodefs.available<5%,nodefs.inodesFree<5% --eviction-soft=imagefs.available<30%,nodefs.available<10% --eviction-soft-grace-period=imagefs.available=2m,nodefs.available=2m --eviction-max-pod-grace-period=600
 

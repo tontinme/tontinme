@@ -1,9 +1,12 @@
 ToC
 
-[localpv]
-[CSI]
-[resource limit]
-[kube-scheduler]
+- [localpv](#localpv)
+- [CSI](#csi)
+- [resource limit](#resource-limit)
+- [kube-scheduler](#kube-scheduler)
+- [kubectl attach vs kubectl exec](#kubectl-attach-vs-kubectl-exec)
+- [](#)
+- [](#)
 
 
 # localpv
@@ -27,4 +30,19 @@ ToC
 # kube-scheduler
 
 kube-scheduler：pod调度串行（防止打分互相干扰），节点predicate和priortity并行，提高过滤node的性能
+
+# kubectl attach vs kubectl exec 
+
+It can attach to the main process run by the container, which is not always bash.
+As opposed to exec, which allows you to execute any process within the container (often: bash)
+
+> exec: any one you want to create
+> attach: the one currently running (no choice)
+
+In addition to interactive execution of commands, you can now also attach to any running process. Like kubectl logs, you’ll get stderr and stdout data, but with attach, you’ll also be able to send stdin from your terminal to the program.
+Awesome for interactive debugging, or even just sending ctrl-c to a misbehaving application.
+
+```
+$> kubectl attach redis -i
+```
 
