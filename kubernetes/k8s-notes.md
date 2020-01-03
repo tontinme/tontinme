@@ -42,7 +42,31 @@ As opposed to exec, which allows you to execute any process within the container
 In addition to interactive execution of commands, you can now also attach to any running process. Like kubectl logs, you’ll get stderr and stdout data, but with attach, you’ll also be able to send stdin from your terminal to the program.
 Awesome for interactive debugging, or even just sending ctrl-c to a misbehaving application.
 
+kubeclt attach用法介绍:
+
+https://github.com/kubernetes/kubernetes/issues/23335
+
 ```
 $> kubectl attach redis -i
+
+$ kubectl attach --help
+Attach to a process that is already running inside an existing container.
+
+Usage:
+  kubectl attach POD -c CONTAINER [flags]
+
+Examples:
+# Get output from running pod 123456-7890, using the first container by default
+$ kubectl attach 123456-7890
+
+# Get output from ruby-container from pod 123456-7890
+$ kubectl attach 123456-7890 -c ruby-container
+
+# Switch to raw terminal mode, sends stdin to 'bash' in ruby-container from pod 123456-7890
+# and sends stdout/stderr from 'bash' back to the client
+$ kubectl attach 123456-7890 -c ruby-container -i -t
 ```
+
+
+
 

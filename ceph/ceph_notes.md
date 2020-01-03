@@ -1,12 +1,56 @@
 # About ceph notes
 
+- [服务器配置](#服务器配置)
 - [librbd feature list](#librbd feature list)
 - [ceph pg stat](#ceph pg stat)
 - [snapshot与clone](#snapshot与clone)
 - [ceph读写流程介绍](#ceph读写流程介绍)
 - [ceph bucket reshard](#ceph bucket reshard)
 - [故障与数据恢复](#故障与数据恢复)
+- [ceph df容量计算](#ceph-df容量计算)
+- [ceph数据分布crush](#ceph数据分布crush)
+- [rbd cache与nova disk_cachemode](#rbd-cache与nova-disk_cachemode)
+- [rgw元数据组织](#rgw元数据组织)
+- [pg状态介绍](#pg状态介绍)
 
+## 服务器配置
+
+Ceph 节点服务器配置
+
+Ceph集群MON节点数量与集群中的OSD数量相关。若Ceph集群中，OSD数量大于1000，则建议MON节点数量为5，否则为3。针对不同的企业应用场景（参考前言部分），服务器配置也有所不同。
+
+针对IOPS密集型场景，服务器配置建议如下：
+
+|模块|配置|
+|---|---|
+|OSD|每个NVME SSD上配置4个OSD(可以用lvm)|
+|日志|存放于NVME SSD|
+|Controller|使用Native PCIE总线|
+|网络|每12个OSD配置一个万兆网口|
+|内存|最小12GB, 每增加一个OSD增加2GB内存|
+|CPU|每个NVME SSD消耗10个CPU Cores|
+
+针对高吞吐量型，服务器配置建议如下：
+
+|模块|配置|
+|---|---|
+|OSD|使用7200转速的机械盘，每个磁盘为一个OSD，不需要配置RAID|
+|日志|如果使用SATA SSD，日志容量与OSD的比率为1:4-5。如果使用NVME SSD，则容量比率为1:12-18|
+|网络|每12个OSD配置一个万兆网口|
+|内存|最小12GB，每增加一个OSD增加2GB内存|
+|CPU|每个HDD消耗0.5个CPU Core|
+
+针对高容量型，服务器配置建议如下：
+
+|模块|配置|
+|---|---|
+|OSD|使用7200转速的机械盘，每个磁盘为一个OSD，不需要配置RAID|
+|日志|使用HDD磁盘|
+|网络|每12个OSD配置一个万兆网口|
+|内存|最小12GB，每增加一个OSD增加2GB内存|
+|CPU|每个HDD消耗0.5个CPU Core|
+
+除此之外，Ceph 的硬件选择也有一些通用的标准，如 Ceph 节点使用相同的：I/O 控制器、磁盘大小、磁盘转速、网络吞吐量和日志配置。
 
 ## librbd feature list
 
@@ -303,6 +347,100 @@ MAX AVAIL = GLOBAL.SIZE * ( full_ratio - MAX(ceph osd df used%)) / replication_s
 
 167 * ( 0.95 - 0.35 ) / 3 = 33.4GB
 
+## ceph数据分布crush
 
+当数据写入集群时，先将数据切分成object, 然后需要进行两次映射。object大小默认为4M，object id(oid)是进行线性映射生成的，即由file的元数据、Ceph条带化产生的object需要连接而成.
 
+> `object->PG`: 
+    1. 指定的静态hash函数计算object id(oid)，获取其hash值
+    2. 获取mask值(pool中的pg总数-1)，将hash值和mask值进行与操作，从而获得PG ID(还需要加上<pool_id>.<与ID>)
 
+> `第二次是PG->OSD set`:
+    1. 以PG ID作为输入，根据Pool的副本数，crush拓扑，获得OSD的一个集合。集合中第一个OSD作为primary OSD
+    2. 影响crush算法的两个因素
+    2.1 当前系统状态: 即cluster map，当osd状态、数量发生变化时，cluster map会变化，进而影响PG到OSD之间的映射
+    2.2 存储配置策略: 比如修改副本数，调整crush rule，将数据调整到不同机柜或节点
+
+以上，可以总结下导致数据重平衡的几个因素：
+    1. 当调整PG数量时，会影响objec提到PG的映射。也就是说，如果PG数量不变，同一文件多次写入，都会落到相同的PG上，进而落到相同的osd上。
+    2. 当有osd数量变化，或副本数变化，或拓扑结构变化，会影响PG到OSD的映射。
+
+ceph为什么采用crush算法，而不是其他的hash算法呢
+    1. crush具有可配置性。可以根据机架拓扑决定数据的分布策略
+    2. crush具有特殊的"稳定性"。当系统加入新的OSD时，大部分PG和OSD之间的映射关系不变，只有少部分会改变从而发生数据迁移
+
+解释一下"稳定性". 
+
+ceph通过straw2算法,实现pgid到osd的选择
+
+```
+1    def bucket_choose(in_bucket, pgid, trial):
+2        for index, item in enumerate(in_bucket.children):
+3            draw = crush_hash(item.id, pgid, trial)
+4            draw *= item.weight
+5            if index == 0 or draw > high_draw:
+6                high_item = item
+7                high_draw = draw
+8        return high_item
+```
+
+其中crush_hash可以简单地看成是一个伪随机的hash函数：它接收3个整数作入参，返回一个固定范围内的随机值。同样的输入下其返回值是确定的，但是任何一个参数的改变都会导致其返回值发生变化。Weight是每个item的权重值（对于OSD来说，weight值与硬盘容量成正比；bucket的weight值即其下children weight值的总和），显然line 4可以使得weight值大的item被选中的几率升高。bucket_choose函数有以下几个特点：
+
+> 1. 对于确定的bucket，不同的pgid能返回不同的结果
+> 2. 对于确定的bucket和pgid，调整trial值可以获得不同的结果
+> 3. 对于确定的pgid和trial值，如果bucket内item增加或删除或调整weight，返回结果要么不变，要么就变更到这个发生变化的item上
+
+这里特点1和2是比较直观的，简单讨论下第三点。假设新增了一个new_item，比对流程可以发现，只需比较原来的high_item和new_item的draw即可，因此返回结果要么仍然是原来的high_item，要么就是new_item，不会出现变为另一个旧的item的情况；同样，假设删除了一个old_item，如果原来它就是high_item，那么会有一个新的item被选择出来，如果它不是high_item，那么返回结果依然是旧的high_item，不会发生变化。
+
+这些特性在一定程度上保证了CRUSH算法的稳定性，即我们期望集群设备的增删仅影响到必要的节点，不要在正常运行的OSD上做无意义的数据迁移。
+
+crush的特点总结
+
+> 1. 计算独立性：每次计算完全独立，不依赖于集群分配情况或已选择结果（先计算再判断冲突，而不是将冲突项从备选项中移除）；仅依靠多次重试解决选择失败问题
+> 2. 稳定性：只有OSD的增删或者weight/reweight变化才会影响到计算结果；正常运行时结果不变
+> 3. 可预测性：通过对指定的CRUSH map进行离线计算即可预测出PG的分布情形，且与集群内实际使用完全一致
+
+虽然CRUSH算法为Ceph数据定位提供了有力的技术支持，但也依然存在一些缺陷，如：
+
+> 1. 假失败：因为计算的独立性CRUSH很难处理权重失衡（weight skew）的情形。例如，假设3个hosts的weight值分别为10，10，1，MAX_TRIES为50，现已经选中了前两个hosts，那么第三个replica有大约(20/21)^50=8.72%的概率选择失败，即使低weight的那个host其实是可用的。因此，在实践中应尽量避免权重失衡的情形出现。
+> 2. 故障额外迁移：上节5.4仅解决了OSD状态由in到out的额外迁移，实际环境中还会因为OSD的增删产生一定量的数据额外迁移，对集群造成影响。
+> 3. 使用率不均衡：这也是CRUSH被诟病最多的缺陷，即完全依赖Hash的随机导致集群中OSD的容量使用率出现明显失衡（实践中遇到过差40%以上），造成空间浪费。因此，自Luminous版本起，Ceph提供了被称为upmap的新机制（可以看成记录了一张特例表），用以手动指定PG的分布位置，来达到均衡数据的效果。
+
+参考: https://zhuanlan.zhihu.com/p/58888246
+
+## rbd cache与nova disk_cachemode
+
+rbd cache配置示例如下
+
+```
+[client]
+    rbd cache = true
+    rbd cache writethrough until flush = true
+    admin socket = /var/run/ceph/rbd-client-$pid.asok
+```
+
+rbd cache的三种模式
+
+> writearound: default. 类似write-back, 写cache成功即返回，区别是不对read请求提供cache服务，因此最大化写性能
+
+> writeback: 同时提供读写cache服务
+
+> writethrough: 写磁盘才返回，仅提供读cache服务
+
+rbd cache(write-back)类似于物理磁盘cache，当OS发送flush或barrier请求时，所有缓存数据刷回osd. 安全性等同于支持自动flush的vm(kernel>2.6.32)使用物理磁盘cache的场景. 如果一直没收到过flush请求，rbd cache行为等同于write-through，以保障数据安全(writethrough_until_flush=true).
+
+换句话说，如果vm或其中的应用对自动flush数据的支持比较好，是建议开启rbd cache的（比如write-back模式，可以合并连续IO，提升写性能）。否则建议关闭（毕竟，突然断电会导致cache丢失），或者使用write-through模式（仅提升读性能）
+
+需要注意的是，rbd-cache位于client本地，如果rbd volume上层业务为GFS等分布式系统，可能会导致数据不一致等问题，不建议开启。
+
+## rgw元数据组织
+
+介绍tail, head, shadow, part相关数据概念
+
+https://blog.csdn.net/ganggexiongqi/article/details/68922663
+
+## pg状态介绍
+
+osd map的变化，pg处于各个状态，比如peering时，都在做什么
+
+https://my.oschina.net/u/2460844/blog/596895
