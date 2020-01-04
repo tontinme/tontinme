@@ -1,6 +1,7 @@
-[# homebrew]
-[# Show hidden files in Finder]
-[# rdm retina]
+[Show hidden files in Finder](Show-hidden-files-in-Finder)
+[homebrew](#homebrew)
+[rdm retina](#rdm-retina)
+[parallels desktop](#Parallels-Desktop)
 
 
 # Show hidden files in Finder
@@ -214,3 +215,23 @@ sudo chown root:wheel ${CONF}
 
 # sudo cp ~/Downloads/DisplayProductID-a0de /System/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-10ac/
 ```
+
+# Parallels Desktop
+
+迁移vmware格式虚拟机到Parallels格式
+
+首先登录虚拟机，卸载vmware tools，正常关机。取消split disk选项。然后在parallels中打开vmx镜像即可自动识别转换。具体可参考https://www.parallels.com/blogs/convert-vmware-to-parallels/
+
+如果通过上述步骤转换失败，提示如下"This VMware Fusion virtual machine cannot be converted to the Parallels format because it is running"。
+
+则可以通过命令行方式进行转换，步骤如下
+
+```
+/Applications/Parallels\ Desktop.app/Contents/MacOS/prl_convert <OS_X>\windows_10_10.vmwarevm/Virtual\ Disk.vmdk --force --no-src-check --no-reconfig --allow-no-os
+```
+
+命令行执行成功后，会直接生成pvm格式的parallels镜像，直接打开即可。
+
+
+
+
