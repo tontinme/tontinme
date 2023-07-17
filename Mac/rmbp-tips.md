@@ -216,6 +216,63 @@ sudo chown root:wheel ${CONF}
 # sudo cp ~/Downloads/DisplayProductID-a0de /System/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-10ac/
 ```
 
+## 10. 附：Ventura配置文件
+
+```
+# 创建目录
+sudo cp -R /System/Library/Displays /Library/
+
+# 创建plist文件
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>DisplayProductID</key>
+            <integer>41182</integer>
+        <key>DisplayVendorID</key>
+            <integer>4268</integer>
+        <key>IODisplayEDID</key>
+            <data>AP///////wAQrN6gTFdMMBYcAQSQUCF45glQqVVOnCYQUFSlSwBxT4EAgYCpQNHAAQEBAQEB53xwoNCgKVAwIDoAIE8xAAAaAAAA/wBUTTQ2Rzg2MTBMV0wKAAAA/ABERUxMIFUzNDE3VwogAAAA/QAwVR5ZIAAKICAgICAgAXc=</data>
+        <key>scale-resolutions</key>
+            <array>
+                <data>AAAa4AAAC0AAAAAB</data>
+                <data>AAAa4AAAC0AAAAABACAAAA==</data>
+                <data>AAAW2AAACZAAAAAB</data>
+                <data>AAAW2AAACZAAAAABACAAAA==</data>
+                <data>AAAtsAAAEyAAAAAB</data>
+                <data>AAAtsAAAEyAAAAABACAAAA==</data>
+                <data>AAA1wAAAFoAAAAAB</data>
+                <data>AAA1wAAAFoAAAAABACAAAA==</data>
+                <data>AAAKoAAABfoAAAABACAAAA==</data>
+                <data>AAAKAAAABkAAAAABACAAAA==</data>
+                <data>AAAKAAAABaAAAAABACAAAA==</data>
+                <data>AAAHgAAABLAAAAABACAAAA==</data>
+                <data>AAAHgAAABDgAAAABACAAAA==</data>
+                <data>AAAFAAAAAtAAAAABACAAAA==</data>
+                <data>AAAGkAAAA7AAAAAB</data>
+                <data>AAAGQAAAA4QAAAAB</data>
+                <data>AAAFoAAAAyoAAAAB</data>
+                <data>AAAFAAAAAtAAAAAB</data>
+                <data>AAAEgAAAAogAAAAB</data>
+                <data>AAAEAAAAAkAAAAAB</data>
+                <data>AAADSAAAAdQAAAAB</data>
+                <data>AAADIAAAAcIAAAAB</data>
+                <data>AAACgAAAAWgAAAAB</data>
+                <data>AAANIAAAB2IAAAAJAKAAAA==</data>
+                <data>AAALQAAABlQAAAAJAKAAAA==</data>
+                <data>AAAKAAAABaAAAAAJAKAAAA==</data>
+                <data>AAAIAAAABIAAAAAJAKAAAA==</data>
+                <data>AAAHgAAABDgAAAAJAKAAAA==</data>
+                <data>AAAGkAAAA7AAAAAJAKAAAA==</data>
+                <data>AAAGQAAAA4QAAAAJAKAAAA==</data>
+                <data>AAAFAAAAAtAAAAAJAKAAAA==</data>
+            </array>
+        <key>target-default-ppmm</key>
+            <real>10.0699301</real>
+    </dict>
+</plist>
+```
+
 # Parallels Desktop
 
 迁移vmware格式虚拟机到Parallels格式
