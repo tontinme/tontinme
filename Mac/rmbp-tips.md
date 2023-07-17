@@ -273,6 +273,8 @@ sudo cp -R /System/Library/Displays /Library/
 </plist>
 ```
 
+参考：https://github.com/bbhardin/A-Guide-to-MacOS-Scaled-Resolutions
+
 # Parallels Desktop
 
 迁移vmware格式虚拟机到Parallels格式
